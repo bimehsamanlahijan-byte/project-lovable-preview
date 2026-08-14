@@ -319,6 +319,8 @@ function TravelPurchasePage() {
         </aside>
       </section>
 
+      <LongformSections path="/insurance/travel" />
+
       <SiteFooter />
     </div>
   );
