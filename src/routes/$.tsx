@@ -108,6 +108,8 @@ function ContentPage({ path }: { path: string }) {
         </section>
       )}
 
+      <LongformSections path={path} />
+
       <section className="container mx-auto px-4 pb-16">
         <div className="bg-card border border-border rounded-3xl shadow-soft p-8 text-center">
           <h2 className="text-xl font-extrabold mb-3">دریافت مشاوره و استعلام قیمت</h2>
