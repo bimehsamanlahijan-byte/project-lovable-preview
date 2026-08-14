@@ -6,6 +6,7 @@ import { InsuranceWheel } from "@/components/InsuranceWheel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { navItems, type NavItem, SITE_CONTACT } from "@/components/site-data";
 import { insuranceContent } from "@/components/insurance-content";
+import { LongformSections } from "@/components/LongformSections";
 
 export const Route = createFileRoute("/$")({
   head: () => ({
@@ -107,6 +108,8 @@ function ContentPage({ path }: { path: string }) {
           </div>
         </section>
       )}
+
+      <LongformSections path={path} />
 
       <section className="container mx-auto px-4 pb-16">
         <div className="bg-card border border-border rounded-3xl shadow-soft p-8 text-center">

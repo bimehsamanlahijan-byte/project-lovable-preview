@@ -16,6 +16,7 @@ import {
 import { SiteHeader } from "@/components/SiteHeader";
 import { InsuranceWheel } from "@/components/InsuranceWheel";
 import { SiteFooter } from "@/components/SiteFooter";
+import { LongformSections } from "@/components/LongformSections";
 import {
   AGE_BANDS,
   CEILINGS,
@@ -318,6 +319,8 @@ function TravelPurchasePage() {
           </div>
         </aside>
       </section>
+
+      <LongformSections path="/insurance/travel" />
 
       <SiteFooter />
     </div>
