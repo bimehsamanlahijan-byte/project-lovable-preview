@@ -10,33 +10,272 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BranchesRouteImport } from './routes/branches'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ReportingRouteImport } from './routes/reporting'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ApiAiChatRouteImport } from './routes/api/ai-chat'
+import { Route as ApiConsultRouteImport } from './routes/api/consult'
+import { Route as ApiReportDamageRouteImport } from './routes/api/report-damage'
+import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
+import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
+import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
+import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
+import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
+import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BranchesRoute = BranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportingRoute = ReportingRouteImport.update({
+  id: '/reporting',
+  path: '/reporting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiChatRoute = ApiAiChatRouteImport.update({
+  id: '/api/ai-chat',
+  path: '/api/ai-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiConsultRoute = ApiConsultRouteImport.update({
+  id: '/api/consult',
+  path: '/api/consult',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReportDamageRoute = ApiReportDamageRouteImport.update({
+  id: '/api/report-damage',
+  path: '/api/report-damage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelOrderRoute = ApiTravelOrderRouteImport.update({
+  id: '/api/travel-order',
+  path: '/api/travel-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EServicesIndexRoute = EServicesIndexRouteImport.update({
+  id: '/e-services/',
+  path: '/e-services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsuranceIndexRoute = InsuranceIndexRouteImport.update({
+  id: '/insurance/',
+  path: '/insurance/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
+  id: '/insurance/travel',
+  path: '/insurance/travel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
+  id: '/api/admin/upload',
+  path: '/api/admin/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAssetSplatRoute = ApiPublicAssetSplatRouteImport.update({
+  id: '/api/public/asset/$',
+  path: '/api/public/asset/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicTelegramWebhookBotIdRoute =
+  ApiPublicTelegramWebhookBotIdRouteImport.update({
+    id: '/api/public/telegram/webhook/$botId',
+    path: '/api/public/telegram/webhook/$botId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
+  '/blog': typeof BlogRoute
+  '/branches': typeof BranchesRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/reporting': typeof ReportingRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/ai-chat': typeof ApiAiChatRoute
+  '/api/consult': typeof ApiConsultRoute
+  '/api/report-damage': typeof ApiReportDamageRoute
+  '/api/travel-order': typeof ApiTravelOrderRoute
+  '/insurance/travel': typeof InsuranceTravelRoute
+  '/e-services/': typeof EServicesIndexRoute
+  '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
+  '/blog': typeof BlogRoute
+  '/branches': typeof BranchesRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/reporting': typeof ReportingRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/ai-chat': typeof ApiAiChatRoute
+  '/api/consult': typeof ApiConsultRoute
+  '/api/report-damage': typeof ApiReportDamageRoute
+  '/api/travel-order': typeof ApiTravelOrderRoute
+  '/insurance/travel': typeof InsuranceTravelRoute
+  '/e-services': typeof EServicesIndexRoute
+  '/insurance': typeof InsuranceIndexRoute
+  '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
+  '/blog': typeof BlogRoute
+  '/branches': typeof BranchesRoute
+  '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRoute
+  '/reporting': typeof ReportingRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/ai-chat': typeof ApiAiChatRoute
+  '/api/consult': typeof ApiConsultRoute
+  '/api/report-damage': typeof ApiReportDamageRoute
+  '/api/travel-order': typeof ApiTravelOrderRoute
+  '/insurance/travel': typeof InsuranceTravelRoute
+  '/e-services/': typeof EServicesIndexRoute
+  '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/blog'
+    | '/branches'
+    | '/contact'
+    | '/dashboard'
+    | '/reporting'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/api/ai-chat'
+    | '/api/consult'
+    | '/api/report-damage'
+    | '/api/travel-order'
+    | '/insurance/travel'
+    | '/e-services/'
+    | '/insurance/'
+    | '/api/admin/upload'
+    | '/api/public/asset/$'
+    | '/api/public/telegram/webhook/$botId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/$'
+    | '/blog'
+    | '/branches'
+    | '/contact'
+    | '/dashboard'
+    | '/reporting'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/api/ai-chat'
+    | '/api/consult'
+    | '/api/report-damage'
+    | '/api/travel-order'
+    | '/insurance/travel'
+    | '/e-services'
+    | '/insurance'
+    | '/api/admin/upload'
+    | '/api/public/asset/$'
+    | '/api/public/telegram/webhook/$botId'
+  id:
+    | '__root__'
+    | '/'
+    | '/$'
+    | '/blog'
+    | '/branches'
+    | '/contact'
+    | '/dashboard'
+    | '/reporting'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/api/ai-chat'
+    | '/api/consult'
+    | '/api/report-damage'
+    | '/api/travel-order'
+    | '/insurance/travel'
+    | '/e-services/'
+    | '/insurance/'
+    | '/api/admin/upload'
+    | '/api/public/asset/$'
+    | '/api/public/telegram/webhook/$botId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SplatRoute: typeof SplatRoute
+  BlogRoute: typeof BlogRoute
+  BranchesRoute: typeof BranchesRoute
+  ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRoute
+  ReportingRoute: typeof ReportingRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiAiChatRoute: typeof ApiAiChatRoute
+  ApiConsultRoute: typeof ApiConsultRoute
+  ApiReportDamageRoute: typeof ApiReportDamageRoute
+  ApiTravelOrderRoute: typeof ApiTravelOrderRoute
+  InsuranceTravelRoute: typeof InsuranceTravelRoute
+  EServicesIndexRoute: typeof EServicesIndexRoute
+  InsuranceIndexRoute: typeof InsuranceIndexRoute
+  ApiAdminUploadRoute: typeof ApiAdminUploadRoute
+  ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
+  ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +287,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/branches': {
+      id: '/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof BranchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reporting': {
+      id: '/reporting'
+      path: '/reporting'
+      fullPath: '/reporting'
+      preLoaderRoute: typeof ReportingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-chat': {
+      id: '/api/ai-chat'
+      path: '/api/ai-chat'
+      fullPath: '/api/ai-chat'
+      preLoaderRoute: typeof ApiAiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/consult': {
+      id: '/api/consult'
+      path: '/api/consult'
+      fullPath: '/api/consult'
+      preLoaderRoute: typeof ApiConsultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/report-damage': {
+      id: '/api/report-damage'
+      path: '/api/report-damage'
+      fullPath: '/api/report-damage'
+      preLoaderRoute: typeof ApiReportDamageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel-order': {
+      id: '/api/travel-order'
+      path: '/api/travel-order'
+      fullPath: '/api/travel-order'
+      preLoaderRoute: typeof ApiTravelOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e-services/': {
+      id: '/e-services/'
+      path: '/e-services'
+      fullPath: '/e-services/'
+      preLoaderRoute: typeof EServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insurance/': {
+      id: '/insurance/'
+      path: '/insurance'
+      fullPath: '/insurance/'
+      preLoaderRoute: typeof InsuranceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insurance/travel': {
+      id: '/insurance/travel'
+      path: '/insurance/travel'
+      fullPath: '/insurance/travel'
+      preLoaderRoute: typeof InsuranceTravelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/upload': {
+      id: '/api/admin/upload'
+      path: '/api/admin/upload'
+      fullPath: '/api/admin/upload'
+      preLoaderRoute: typeof ApiAdminUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/asset/$': {
+      id: '/api/public/asset/$'
+      path: '/api/public/asset/$'
+      fullPath: '/api/public/asset/$'
+      preLoaderRoute: typeof ApiPublicAssetSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/telegram/webhook/$botId': {
+      id: '/api/public/telegram/webhook/$botId'
+      path: '/api/public/telegram/webhook/$botId'
+      fullPath: '/api/public/telegram/webhook/$botId'
+      preLoaderRoute: typeof ApiPublicTelegramWebhookBotIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SplatRoute: SplatRoute,
+  BlogRoute: BlogRoute,
+  BranchesRoute: BranchesRoute,
+  ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRoute,
+  ReportingRoute: ReportingRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiAiChatRoute: ApiAiChatRoute,
+  ApiConsultRoute: ApiConsultRoute,
+  ApiReportDamageRoute: ApiReportDamageRoute,
+  ApiTravelOrderRoute: ApiTravelOrderRoute,
+  InsuranceTravelRoute: InsuranceTravelRoute,
+  EServicesIndexRoute: EServicesIndexRoute,
+  InsuranceIndexRoute: InsuranceIndexRoute,
+  ApiAdminUploadRoute: ApiAdminUploadRoute,
+  ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
+  ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

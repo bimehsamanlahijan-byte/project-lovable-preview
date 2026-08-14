@@ -1,0 +1,152 @@
+import { createServerFn } from "@tanstack/react-start";
+import {
+  getGateSession,
+  isUnlocked,
+  passwordMatches,
+  requireUnlocked,
+  runAdminOp,
+  type AdminOp,
+} from "./dashboard-auth.server";
+import { parseChatIds, runFlowSteps, tg, type FlowStep } from "./telegram.server";
+
+export const dashboardStatus = createServerFn({ method: "GET" }).handler(async () => {
+  return { unlocked: await isUnlocked() };
+});
+
+export const unlockDashboard = createServerFn({ method: "POST" })
+  .inputValidator((data: { password: string }) => data)
+  .handler(async ({ data }) => {
+    const expected = process.env["DASHBOARD_PASSWORD"];
+    if (!expected) return { ok: false as const, reason: "not-configured" };
+    if (!passwordMatches(data.password ?? "", expected)) return { ok: false as const };
+    const session = await getGateSession();
+    await session.update({ unlocked: true });
+    return { ok: true as const };
+  });
+
+export const lockDashboard = createServerFn({ method: "POST" }).handler(async () => {
+  const session = await getGateSession();
+  await session.clear();
+  return { ok: true as const };
+});
+
+export const adminExec = createServerFn({ method: "POST" })
+  .inputValidator((data: AdminOp) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const res = await runAdminOp(data);
+    return res as { data: any; count: number | null; error: { message: string } | null };
+  });
+
+export const telegramSetWebhook = createServerFn({ method: "POST" })
+  .inputValidator((data: { botId: string; url: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const bot = (await runAdminOp({
+      table: "telegram_bots",
+      action: "select",
+      match: { id: data.botId },
+      single: "single",
+    })) as { data: { bot_token: string; webhook_secret: string | null } | null };
+    if (!bot.data) throw new Error("BOT_NOT_FOUND");
+    const secret =
+      bot.data.webhook_secret || Math.random().toString(36).slice(2) + Date.now().toString(36);
+    await tg(bot.data.bot_token, "setWebhook", {
+      url: data.url,
+      secret_token: secret,
+      allowed_updates: ["message", "edited_message", "channel_post", "callback_query"],
+    });
+    await runAdminOp({
+      table: "telegram_bots",
+      action: "update",
+      values: { webhook_secret: secret },
+      match: { id: data.botId },
+    });
+    return { ok: true as const, secret };
+  });
+
+export const telegramGetInfo = createServerFn({ method: "POST" })
+  .inputValidator((data: { botId: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const bot = (await runAdminOp({
+      table: "telegram_bots",
+      action: "select",
+      match: { id: data.botId },
+      single: "single",
+    })) as { data: { bot_token: string } | null };
+    if (!bot.data) throw new Error("BOT_NOT_FOUND");
+    const me = (await tg(bot.data.bot_token, "getMe", {})) as any;
+    const hook = (await tg(bot.data.bot_token, "getWebhookInfo", {})) as any;
+    return { me, hook } as { me: Record<string, any>; hook: Record<string, any> };
+  });
+
+export const telegramRunFlow = createServerFn({ method: "POST" })
+  .inputValidator((data: { flowId: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const flow = (await runAdminOp({
+      table: "telegram_flows",
+      action: "select",
+      match: { id: data.flowId },
+      single: "single",
+    })) as {
+      data: { id: string; bot_id: string | null; steps: FlowStep[]; name: string } | null;
+    };
+    if (!flow.data?.bot_id) throw new Error("FLOW_OR_BOT_MISSING");
+
+    const bot = (await runAdminOp({
+      table: "telegram_bots",
+      action: "select",
+      match: { id: flow.data.bot_id },
+      single: "single",
+    })) as { data: { bot_token: string; default_chat_ids: string | null } | null };
+    if (!bot.data) throw new Error("BOT_NOT_FOUND");
+
+    try {
+      const result = await runFlowSteps(
+        bot.data.bot_token,
+        (flow.data.steps ?? []) as FlowStep[],
+        parseChatIds(bot.data.default_chat_ids),
+      );
+      await runAdminOp({
+        table: "telegram_runs",
+        action: "insert",
+        values: {
+          flow_id: flow.data.id,
+          bot_id: flow.data.bot_id,
+          status: "ok",
+          message: `${result.sent} پیام ارسال شد`,
+          details: { log: result.log },
+        },
+      });
+      return { ok: true as const, sent: result.sent, log: result.log };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      await runAdminOp({
+        table: "telegram_runs",
+        action: "insert",
+        values: {
+          flow_id: flow.data.id,
+          bot_id: flow.data.bot_id,
+          status: "error",
+          message,
+          details: {},
+        },
+      });
+      return { ok: false as const, error: message };
+    }
+  });
+
+export const adminSignedUrl = createServerFn({ method: "POST" })
+  .inputValidator((data: { bucket: string; path: string; expiresIn?: number }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    if (!["customer-documents", "site-assets"].includes(data.bucket)) throw new Error("BAD_BUCKET");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: res, error } = await supabaseAdmin.storage
+      .from(data.bucket)
+      .createSignedUrl(data.path, data.expiresIn ?? 300);
+    if (error || !res) return { url: "" as string, error: error?.message ?? "failed" };
+    return { url: res.signedUrl, error: null as string | null };
+  });

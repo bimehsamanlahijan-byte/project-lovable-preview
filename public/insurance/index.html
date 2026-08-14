@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- بارگذاری فایل‌های Leaflet -->
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.79.0/dist/L.Control.Locate.min.css" />
+  <script src="https://unpkg.com/leaflet.shpfile"></script>
+    <style>
+      .main-body-header {
+  flex-direction: row;
+  position: absolute;
+  max-width: 100%;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(0deg, #f7f7f7, #1ABC9C 200%);
+}
+.main-body-right {
+  float: right;
+}
+.main-body-right img {
+  margin-top: 13px;
+  margin-right: 33px;
+}
+
+.main-body-left {
+  margin-left: 60px;
+  float: left;
+}
+.main-body-left h4 {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+    color: #026d58;
+    margin: 12px 0;
+}
+
+.main-body {
+  padding-top: 5%;
+width: 100%;
+
+}
+.main-body-object-one {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 2%;
+    direction: rtl;
+}
+
+.box-data {
+    width: 224px;
+    height: 219px;
+    background-color: #166d5c;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+.box-details {
+  width: 539px;
+  height: 259px;
+  left: 72px;
+  top: 138px;
+  background-color: #166d5c;
+  border-radius: 10px;
+  float: left;
+  margin-right: 26%;
+}
+input {
+  border-radius: 8px;
+  border: 1px solid #f7f7f7;
+  width: 130x;
+  width: 130px;
+  height: 30px;
+}
+label {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.form {
+  direction: ltr;
+  text-align: center;
+  padding-top: 10px;
+}
+select {
+  width: 188px;
+  height: 30px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  border: 1px solid #f7f7f7;
+}
+.submit {
+  border: 1px solid #008268;
+  width: 188px;
+  height: 30px;
+  background: #008268;
+  border-radius: 8px;
+  color: #f7f7f7;
+  font-size: 15px;
+  line-height: 18px;
+}
+
+.form-data {
+  display: flex;
+  flex-direction: row;
+  width: 89%;
+  margin: 0 auto 15px;
+}
+
+.form-data input {
+  width: 90px;
+  height: 30px;
+  margin: 0 auto;
+}
+
+.container {
+    align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    width: 488px;
+    height: 219px;
+    background-color: #166d5c;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+.col-1, .col-2, .col-3 {
+  width: 103px;
+  display: flex;
+  flex-direction: column;
+}
+
+.row-1, .row-2 , .row-3 {
+  text-align: center;
+  height: 30px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  margin: 0 0 7px 0;
+}
+
+.item-data  {
+    margin: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1%;
+    font-size: 20px;
+}
+.item-data1 {
+    margin: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1%;
+    font-size: 20px;
+}
+.item-data2 {
+    margin: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1%;
+    font-size: 20px;
+}
+
+
+.col-1 {
+  width: 242px;
+}
+
+
+.row-21 {
+  height: 157px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+}
+.row-22 {
+  height: 157px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+}
+.row-23 {
+  height: 157px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+}
+
+.map{
+    width: 1194px;
+    height: 397px;
+    margin: 70px auto 10px;
+}
+.text-data,
+.text-data1,
+.text-data2 {
+  display: flex;
+  text-align: end;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8%;
+  font-size: 20px;
+}
+
+.footer {
+  margin: 0;
+  width: 100%;
+  height: 88px;
+  max-width: 100%;
+  align-items: center;
+  background: linear-gradient(#f7f7f7, #1ABC9C 200%);
+  text-align: center;
+  justify-content: center;
+}
+.footer h3 {
+  color: #121212;
+  text-shadow: 0px 4px 4px rgb(0 0 0 / 25%);
+  font-size: 20px;
+  line-height: 29px;
+  justify-content: center;
+  text-align: center;
+  font-weight: 400;
+  margin-top: 40px;
+  width: 100%;
+  align-items: center;
+  padding-top: 38px;
+}
+
+body {
+  background-color: rgba(245, 239, 237, 1);
+}
+section h1 {
+  margin-top: 50px;
+  margin-bottom: 350px;
+  color: rgba(255, 255, 255, 1);
+}
+p {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 18px;
+}
+h2 {
+  font-family: 'Roboto', sans-serif;
+}
+.timeline {
+  width: 100%;
+  position: relative;
+  perspective: 5000px;
+}
+.timeline:before {
+  position: absolute;
+  content: "";
+  width: 86%;
+  height: 15px;
+  background-color: #166d5c;
+  border-radius: 15px;
+  top: 82px;
+}
+.timeline .timeline-item {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+.timeline .timeline-item:hover:after {
+  transform: scale(1.5, 1.5);
+}
+.timeline .timeline-item.selected:after {
+  background-color: rgba(28, 119, 195, 1);
+  border: 5px solid rgba(86, 203, 249, 1);
+  transform: scale(1.5, 1.5);
+}
+.timeline .timeline-item:after {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 69px;
+  left: 50%;
+  margin-left: -15px;
+  background-color: rgba(245, 239, 237, 1);
+  border: 5px solid #166d5c;
+  content: "";
+  border-radius: 50%;
+  transition: transform 0.5s ease;
+}
+.timeline .timeline-item .timeline-content {
+  position: absolute;
+  top: -300px;
+  display: contents;
+  width: 350px;
+  left: -60px;
+  cursor: auto;
+}
+.timeline .timeline-item .timeline-content.fadeIn {
+  animation-delay: 0.2s;
+}
+.timeline .timeline-item .timeline-content.animated {
+  display: block;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+.flex-items-default {
+  width: 100px;
+  height: 100px;
+}
+.dropdown {
+  width: 400px;
+  height: 326px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 3px 20px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  position: absolute;
+  top: -310px;
+  animation-duration: 0.2s;
+  transition: left 0.3s ease;
+}
+.dropdown .inner {
+  position: relative;
+  width: 100%;
+  height: 326px;
+}
+.dropdown .inner .arrow-down {
+  position: absolute;
+  bottom: -19px;
+  left: 50%;
+  margin-left: -20px;
+}
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid rgba(255, 255, 255, 1);
+}
+.animated {
+  display: block;
+}
+.material-icons {
+  position: absolute;
+  top: 189px;
+  left: 160px;
+  width: 100%;
+  color: rgba(255, 255, 255, 1);
+  font-size: 33px;
+}
+.hexagon {
+  position: relative;
+  width: 75px;
+  height: 43.3px;
+  background-color: rgba(28, 119, 195, 1);
+  margin: 21.65px 0;
+  left: 50%;
+  margin-left: -37px;
+  top: 25px;
+}
+.hexagon:before, .hexagon:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  border-left: 37.5px solid transparent;
+  border-right: 37.5px solid transparent;
+}
+.hexagon:before {
+  bottom: 100%;
+  border-bottom: 21.65px solid rgba(28, 119, 195, 1);
+}
+.hexagon:after {
+  top: 100%;
+  width: 0;
+  border-top: 21.65px solid rgba(28, 119, 195, 1);
+}
+
+.timeline-content h2 {
+  margin-top: 75px;
+  z-index: 10;
+  position: sticky;
+  margin-left: 9px;
+}
+
+      body {
+        max-width: 100%;
+  margin: 0;
+  padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+      .map-leaflet{
+        height: 60%;
+      }
+      .boxDataMain{
+        width: 40%;
+      }
+      .containerMain{
+        width: 60%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- هدر وب سایت -->
+      <nav class="main-body-header">
+        <div class="main-body-right">
+          <img src="" alt="" />
+        </div>
+        <div class="main-body-left">
+          <h4>info@sameteo.com</h4>
+        </div>
+      </nav>
+      <!-- دیتاهای ارسالی -->
+      <div class="main-body">
+        <div class="main-body-object-one">
+          <div class="boxDataMain">
+          <div class="box-data">
+
+
+            <div class="form">
+              <label>Lat :</label>
+              <input
+                class="input"
+                id="lat"
+                placeholder="52.216.52A"
+              /><br /><br />
+              <label>Lon :</label>
+              <input
+                class="input"
+                id="lon"
+                placeholder="52.216.52A"
+              /><br />
+              <br /><br />
+              <div class="form-data">
+                <input
+                  class="input"
+                  id="fname"
+                  placeholder="تاریخ"
+                />
+                <input
+                  class="input"
+                  id="fname"
+                  placeholder="ساعت"
+                />
+              </div>
+              <button id="btn" class="submit"> ارسال </button>
+            </div>
+
+
+          </div>
+        </div>
+    <!-- دیتاهای دریافتی -->
+<div class="containerMain">
+          <div class="container">
+            <div class="col-1">
+              <div class="row-1">
+                <p class="item-data">فاصله ۱</p>
+              </div>
+              <div class="row-21"> 
+                <span class="text-data"></span>  
+            </div>
+            </div>
+            <div class="col-2">
+              <div class="row-2"> <p class="item-data1">فاصله ۲</p></div>
+              <div class="row-22"><span class="text-data1"></span></div>
+            </div>
+            <div class="col-3">
+              <div class="row-3"> <p class="item-data2">فاصله ۳</p></div>
+              <div class="row-23"> <span class="text-data2"></span></div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      </div>
+
+          <!-- Leaflet نقشه -->
+      <div class="map-leaflet" id="map"></div>
+
+          <!-- بارگذاری فایل‌های Leaflet -->
+      <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.79.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+
+        <!--  Leaflet -->
+    <script>
+      var map = L.map("map").setView([32.4207, 53.683], 5);
+
+      var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      });
+      osm.addTo(map);
+      var shpfile = new L.Shapefile('/Users/sanaz/Desktop/bime/mt_loc.shp', {
+    onEachFeature: function(feature, layer) {
+        layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+            return k + ": " + feature.properties[k];
+        }).join("<br />"), {
+            maxHeight: 200
+        });
+    }
+});
+shpfile.addTo(map);
+
+
+    //   var layer = omnivore.shp('/Users/sanaz/Desktop/bime/mt_loc.shp')
+    // .on('ready', function() {
+    //     // دریافت لایه مربوط به dbf
+    //     var dbfLayer = this.toGeoJSON();
+        
+    //     // اضافه کردن لایه dbf به نقشه
+    //     L.geoJSON(dbfLayer).addTo(map);
+    // })
+    // .addTo(map);
+
+    </script>
+        <!-- کد مربوط به تغییر سایز باکس دریافت اطلاعات -->
+    <script>
+
+var cols = document.querySelectorAll(".container > div");
+
+cols.forEach(function(col) {
+  col.addEventListener("click", function() {
+    cols.forEach(function(col) {
+      col.style.width = "103px";
+      col.querySelectorAll(".text-data, .text-data1, .text-data2").forEach(function(el) {
+        el.style.fontSize = "20px";
+      });
+    });
+    col.style.width = "242px";
+    col.querySelectorAll(".text-data, .text-data1, .text-data2").forEach(function(el) {
+      el.style.fontSize = "24px";
+    });
+  });
+});
+
+
+
+    </script>
+        <!-- کد های مربوط به ارسال اطلاعات با متد fetch -->
+    <script>
+let latElem = document.getElementById('lat')
+let lonElem = document.getElementById('lon')
+let btn = document.getElementById('btn')
+
+
+btn.addEventListener("click", sendRequest);
+
+function sendRequest() {
+  // گرفتن مقدار lat و lon هر بار کلیک بر روی دکمه
+  let latElemValue = +latElem.value
+  let lonElemValue = +lonElem.value
+  let changeSizeObject = document.getElementById('row-21')
+  // ساخت شی Headers برای تعیین Content-Type
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  // ساخت پارامتر‌های درخواست برای ارسال به بک‌اند
+  var raw = JSON.stringify({
+    "lat": latElemValue,  // استفاده از مقدار latElemValue به جای +latElemValue
+    "lon": lonElemValue,  // استفاده از مقدار lonElemValue به جای +lonElemValue
+    "date": "2022-01-05 15:00:00"
+  });
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+
+  fetch("http://api.sameteo.ir/sbk/nearest/", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+    // استخراج داده‌های مورد نظر از ابجکت‌ها
+    var dd1 = data[0].dd_10m;
+    var dis1 = data[0].distance;
+    var loc1 = data[0].loc_id;
+    var t2m1 = data[0].t2m;
+    var tp1 = data[0].tp;
+    var dd2 = data[1].dd_10m;
+    var dis2 = data[1].distance;
+    var loc2 = data[1].loc_id;
+    var t2m2 = data[1].t2m;
+    var tp2 = data[1].tp;
+    var dd3 = data[2].dd_10m;
+    var dis3 = data[2].distance;
+    var loc3 = data[2].loc_id;
+    var t2m3 = data[2].t2m;
+    var tp3 = data[2].tp;
+document.querySelector('.item-data').innerHTML = dis1 ;
+document.querySelector('.item-data1').innerHTML = dis2 ;
+document.querySelector('.item-data2').innerHTML = dis3 ;
+
+    document.querySelector('.text-data').innerHTML = 'loc-id = ' + dd1 + '</br>' + 'dd-10m = '+ dd1 + '</br>' + 't2m = ' + t2m1 + '</br>' +'tp = ' + tp1;
+    document.querySelector('.text-data1').innerHTML = 'loc-id = ' + dd2 + '</br>' + 'dd-10m = '+ dd2 + '</br>' + 't2m = ' + t2m2 + '</br>' +'tp = ' + tp2;
+    document.querySelector('.text-data2').innerHTML =  'loc-id = ' + dd3 + '</br>' + 'dd-10m = '+ dd3 + '</br>' + 't2m = ' + t2m3 + '</br>' +'tp = ' + tp3;
+  })
+    .catch(error => console.log('error', error));
+}
+
+
+
+// //  و وجود مارکر قبلی اضافه کردن مارکر
+// function addMarker(lat, lon) {
+//   L.marker([lat, lon]).addTo(map);
+//   map.flyTo([lat, lon], 8);
+// }
+
+let marker;
+
+// اضافه کردن مارکر
+function addMarker(lat, lon) {
+  if (marker) {
+    // حذف مارکر قبلی در صورت وجود
+    marker.remove();
+  }
+  marker = L.marker([lat, lon]).addTo(map);
+  map.flyTo([lat, lon], 8);
+}
+
+
+// فراخوانی تابع addMarker() و ارسال مقادیر lat و lon
+btn.addEventListener("click", function () {
+  var lat = +latElem.value;
+  var lon = +lonElem.value;
+  addMarker(lat, lon);
+});
+
+// let marker = L.marker([lat, lon]).addTo(map);
+// map.setView([lat, lon], 12);
+// marker.bindPopup('Your Location').openPopup();
+// map.flyTo([lat, lon], 12);
+
+
+    </script>
+  </body>
+</html>
