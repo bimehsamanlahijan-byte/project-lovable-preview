@@ -5,8 +5,12 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { InsuranceWheel } from "@/components/InsuranceWheel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { navItems, type NavItem, SITE_CONTACT } from "@/components/site-data";
-import { insuranceContent } from "@/components/insurance-content";
+import { insuranceContent, type InsuranceContent } from "@/components/insurance-content";
+import { hubContent } from "@/components/insurance-hubs";
 import { LongformSections } from "@/components/LongformSections";
+import { pageImage } from "@/components/page-media";
+
+const allContent: Record<string, InsuranceContent> = { ...insuranceContent, ...hubContent };
 
 export const Route = createFileRoute("/$")({
   head: () => ({
@@ -33,13 +37,13 @@ function DynamicPage() {
   const { _splat } = useParams({ strict: false }) as { _splat?: string };
   const path = _splat ?? "";
   const fullPath = "/" + path.replace(/^\/+|\/+$/g, "");
-  const content = insuranceContent[fullPath];
+  const content = allContent[fullPath];
   if (content) return <ContentPage path={fullPath} />;
   return <UnderConstruction />;
 }
 
 function ContentPage({ path }: { path: string }) {
-  const content = insuranceContent[path]!;
+  const content = allContent[path]!;
   const navLabel = findLabel(path) ?? content.title;
 
   return (
@@ -47,8 +51,16 @@ function ContentPage({ path }: { path: string }) {
       <SiteHeader />
       <InsuranceWheel />
 
-      <section className="gradient-hero text-primary-foreground">
-        <div className="container mx-auto px-4 py-12 md:py-16">
+      <section className="relative overflow-hidden">
+        <img
+          src={pageImage(path)}
+          alt={content.title}
+          width={1280}
+          height={720}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 gradient-hero opacity-90" />
+        <div className="relative container mx-auto px-4 py-16 md:py-24 text-primary-foreground">
           <nav className="flex items-center flex-wrap gap-2 text-xs opacity-85 mb-4">
             <a href="/" className="hover:underline">خانه</a>
             <span>/</span>
@@ -56,8 +68,16 @@ function ContentPage({ path }: { path: string }) {
             <span>/</span>
             <span>{navLabel}</span>
           </nav>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">{content.title}</h1>
-          <p className="text-sm md:text-base opacity-90 max-w-3xl leading-8">{content.intro}</p>
+          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight drop-shadow">{content.title}</h1>
+          <p className="text-sm md:text-lg opacity-95 max-w-3xl leading-9">{content.intro}</p>
+          <div className="flex flex-wrap gap-3 mt-7">
+            <a href="/insurance" className="bg-white/15 backdrop-blur border border-white/30 rounded-full px-6 py-3 text-sm font-bold hover:bg-white/25 transition">
+              مشاهده همه بیمه‌ها
+            </a>
+            <a href={`tel:${SITE_CONTACT.mobilePhone}`} dir="ltr" className="bg-card text-primary rounded-full px-6 py-3 text-sm font-extrabold shadow-soft hover:shadow-glow transition inline-flex items-center gap-2">
+              <Phone className="w-4 h-4" /> {SITE_CONTACT.mobilePhone}
+            </a>
+          </div>
         </div>
       </section>
 

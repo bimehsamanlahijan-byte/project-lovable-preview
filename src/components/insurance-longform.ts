@@ -5,7 +5,13 @@ export type Block =
   | { type: "p"; text: string }
   | { type: "list"; items: string[] }
   | { type: "chips"; items: string[] }
-  | { type: "faq"; items: { q: string; a: string }[] };
+  | { type: "faq"; items: { q: string; a: string }[] }
+  | { type: "stats"; items: { value: string; label: string }[] }
+  | { type: "cards"; items: { title: string; text: string }[] }
+  | { type: "steps"; items: { title: string; text: string }[] }
+  | { type: "highlight"; title: string; text: string }
+  | { type: "links"; items: { label: string; href: string }[] };
+
 
 export const insuranceLongform: Record<string, Block[]> = {
   "/insurance/travel": [
