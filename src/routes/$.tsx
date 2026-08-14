@@ -6,6 +6,7 @@ import { InsuranceWheel } from "@/components/InsuranceWheel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { navItems, type NavItem, SITE_CONTACT } from "@/components/site-data";
 import { insuranceContent } from "@/components/insurance-content";
+import { LongformSections } from "@/components/LongformSections";
 
 export const Route = createFileRoute("/$")({
   head: () => ({
