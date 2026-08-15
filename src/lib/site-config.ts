@@ -265,6 +265,10 @@ export type WheelIntroSettings = {
   innerMode: "full" | "collapse" | "modal" | "bubble";
   innerLabel: string;
   innerAnimMs: number;
+  /* announcement ticker */
+  tickerGapPx: number;
+  tickerSpeedSec: number;
+  tickerSchematic: boolean;
 };
 
 export const WHEEL_INNER_MODES = [
@@ -292,6 +296,9 @@ export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   innerMode: "collapse",
   innerLabel: "ارائه کلیه خدمات بیمه‌ای در سریع‌ترین زمان ممکن",
   innerAnimMs: 500,
+  tickerGapPx: 320,
+  tickerSpeedSec: 40,
+  tickerSchematic: true,
 };
 
 

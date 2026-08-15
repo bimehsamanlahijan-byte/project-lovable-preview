@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { CityscapeBackdrop } from "./CityscapeBackdrop";
-import { SITE_CONTACT, SITE_LOGO_HEADER } from "./site-data";
+import { SITE_CONTACT } from "./site-data";
+import { AnnouncementTicker } from "./AnnouncementTicker";
+import { BrandCartBadge } from "./BrandCartBadge";
 import { useSiteSetting } from "@/hooks/use-site-setting";
 import { DEFAULT_WHEEL_INTRO, type WheelIntroSettings } from "@/lib/site-config";
 import { ShoppingCart, Sparkles, X } from "lucide-react";
@@ -368,33 +370,13 @@ function WheelSection() {
 
 
       {/* News ticker — replaces ground vehicle animation */}
-      <div className="relative z-20 mt-6 mb-4 mx-2 sm:mx-4 rounded-full bg-white/90 backdrop-blur border border-red-100 shadow-[0_8px_24px_-12px_rgba(15,30,80,0.18)] overflow-hidden" dir="rtl">
-        <div className="flex items-stretch">
-          <div className="flex-1 overflow-hidden py-2">
-            <div className="marquee-track text-[12px] sm:text-sm text-foreground/85 font-semibold">
-              {announcements.map((text, i) => (
-                <span key={i} className="inline-flex items-center mx-6">
-                  <img
-                    alt="بیمه سامان"
-                    className="h-6 w-auto object-contain mx-2"
-                    loading="lazy"
-                    src={SITE_LOGO_HEADER}
-                  />
-                  <span>{text}</span>
-                  <img
-                    alt="بیمه سامان"
-                    className="h-6 w-auto object-contain mx-2"
-                    loading="lazy"
-                    src={SITE_LOGO_HEADER}
-                  />
-                  {i < announcements.length - 1 && (
-                    <span className="text-red-500 mx-2">◆</span>
-                  )}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="relative z-20 mt-6 mb-4 mx-2 sm:mx-4 rounded-3xl bg-white/90 backdrop-blur border border-red-100 shadow-[0_8px_24px_-12px_rgba(15,30,80,0.18)] overflow-hidden" dir="rtl">
+        <AnnouncementTicker
+          items={announcements}
+          gapPx={intro.tickerGapPx ?? 320}
+          speedSec={intro.tickerSpeedSec ?? 40}
+          schematic={intro.tickerSchematic ?? true}
+        />
       </div>
       </div>
     </section>
@@ -421,13 +403,18 @@ export function InsuranceWheel() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="w-full text-right group flex items-center justify-between gap-3 rounded-2xl border border-red-100 bg-card/90 backdrop-blur px-4 sm:px-6 py-3.5 shadow-[0_10px_28px_-16px_rgba(15,30,80,0.25)] hover:border-red-300 transition"
+      aria-label={label}
+      title={label}
+      className="w-full text-right group flex items-center justify-between gap-3 rounded-2xl border border-red-100 bg-card/90 backdrop-blur px-4 sm:px-6 py-2.5 shadow-[0_10px_28px_-16px_rgba(15,30,80,0.25)] hover:border-red-300 transition"
     >
-      <span className="flex items-center gap-3 min-w-0">
-        <span className="grid place-items-center w-10 h-10 rounded-full bg-[linear-gradient(120deg,#b91c1c,#f43f5e)] text-white shadow-md shrink-0">
-          <ShoppingCart className="w-5 h-5" />
-        </span>
-        <span className="truncate text-xs sm:text-sm font-extrabold text-foreground">{label}</span>
+      <BrandCartBadge size={40} />
+      <span className="flex-1 min-w-0">
+        <AnnouncementTicker
+          items={announcements}
+          gapPx={intro.tickerGapPx ?? 320}
+          speedSec={intro.tickerSpeedSec ?? 40}
+          schematic={intro.tickerSchematic ?? true}
+        />
       </span>
       <span className="shrink-0 inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold text-red-600">
         {intro.buttonText}
@@ -480,9 +467,9 @@ export function InsuranceWheel() {
           onClick={() => setOpen(true)}
           aria-label={label}
           title={label}
-          className="fixed z-40 bottom-5 left-5 w-14 h-14 rounded-full grid place-items-center text-white bg-[linear-gradient(120deg,#b91c1c,#f43f5e)] shadow-[0_18px_40px_-14px_rgba(220,38,38,0.8)] ring-4 ring-white/60 hover:scale-105 transition-transform animate-[ve-pulse_2.4s_ease-in-out_infinite]"
+          className="fixed z-40 bottom-5 left-5 rounded-full grid place-items-center shadow-[0_18px_40px_-14px_rgba(220,38,38,0.8)] ring-4 ring-white/60 hover:scale-105 transition-transform animate-[ve-pulse_2.4s_ease-in-out_infinite]"
         >
-          <ShoppingCart className="w-6 h-6" />
+          <BrandCartBadge size={56} />
         </button>
       )}
 
