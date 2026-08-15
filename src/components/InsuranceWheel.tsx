@@ -59,7 +59,7 @@ const REVEAL_VARIANTS: Record<string, { initial: Record<string, number>; animate
   fade: { initial: { opacity: 0 }, animate: { opacity: 1 } },
 };
 
-export function InsuranceWheel() {
+function WheelSection() {
   const intro = useSiteSetting<WheelIntroSettings>("wheel_intro", DEFAULT_WHEEL_INTRO);
   const [revealed, setRevealed] = useState(false);
   const [burst, setBurst] = useState(false);
