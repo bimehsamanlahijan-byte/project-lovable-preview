@@ -261,7 +261,18 @@ export type WheelIntroSettings = {
   centerImageSize: number;
   centerTitle: string;
   centerSubtitle: string;
+  /* how the section behaves on inner pages (non-home) */
+  innerMode: "full" | "collapse" | "modal" | "bubble";
+  innerLabel: string;
+  innerAnimMs: number;
 };
+
+export const WHEEL_INNER_MODES = [
+  { v: "full", label: "نمایش کامل (مثل صفحه اصلی)" },
+  { v: "collapse", label: "جمع‌شده (باز و بسته شدن نرم)" },
+  { v: "modal", label: "پنجره پاپ‌آپ" },
+  { v: "bubble", label: "دایره کوچک شناور" },
+] as const;
 
 export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   enabled: true,
@@ -278,6 +289,9 @@ export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   centerImageSize: 56,
   centerTitle: "بیمه‌نامه‌های سامان",
   centerSubtitle: "روی هر بیمه قرار بگیرید",
+  innerMode: "collapse",
+  innerLabel: "ارائه کلیه خدمات بیمه‌ای در سریع‌ترین زمان ممکن",
+  innerAnimMs: 500,
 };
 
 
