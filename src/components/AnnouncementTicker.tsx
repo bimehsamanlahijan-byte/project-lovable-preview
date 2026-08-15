@@ -9,15 +9,22 @@ export function AnnouncementTicker({
   gapPx = 320,
   speedSec = 40,
   schematic = true,
+  barColorA = "#f87171",
+  barColorB = "#3b5a86",
+  barAnim = "slide",
   className = "",
 }: {
   items: string[];
   gapPx?: number;
   speedSec?: number;
   schematic?: boolean;
+  barColorA?: string;
+  barColorB?: string;
+  barAnim?: "none" | "slide" | "pulse" | "wave";
   className?: string;
 }) {
   const gapShare = Math.min(60, Math.round((gapPx / (gapPx + items.length * 420)) * 100));
+  const animCls = barAnim === "none" ? "" : `tick-bar-${barAnim}`;
 
   return (
     <div className={`w-full min-w-0 ${className}`} dir="rtl">
@@ -43,19 +50,33 @@ export function AnnouncementTicker({
         <div className="flex items-center gap-1 px-4 pb-1.5" aria-hidden="true">
           <div className="flex-1 flex items-center gap-[2px] h-1.5">
             {items.map((_, i) => (
-              <span key={i} className="flex-1 h-full rounded-full bg-red-400/70" />
+              <span
+                key={i}
+                className={`flex-1 h-full rounded-full ${animCls}`}
+                style={{
+                  backgroundColor: i % 2 === 0 ? barColorA : barColorB,
+                  opacity: 0.75,
+                  animationDelay: `${(i % 6) * 0.15}s`,
+                }}
+              />
             ))}
             <span
-              className="h-full rounded-full bg-slate-300/70"
-              style={{ width: `${gapShare}%`, minWidth: 6 }}
+              className={`h-full rounded-full ${animCls}`}
+              style={{
+                width: `${gapShare}%`,
+                minWidth: 6,
+                backgroundColor: barColorB,
+                opacity: 0.35,
+                animationDelay: "0.4s",
+              }}
               title="فاصله خالی تا اعلان اول"
             />
           </div>
-          <span className="text-[9px] font-bold text-slate-400 tabular-nums">{gapShare}%</span>
         </div>
       )}
     </div>
   );
 }
+
 
 export default AnnouncementTicker;
