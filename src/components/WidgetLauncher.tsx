@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { BrandCartBadge } from "./BrandCartBadge";
 
 /** Circular launcher button shared by the live-chat and AI widgets. */
 export function WidgetLauncher({
@@ -29,12 +30,7 @@ export function WidgetLauncher({
       {iconUrl ? (
         <img src={iconUrl} alt={label} className="w-full h-full object-cover" />
       ) : (
-        <span
-          className="w-full h-full grid place-items-center"
-          style={{ background: "linear-gradient(135deg,#0b1e3f 0%,#16305f 60%,#24467f 100%)" }}
-        >
-          <Icon className="w-1/2 h-1/2" />
-        </span>
+        <BrandCartBadge size={size} Icon={Icon} className="ring-0 shadow-none" />
       )}
     </button>
   );
