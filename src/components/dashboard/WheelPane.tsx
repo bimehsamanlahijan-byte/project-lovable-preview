@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Save, Trash2, Upload } from "lucide-react";
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
-import { DEFAULT_WHEEL_INTRO, type WheelIntroSettings } from "@/lib/site-config";
+import { DEFAULT_WHEEL_INTRO, WHEEL_INNER_MODES, type WheelIntroSettings } from "@/lib/site-config";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
 const cardCls = "bg-white rounded-2xl border border-slate-200 p-5";
@@ -145,6 +145,34 @@ export function WheelPane() {
                 onChange={(e) => setCfg({ ...cfg, buttonY: Number(e.target.value) })} className="w-full" />
             </Row>
           </div>
+        </div>
+      </section>
+
+      <section className={cardCls}>
+        <h2 className="font-extrabold text-[#0b1e3f] mb-1">نمایش سکشن در صفحات داخلی</h2>
+        <p className="text-[11px] text-slate-500 leading-6 mb-4">
+          در صفحه اصلی این سکشن همیشه کامل نمایش داده می‌شود. برای صفحات دیگر می‌توانید حالت جمع‌شده،
+          پنجره پاپ‌آپ یا دایره کوچک شناور را انتخاب کنید؛ کاربر با یک کلیک آن را باز و با «بستن» به حالت اول برمی‌گرداند.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <Row label="حالت نمایش در صفحات داخلی">
+            <select
+              value={cfg.innerMode ?? "collapse"}
+              onChange={(e) => setCfg({ ...cfg, innerMode: e.target.value as WheelIntroSettings["innerMode"] })}
+              className={inputCls}
+            >
+              {WHEEL_INNER_MODES.map((m) => (
+                <option key={m.v} value={m.v}>{m.label}</option>
+              ))}
+            </select>
+          </Row>
+          <Row label="متن نوار / دکمه بازکننده">
+            <input value={cfg.innerLabel ?? ""} onChange={(e) => setCfg({ ...cfg, innerLabel: e.target.value })} className={inputCls} />
+          </Row>
+          <Row label={`سرعت انیمیشن: ${cfg.innerAnimMs ?? 500} میلی‌ثانیه`}>
+            <input type="range" min={150} max={1200} step={50} value={cfg.innerAnimMs ?? 500}
+              onChange={(e) => setCfg({ ...cfg, innerAnimMs: Number(e.target.value) })} className="w-full" />
+          </Row>
         </div>
       </section>
 

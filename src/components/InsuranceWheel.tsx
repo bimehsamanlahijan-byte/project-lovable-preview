@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { CityscapeBackdrop } from "./CityscapeBackdrop";
 import { SITE_CONTACT, SITE_LOGO_HEADER } from "./site-data";
 import { useSiteSetting } from "@/hooks/use-site-setting";
 import { DEFAULT_WHEEL_INTRO, type WheelIntroSettings } from "@/lib/site-config";
-import { ShoppingCart, Sparkles } from "lucide-react";
+import { ShoppingCart, Sparkles, X } from "lucide-react";
 
 
 import {
@@ -59,7 +59,7 @@ const REVEAL_VARIANTS: Record<string, { initial: Record<string, number>; animate
   fade: { initial: { opacity: 0 }, animate: { opacity: 1 } },
 };
 
-export function InsuranceWheel() {
+function WheelSection() {
   const intro = useSiteSetting<WheelIntroSettings>("wheel_intro", DEFAULT_WHEEL_INTRO);
   const [revealed, setRevealed] = useState(false);
   const [burst, setBurst] = useState(false);
@@ -401,5 +401,121 @@ export function InsuranceWheel() {
   );
 }
 
+/**
+ * Wrapper: on the home page the section always shows in full.
+ * On inner pages the admin picks how it appears (full / collapse / modal / bubble)
+ * so visitors notice a new page opened, and can always restore the button state.
+ */
+export function InsuranceWheel() {
+  const intro = useSiteSetting<WheelIntroSettings>("wheel_intro", DEFAULT_WHEEL_INTRO);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/" || pathname === "";
+  const mode = intro.innerMode ?? "collapse";
+  const [open, setOpen] = useState(false);
+  const dur = Math.max(150, intro.innerAnimMs ?? 500) / 1000;
+  const label = intro.innerLabel || "ارائه کلیه خدمات بیمه‌ای در سریع‌ترین زمان ممکن";
+
+  if (isHome || mode === "full") return <WheelSection />;
+
+  const trigger = (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className="w-full text-right group flex items-center justify-between gap-3 rounded-2xl border border-red-100 bg-card/90 backdrop-blur px-4 sm:px-6 py-3.5 shadow-[0_10px_28px_-16px_rgba(15,30,80,0.25)] hover:border-red-300 transition"
+    >
+      <span className="flex items-center gap-3 min-w-0">
+        <span className="grid place-items-center w-10 h-10 rounded-full bg-[linear-gradient(120deg,#b91c1c,#f43f5e)] text-white shadow-md shrink-0">
+          <ShoppingCart className="w-5 h-5" />
+        </span>
+        <span className="truncate text-xs sm:text-sm font-extrabold text-foreground">{label}</span>
+      </span>
+      <span className="shrink-0 inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold text-red-600">
+        {intro.buttonText}
+        <Sparkles className="w-4 h-4" />
+      </span>
+    </button>
+  );
+
+  const closeBtn = (
+    <button
+      type="button"
+      onClick={() => setOpen(false)}
+      aria-label="بستن"
+      className="inline-flex items-center gap-1.5 rounded-full bg-card border border-border px-4 py-2 text-xs font-extrabold text-foreground shadow-soft hover:border-red-300 transition"
+    >
+      <X className="w-4 h-4" /> بستن
+    </button>
+  );
+
+  if (mode === "collapse") {
+    return (
+      <div dir="rtl">
+        {!open && <div className="container mx-auto px-4 mt-8">{trigger}</div>}
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              key="wheel-collapse"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: dur, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden"
+            >
+              <WheelSection />
+              <div className="container mx-auto px-4 -mt-4 mb-8 flex justify-center">{closeBtn}</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  return (
+    <div dir="rtl">
+      {mode === "modal" ? (
+        <div className="container mx-auto px-4 mt-8">{trigger}</div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={label}
+          title={label}
+          className="fixed z-40 bottom-5 left-5 w-14 h-14 rounded-full grid place-items-center text-white bg-[linear-gradient(120deg,#b91c1c,#f43f5e)] shadow-[0_18px_40px_-14px_rgba(220,38,38,0.8)] ring-4 ring-white/60 hover:scale-105 transition-transform animate-[ve-pulse_2.4s_ease-in-out_infinite]"
+        >
+          <ShoppingCart className="w-6 h-6" />
+        </button>
+      )}
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="wheel-modal"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: dur * 0.6 }}
+            onClick={() => setOpen(false)}
+          >
+            <motion.div
+              className="mx-auto w-full max-w-4xl rounded-3xl bg-background shadow-2xl overflow-hidden"
+              initial={{ scale: 0.85, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 12, opacity: 0 }}
+              transition={{ duration: dur, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between gap-3 px-4 sm:px-6 pt-4">
+                <span className="text-xs sm:text-sm font-extrabold text-foreground truncate">{label}</span>
+                {closeBtn}
+              </div>
+              <WheelSection />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default InsuranceWheel;
