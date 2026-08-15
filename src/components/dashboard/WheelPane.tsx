@@ -177,6 +177,53 @@ export function WheelPane() {
       </section>
 
       <section className={cardCls}>
+        <h2 className="font-extrabold text-[#0b1e3f] mb-1">نوار اعلان (حلقه‌وار)</h2>
+        <p className="text-[11px] text-slate-500 leading-6 mb-4">
+          با نوار زیر می‌توانید فاصله خالی بین آخرین اعلان و بازگشت اعلان اول را کم و زیاد کنید؛ منوی شماتیک، سهم
+          اعلان‌ها (قرمز) و فضای خالی (خاکستری) را در یک دور کامل نشان می‌دهد.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-3 items-start">
+          <Row label={`فاصله خالی تا اعلان اول: ${cfg.tickerGapPx ?? 320}px`}>
+            <input type="range" min={0} max={1600} step={20} value={cfg.tickerGapPx ?? 320}
+              onChange={(e) => setCfg({ ...cfg, tickerGapPx: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`زمان یک دور کامل: ${cfg.tickerSpeedSec ?? 40} ثانیه`}>
+            <input type="range" min={10} max={120} step={1} value={cfg.tickerSpeedSec ?? 40}
+              onChange={(e) => setCfg({ ...cfg, tickerSpeedSec: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label="نمایش منوی شماتیک زیر نوار">
+            <select value={(cfg.tickerSchematic ?? true) ? "1" : "0"}
+              onChange={(e) => setCfg({ ...cfg, tickerSchematic: e.target.value === "1" })} className={inputCls}>
+              <option value="1">فعال</option>
+              <option value="0">غیرفعال</option>
+            </select>
+          </Row>
+        </div>
+
+        {(() => {
+          const gap = cfg.tickerGapPx ?? 320;
+          const share = Math.min(60, Math.round((gap / (gap + 7 * 420)) * 100));
+          const secs = Math.round(((cfg.tickerSpeedSec ?? 40) * share) / 100);
+          return (
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 flex items-center gap-[2px] h-2">
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <span key={i} className="flex-1 h-full rounded-full bg-red-400/80" />
+                  ))}
+                  <span className="h-full rounded-full bg-slate-300" style={{ width: `${share}%`, minWidth: 6 }} />
+                </div>
+                <span className="text-[10px] font-bold text-slate-500 tabular-nums">{share}%</span>
+              </div>
+              <p className="text-[10px] text-slate-500 mt-2">
+                حدوداً {secs} ثانیه فضای خالی پیش از ورود اعلان اول.
+              </p>
+            </div>
+          );
+        })()}
+      </section>
+
+      <section className={cardCls}>
         <h2 className="font-extrabold text-[#0b1e3f] mb-1">دایره وسط چرخ‌وفلک (لوگو و نوشته‌ها)</h2>
         <p className="text-[11px] text-slate-500 leading-6 mb-4">
           می‌توانید به‌جای آیکن سپر، لوگو یا عکس دلخواه آپلود کنید و عنوان و زیرعنوان وسط چرخ را تغییر دهید.
