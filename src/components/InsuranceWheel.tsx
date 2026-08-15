@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { CityscapeBackdrop } from "./CityscapeBackdrop";
 import { SITE_CONTACT, SITE_LOGO_HEADER } from "./site-data";
 import { useSiteSetting } from "@/hooks/use-site-setting";
 import { DEFAULT_WHEEL_INTRO, type WheelIntroSettings } from "@/lib/site-config";
-import { ShoppingCart, Sparkles } from "lucide-react";
+import { ShoppingCart, Sparkles, X } from "lucide-react";
 
 
 import {
