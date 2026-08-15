@@ -249,3 +249,12 @@
   background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
   animation: cta-sheen 2.6s ease-in-out infinite;
 }
+
+
+/* ---------- Announcement ticker schematic bars ---------- */
+@keyframes tick-bar-slide { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-22%); } }
+@keyframes tick-bar-pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes tick-bar-wave { 0%,100% { transform: scaleY(.5); } 50% { transform: scaleY(1); } }
+.tick-bar-slide { animation: tick-bar-slide 3.2s ease-in-out infinite; }
+.tick-bar-pulse { animation: tick-bar-pulse 2.4s ease-in-out infinite; }
+.tick-bar-wave { animation: tick-bar-wave 2.2s ease-in-out infinite; transform-origin: center; }

@@ -269,7 +269,17 @@ export type WheelIntroSettings = {
   tickerGapPx: number;
   tickerSpeedSec: number;
   tickerSchematic: boolean;
+  tickerBarColorA: string;
+  tickerBarColorB: string;
+  tickerBarAnim: "none" | "slide" | "pulse" | "wave";
 };
+
+export const TICKER_BAR_ANIMS = [
+  { v: "none", label: "بدون انیمیشن" },
+  { v: "slide", label: "جابجایی نرم (Slide)" },
+  { v: "pulse", label: "تپش ملایم" },
+  { v: "wave", label: "موج" },
+] as const;
 
 export const WHEEL_INNER_MODES = [
   { v: "full", label: "نمایش کامل (مثل صفحه اصلی)" },
@@ -299,6 +309,9 @@ export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   tickerGapPx: 320,
   tickerSpeedSec: 40,
   tickerSchematic: true,
+  tickerBarColorA: "#f87171",
+  tickerBarColorB: "#3b5a86",
+  tickerBarAnim: "slide",
 };
 
 
