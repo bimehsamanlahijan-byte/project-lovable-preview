@@ -17,8 +17,8 @@ const DEFAULT_DEPLOY: Deploy = {
   wwwRedirect: true,
   projectName: "azarakhsh-saman",
   buildCommand: "bun run build",
-  outputDir: ".output/public",
-  notes: "پس از اتصال دامنه، رکورد CNAME را در پنل دامنه به Cloudflare Pages منتقل کنید.",
+  outputDir: "dist/client",
+  notes: "خروجی سرور (Worker) در dist/server/wrangler.json است و با npx wrangler deploy منتشر می‌شود. انتشار خودکار از گیت‌هاب با فایل .github/workflows/deploy-cloudflare.yml انجام می‌شود.",
 };
 
 const ENV_VARS = [
