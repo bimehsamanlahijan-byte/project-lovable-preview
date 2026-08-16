@@ -51,3 +51,28 @@
 - خروجی خودکار: `/sitemap.xml` و `/robots.txt` بر اساس همان فهرست ساخته می‌شوند.
 - داده ساختاریافته `WebSite` و `SiteNavigationElement` در صفحه اصلی درج می‌شود تا گوگل صفحات انتخابی را به‌عنوان سایت‌لینک زیر دامنه اصلی نشان دهد.
 - پس از اتصال دامنه در Cloudflare: آدرس دامنه را در پیشخوان ثبت کنید، سپس در Google Search Console دامنه را تأیید و `https://دامنه/sitemap.xml` را ثبت کنید.
+
+## ۷) انتشار خودکار از گیت‌هاب (CI/CD)
+فایل `.github/workflows/deploy-cloudflare.yml` هر push به شاخه `main` را می‌گیرد، پروژه را `bun run build` می‌کند و با `npx wrangler deploy --config dist/server/wrangler.json` روی Cloudflare منتشر می‌کند.
+
+برای فعال‌سازی این زنجیره باید **کد منبع کامل پروژه** در مخزن گیت‌هاب موجود باشد و با هر ویرایش در Lovable به‌روز شود:
+1. در **Project Settings → GitHub** پروژه‌ی Lovable، مخزن گیت‌هاب را متصل کنید تا کد منبع دوطرفه سینک شود (هر ویرایش در Lovable به‌صورت commit به گیت‌هاب می‌رود و Actions را روشن می‌کند). پنل «اتصال و انتشار در گیت‌هاب» در پیشخوان فقط فایل پشتیبان `site-content.json` را می‌فرستد و جایگزین این سینک کامل نیست.
+2. در گیت‌هاب: **Settings → Secrets and variables → Actions** این رازها را ثبت کنید:
+   - `CLOUDFLARE_API_TOKEN` — توکن با دسترسی Edit Cloudflare Workers (Cloudflare → My Profile → API Tokens)
+   - `CLOUDFLARE_ACCOUNT_ID` — شناسه حساب (Cloudflare → هر پروژه →右侧 Account ID)
+   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` (در زمان بیلد در کد کلاینت پخته می‌شوند)
+
+### متغیرهای زمان اجرا (روی Worker در Cloudflare، یک‌بار تنظیم می‌شوند)
+در پنل Cloudflare: **Workers & Pages → \<worker شما\> → Settings → Variables and Secrets** این موارد را اضافه کنید (در دیپلویهای بعدی حفظ می‌شوند):
+
+| نام | نوع | توضیح |
+| --- | --- | --- |
+| `SUPABASE_URL` | Text | آدرس سرویس داده سمت سرور |
+| `SUPABASE_PUBLISHABLE_KEY` | Text | کلید عمومی سمت سرور |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret | کلید سرویس (RLS را دور می‌زند) — **الزامی برای پیشخوان مدیریت**؛ بدون آن عملیات دیتابیس پیشخوان خطا می‌دهد |
+| `LOVABLE_API_KEY` | Secret | کلید دروازه هوش مصنوعی (چت + اتصال گیت‌هاب) |
+| `DASHBOARD_PASSWORD` | Secret | رمز ورود پیشخوان |
+| `SESSION_SECRET` | Secret | رمز نشست پیشخوان |
+| `GITHUB_API_KEY` | Secret | توکن گیت‌هاب (برای ارسال خودکار snapshot از پیشخوان؛ اختیاری) |
+
+> توجه: `SUPABASE_SERVICE_ROLE_KEY` برای کارکرد پیشخوان مدیریت روی Cloudflare اختصاصی الزامی است. این کلید در محیط Lovable Cloud قابل دریافت نیست؛ اگر به‌صورت خودمیزبان روی Cloudflare خودتان منتشر می‌کنید، باید این کلید را از پروژه‌ی سرویس داده خود تهیه و به‌عنوان Secret ثبت کنید. بخش‌های عمومی سایت (صفحات بیمه، چت، فرم‌ها) با همان کلید عمومی و RLS کار می‌کنند و به این کلید نیاز ندارند.
