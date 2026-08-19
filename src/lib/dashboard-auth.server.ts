@@ -31,6 +31,74 @@ export async function requireUnlocked(): Promise<void> {
   if (!(await isUnlocked())) throw new Error("UNAUTHORIZED");
 }
 
+/* ---------- Private (service-role only) admin settings ---------- */
+
+export async function readPrivateSetting<T>(key: string): Promise<T | null> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("admin_private_settings" as never)
+    .select("value")
+    .eq("key", key)
+    .maybeSingle();
+  return ((data as { value?: T } | null)?.value ?? null) as T | null;
+}
+
+export async function writePrivateSetting(key: string, value: unknown) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin
+    .from("admin_private_settings" as never)
+    .upsert({ key, value, updated_at: new Date().toISOString() } as never, { onConflict: "key" });
+  return { error: error ? error.message : null };
+}
+
+/* ---------- Dashboard password stored in the database (bcrypt) ---------- */
+
+const PASSWORD_KEY = "dashboard_password";
+
+export async function hashPassword(plain: string): Promise<string> {
+  const bcrypt = await import("bcryptjs");
+  return bcrypt.hash(plain, 10);
+}
+
+/**
+ * Verifies the dashboard password against the hash stored in the database.
+ * If no hash exists yet, falls back to the DASHBOARD_PASSWORD env var once and
+ * migrates it into the database so it can be changed from the site itself.
+ */
+export async function verifyDashboardPassword(input: string): Promise<
+  { ok: true } | { ok: false; reason?: "not-configured" }
+> {
+  const plainInput = input ?? "";
+  const stored = await readPrivateSetting<{ hash?: string }>(PASSWORD_KEY);
+  if (stored?.hash) {
+    const bcrypt = await import("bcryptjs");
+    return (await bcrypt.compare(plainInput, stored.hash)) ? { ok: true } : { ok: false };
+  }
+
+  const envPassword = process.env["DASHBOARD_PASSWORD"];
+  if (!envPassword) return { ok: false, reason: "not-configured" };
+  if (!passwordMatches(plainInput, envPassword)) return { ok: false };
+  await writePrivateSetting(PASSWORD_KEY, {
+    hash: await hashPassword(plainInput),
+    updatedAt: new Date().toISOString(),
+  });
+  return { ok: true };
+}
+
+export async function setDashboardPassword(next: string) {
+  return writePrivateSetting(PASSWORD_KEY, {
+    hash: await hashPassword(next),
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+export async function dashboardPasswordSource(): Promise<"database" | "env" | "none"> {
+  const stored = await readPrivateSetting<{ hash?: string }>(PASSWORD_KEY);
+  if (stored?.hash) return "database";
+  return process.env["DASHBOARD_PASSWORD"] ? "env" : "none";
+}
+
+
 /** Tables the dashboard is allowed to manage. */
 export const ADMIN_TABLES = [
   "contact_messages",

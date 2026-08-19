@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
+  dashboardPasswordSource,
   getGateSession,
   isUnlocked,
-  passwordMatches,
   requireUnlocked,
   runAdminOp,
+  setDashboardPassword,
+  verifyDashboardPassword,
   type AdminOp,
 } from "./dashboard-auth.server";
 import { parseChatIds, runFlowSteps, tg, type FlowStep } from "./telegram.server";
@@ -16,11 +18,28 @@ export const dashboardStatus = createServerFn({ method: "GET" }).handler(async (
 export const unlockDashboard = createServerFn({ method: "POST" })
   .inputValidator((data: { password: string }) => data)
   .handler(async ({ data }) => {
-    const expected = process.env["DASHBOARD_PASSWORD"];
-    if (!expected) return { ok: false as const, reason: "not-configured" };
-    if (!passwordMatches(data.password ?? "", expected)) return { ok: false as const };
+    const res = await verifyDashboardPassword(data.password ?? "");
+    if (!res.ok) return { ok: false as const, reason: res.reason };
     const session = await getGateSession();
     await session.update({ unlocked: true });
+    return { ok: true as const };
+  });
+
+export const dashboardPasswordInfo = createServerFn({ method: "GET" }).handler(async () => {
+  await requireUnlocked();
+  return { source: await dashboardPasswordSource() };
+});
+
+export const changeDashboardPassword = createServerFn({ method: "POST" })
+  .inputValidator((data: { current: string; next: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const check = await verifyDashboardPassword(data.current ?? "");
+    if (!check.ok) return { ok: false as const, error: "رمز فعلی نادرست است." };
+    const next = (data.next ?? "").trim();
+    if (next.length < 10) return { ok: false as const, error: "رمز جدید باید حداقل ۱۰ نویسه باشد." };
+    const res = await setDashboardPassword(next);
+    if (res.error) return { ok: false as const, error: res.error };
     return { ok: true as const };
   });
 
@@ -29,6 +48,7 @@ export const lockDashboard = createServerFn({ method: "POST" }).handler(async ()
   await session.clear();
   return { ok: true as const };
 });
+
 
 export const adminExec = createServerFn({ method: "POST" })
   .inputValidator((data: AdminOp) => data)
