@@ -25,6 +25,7 @@ import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
 import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
 import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
 import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
+import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
 import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
 import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
@@ -109,6 +110,11 @@ const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
   path: '/insurance/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAssetsRoute = ApiAdminAssetsRouteImport.update({
+  id: '/api/admin/assets',
+  path: '/api/admin/assets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   id: '/api/admin/upload',
   path: '/api/admin/upload',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services': typeof EServicesIndexRoute
   '/insurance': typeof InsuranceIndexRoute
+  '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services/'
     | '/insurance/'
+    | '/api/admin/assets'
     | '/api/admin/upload'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services'
     | '/insurance'
+    | '/api/admin/assets'
     | '/api/admin/upload'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services/'
     | '/insurance/'
+    | '/api/admin/assets'
     | '/api/admin/upload'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   InsuranceTravelRoute: typeof InsuranceTravelRoute
   EServicesIndexRoute: typeof EServicesIndexRoute
   InsuranceIndexRoute: typeof InsuranceIndexRoute
+  ApiAdminAssetsRoute: typeof ApiAdminAssetsRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
   ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsuranceTravelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/assets': {
+      id: '/api/admin/assets'
+      path: '/api/admin/assets'
+      fullPath: '/api/admin/assets'
+      preLoaderRoute: typeof ApiAdminAssetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/upload': {
       id: '/api/admin/upload'
       path: '/api/admin/upload'
@@ -433,6 +453,7 @@ const rootRouteChildren: RootRouteChildren = {
   InsuranceTravelRoute: InsuranceTravelRoute,
   EServicesIndexRoute: EServicesIndexRoute,
   InsuranceIndexRoute: InsuranceIndexRoute,
+  ApiAdminAssetsRoute: ApiAdminAssetsRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
   ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
