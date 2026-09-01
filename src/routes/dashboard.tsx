@@ -212,6 +212,7 @@ function Dashboard() {
           {tab === "chat" && <ChatRoomPane />}
           {tab === "docs" && <DocsPane />}
           {tab === "branding" && <BrandingPane />}
+          {tab === "medialib" && <MediaPane />}
           {tab === "telegram" && <TelegramPane />}
           {tab === "seo" && <SeoPane />}
           {tab === "deploy" && <DeployPane />}
