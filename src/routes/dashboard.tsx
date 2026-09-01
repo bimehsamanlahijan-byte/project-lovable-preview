@@ -51,6 +51,7 @@ import { SliderPane } from "@/components/dashboard/SliderPane";
 import { SeoPane } from "@/components/dashboard/SeoPane";
 import { WheelPane } from "@/components/dashboard/WheelPane";
 import { MediaPane } from "@/components/dashboard/MediaPane";
+import { BackendPane } from "@/components/dashboard/BackendPane";
 
 
 
@@ -95,6 +96,7 @@ type TabKey =
   | "docs"
   | "branding"
   | "medialib"
+  | "backend"
   | "telegram"
   | "seo"
   | "deploy"
@@ -120,6 +122,7 @@ function Dashboard() {
     { key: "docs", label: "مخزن مدارک مشتریان", icon: FolderOpen },
     { key: "branding", label: "لوگو، آیکن‌ها و عنوان", icon: ImageIcon },
     { key: "medialib", label: "کتابخانه رسانه (عکس/ویدئو)", icon: ImageIcon },
+    { key: "backend", label: "اتصال Supabase (دیتابیس و فایل)", icon: Database },
     { key: "telegram", label: "ربات تلگرام و اتوماسیون", icon: Send },
     { key: "seo", label: "سئو و نتایج گوگل", icon: SearchIcon },
     { key: "deploy", label: "انتشار در Cloudflare", icon: Cloud },
@@ -213,6 +216,7 @@ function Dashboard() {
           {tab === "docs" && <DocsPane />}
           {tab === "branding" && <BrandingPane />}
           {tab === "medialib" && <MediaPane />}
+          {tab === "backend" && <BackendPane />}
           {tab === "telegram" && <TelegramPane />}
           {tab === "seo" && <SeoPane />}
           {tab === "deploy" && <DeployPane />}
