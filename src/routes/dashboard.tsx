@@ -30,6 +30,8 @@ import {
   Eye,
   EyeOff,
   Bug,
+  Database,
+
 } from "lucide-react";
 import { SocialPane } from "@/components/dashboard/SocialPane";
 import { AiPane } from "@/components/dashboard/AiPane";
