@@ -94,6 +94,7 @@ type TabKey =
   | "chat"
   | "docs"
   | "branding"
+  | "medialib"
   | "telegram"
   | "seo"
   | "deploy"
