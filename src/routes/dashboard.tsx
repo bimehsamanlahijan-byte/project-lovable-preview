@@ -50,6 +50,7 @@ import { useBranding } from "@/hooks/use-branding";
 import { SliderPane } from "@/components/dashboard/SliderPane";
 import { SeoPane } from "@/components/dashboard/SeoPane";
 import { WheelPane } from "@/components/dashboard/WheelPane";
+import { MediaPane } from "@/components/dashboard/MediaPane";
 
 
 
