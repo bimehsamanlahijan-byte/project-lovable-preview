@@ -119,6 +119,7 @@ function Dashboard() {
     { key: "chat", label: "چت روم آنلاین", icon: MessagesSquare },
     { key: "docs", label: "مخزن مدارک مشتریان", icon: FolderOpen },
     { key: "branding", label: "لوگو، آیکن‌ها و عنوان", icon: ImageIcon },
+    { key: "medialib", label: "کتابخانه رسانه (عکس/ویدئو)", icon: ImageIcon },
     { key: "telegram", label: "ربات تلگرام و اتوماسیون", icon: Send },
     { key: "seo", label: "سئو و نتایج گوگل", icon: SearchIcon },
     { key: "deploy", label: "انتشار در Cloudflare", icon: Cloud },
