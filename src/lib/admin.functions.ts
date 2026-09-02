@@ -18,11 +18,23 @@ export const dashboardStatus = createServerFn({ method: "GET" }).handler(async (
 export const unlockDashboard = createServerFn({ method: "POST" })
   .inputValidator((data: { password: string }) => data)
   .handler(async ({ data }) => {
-    const res = await verifyDashboardPassword(data.password ?? "");
-    if (!res.ok) return { ok: false as const, reason: res.reason };
-    const session = await getGateSession();
-    await session.update({ unlocked: true });
-    return { ok: true as const };
+    if (!process.env["SESSION_SECRET"] || process.env["SESSION_SECRET"].length < 32) {
+      return { ok: false as const, reason: "no-session-secret" as const };
+    }
+    try {
+      const res = await verifyDashboardPassword(data.password ?? "");
+      if (!res.ok) return { ok: false as const, reason: res.reason };
+      const session = await getGateSession();
+      await session.update({ unlocked: true });
+      return { ok: true as const };
+    } catch (e) {
+      console.error("[unlockDashboard]", e);
+      return {
+        ok: false as const,
+        reason: "server-error" as const,
+        message: e instanceof Error ? e.message : "خطای نامشخص سرور",
+      };
+    }
   });
 
 export const dashboardPasswordInfo = createServerFn({ method: "GET" }).handler(async () => {

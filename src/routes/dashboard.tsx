@@ -245,10 +245,21 @@ function DashboardGate() {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const res = await unlockDashboard({ data: { password } });
-    setBusy(false);
-    if (res.ok) setState("open");
-    else setError("رمز ورود نادرست است.");
+    try {
+      const res = await unlockDashboard({ data: { password } });
+      if (res.ok) setState("open");
+      else if (res.reason === "not-configured")
+        setError("رمز پیشخوان روی سرور تنظیم نشده است (DASHBOARD_PASSWORD).");
+      else if (res.reason === "no-session-secret")
+        setError("متغیر SESSION_SECRET روی سرور تنظیم نشده است.");
+      else if (res.reason === "server-error")
+        setError(res.message ?? "خطای سرور در بررسی رمز.");
+      else setError("رمز ورود نادرست است.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ارتباط با سرور برقرار نشد.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (state === "open") return <Dashboard />;
