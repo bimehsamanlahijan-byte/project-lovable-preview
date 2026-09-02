@@ -40,21 +40,33 @@ export async function requireUnlocked(): Promise<void> {
 /* ---------- Private (service-role only) admin settings ---------- */
 
 export async function readPrivateSetting<T>(key: string): Promise<T | null> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
-    .from("admin_private_settings" as never)
-    .select("value")
-    .eq("key", key)
-    .maybeSingle();
-  return ((data as { value?: T } | null)?.value ?? null) as T | null;
+  // Never throw: when the service-role key is missing on the Worker we fall back
+  // to the DASHBOARD_PASSWORD env var instead of breaking the login request.
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("admin_private_settings" as never)
+      .select("value")
+      .eq("key", key)
+      .maybeSingle();
+    return ((data as { value?: T } | null)?.value ?? null) as T | null;
+  } catch (e) {
+    console.error("[readPrivateSetting]", e);
+    return null;
+  }
 }
 
 export async function writePrivateSetting(key: string, value: unknown) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error } = await supabaseAdmin
-    .from("admin_private_settings" as never)
-    .upsert({ key, value, updated_at: new Date().toISOString() } as never, { onConflict: "key" });
-  return { error: error ? error.message : null };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("admin_private_settings" as never)
+      .upsert({ key, value, updated_at: new Date().toISOString() } as never, { onConflict: "key" });
+    return { error: error ? error.message : null };
+  } catch (e) {
+    console.error("[writePrivateSetting]", e);
+    return { error: e instanceof Error ? e.message : "خطای نامشخص" };
+  }
 }
 
 /* ---------- Dashboard password stored in the database (bcrypt) ---------- */
