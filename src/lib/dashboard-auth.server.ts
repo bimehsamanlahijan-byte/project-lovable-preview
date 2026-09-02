@@ -23,8 +23,14 @@ export function passwordMatches(input: string, expected: string): boolean {
 }
 
 export async function isUnlocked(): Promise<boolean> {
-  const session = await getGateSession();
-  return session.data.unlocked === true;
+  const secret = process.env["SESSION_SECRET"];
+  if (!secret || secret.length < 32) return false;
+  try {
+    const session = await getGateSession();
+    return session.data.unlocked === true;
+  } catch {
+    return false;
+  }
 }
 
 export async function requireUnlocked(): Promise<void> {
