@@ -86,6 +86,7 @@ export function BackendPane() {
 
   useEffect(() => {
     void load();
+    void loadTarget();
   }, []);
 
   return (
