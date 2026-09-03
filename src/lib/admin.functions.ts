@@ -203,7 +203,13 @@ export const saveStorageTarget = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireUnlocked();
     const { writeStorageTarget, getStorage } = await import("./storage.server");
-    const url = (data.url ?? "").trim().replace(/\/+$/, "");
+    // Accept pasted REST/dashboard URLs too: keep only the project origin.
+    let url = (data.url ?? "").trim();
+    try {
+      url = new URL(url).origin;
+    } catch {
+      url = url.replace(/\/(rest|storage|auth)\/v1.*$/, "").replace(/\/+$/, "");
+    }
     const serviceKey = (data.serviceKey ?? "").trim();
     const bucket = (data.bucket ?? "site-assets").trim() || "site-assets";
     if (!/^https:\/\/.+/.test(url)) return { ok: false as const, error: "نشانی پروژه باید با https:// شروع شود." };
