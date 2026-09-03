@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const BUCKET = "site-assets";
-
 function clean(p: string) {
   return p.replace(/^\/+/, "").replace(/\.\./g, "");
 }
@@ -16,8 +14,9 @@ export const Route = createFileRoute("/api/admin/assets")({
 
         const url = new URL(request.url);
         const folder = clean(url.searchParams.get("folder") ?? "");
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data, error } = await supabaseAdmin.storage.from(BUCKET).list(folder, {
+        const { getStorage } = await import("@/lib/storage.server");
+        const { client, bucket: BUCKET } = await getStorage();
+        const { data, error } = await client.storage.from(BUCKET).list(folder, {
           limit: 500,
           sortBy: { column: "created_at", order: "desc" },
         });
@@ -48,8 +47,9 @@ export const Route = createFileRoute("/api/admin/assets")({
         const paths = (body?.paths ?? []).map(clean).filter(Boolean);
         if (!paths.length) return Response.json({ error: "No paths" }, { status: 400 });
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { error } = await supabaseAdmin.storage.from(BUCKET).remove(paths);
+        const { getStorage } = await import("@/lib/storage.server");
+        const { client, bucket: BUCKET } = await getStorage();
+        const { error } = await client.storage.from(BUCKET).remove(paths);
         if (error) return Response.json({ error: error.message }, { status: 500 });
         return Response.json({ ok: true, removed: paths.length });
       },
