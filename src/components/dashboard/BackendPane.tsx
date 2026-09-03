@@ -85,6 +85,62 @@ export function BackendPane() {
         </div>
       </div>
 
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-slate-500" />
+          <h3 className="text-sm font-extrabold text-slate-800">اتصال Supabase شخصی (برای فایل و عکس)</h3>
+        </div>
+        <p className="text-[11px] leading-5 text-slate-500">
+          پروژه فعلی فایل‌ها را روی این سرویس ذخیره می‌کند:{" "}
+          <b className="font-mono text-slate-700">{target?.host || "—"}</b>{" "}
+          {target?.custom ? "(اکانت شخصی شما)" : "(بک‌اند پیش‌فرض پروژه)"}. برای استفاده از اکانت
+          Supabase خودتان، نشانی پروژه و کلید <code>service_role</code> را وارد کنید؛ از آن پس آپلود،
+          حذف و مشاهده فایل‌ها از همان اکانت انجام می‌شود.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <input
+            dir="ltr"
+            value={form.url}
+            onChange={(e) => setForm({ ...form, url: e.target.value })}
+            placeholder="https://xxxx.supabase.co"
+            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+          <input
+            dir="ltr"
+            value={form.bucket}
+            onChange={(e) => setForm({ ...form, bucket: e.target.value })}
+            placeholder="site-assets"
+            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+          <input
+            dir="ltr"
+            type="password"
+            value={form.serviceKey}
+            onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
+            placeholder="service_role secret key"
+            className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save()}
+            className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+          >
+            ذخیره و آزمایش اتصال
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void reset()}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50"
+          >
+            بازگشت به بک‌اند پیش‌فرض
+          </button>
+        </div>
+      </div>
+
       <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2">
         <div className="flex items-center gap-2">
           <HardDrive className="h-4 w-4 text-slate-500" />
