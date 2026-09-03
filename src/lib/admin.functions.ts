@@ -182,3 +182,45 @@ export const adminSignedUrl = createServerFn({ method: "POST" })
     if (error || !res) return { url: "" as string, error: error?.message ?? "failed" };
     return { url: res.signedUrl, error: null as string | null };
   });
+
+/* ---------- Personal Supabase storage target (URL + service key) ---------- */
+
+export const storageTargetInfo = createServerFn({ method: "GET" }).handler(async () => {
+  await requireUnlocked();
+  const { readStorageTarget, safeHost } = await import("./storage.server");
+  const t = await readStorageTarget();
+  return {
+    custom: Boolean(t?.url && t?.serviceKey),
+    url: t?.url ?? "",
+    bucket: t?.bucket ?? "site-assets",
+    host: t?.url ? safeHost(t.url) : safeHost(process.env["SUPABASE_URL"] ?? ""),
+    updatedAt: t?.updatedAt ?? null,
+  };
+});
+
+export const saveStorageTarget = createServerFn({ method: "POST" })
+  .inputValidator((data: { url: string; serviceKey: string; bucket?: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { writeStorageTarget, getStorage } = await import("./storage.server");
+    const url = (data.url ?? "").trim().replace(/\/+$/, "");
+    const serviceKey = (data.serviceKey ?? "").trim();
+    const bucket = (data.bucket ?? "site-assets").trim() || "site-assets";
+    if (!/^https:\/\/.+/.test(url)) return { ok: false as const, error: "نشانی پروژه باید با https:// شروع شود." };
+    if (serviceKey.length < 20) return { ok: false as const, error: "کلید سرویس‌رول نامعتبر است." };
+
+    const res = await writeStorageTarget({ url, serviceKey, bucket });
+    if (res.error) return { ok: false as const, error: res.error };
+
+    const { client } = await getStorage();
+    const { error } = await client.storage.from(bucket).list("", { limit: 1 });
+    if (error) return { ok: true as const, warning: `ذخیره شد اما دسترسی به باکت خطا داد: ${error.message}` };
+    return { ok: true as const, warning: null };
+  });
+
+export const clearStorageTarget = createServerFn({ method: "POST" }).handler(async () => {
+  await requireUnlocked();
+  const { writeStorageTarget } = await import("./storage.server");
+  await writeStorageTarget({ url: "", serviceKey: "", bucket: "site-assets" });
+  return { ok: true as const };
+});
