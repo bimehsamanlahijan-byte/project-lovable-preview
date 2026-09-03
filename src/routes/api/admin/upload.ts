@@ -10,7 +10,10 @@ export const Route = createFileRoute("/api/admin/upload")({
           if (!(await isUnlocked()))
             return Response.json({ error: "نشست مدیریت منقضی شده است؛ دوباره وارد شوید." }, { status: 401 });
 
-          if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
+          const { readStorageTarget } = await import("@/lib/storage.server");
+          const override = await readStorageTarget();
+          const hasOverride = Boolean(override?.url && override?.serviceKey);
+          if (!hasOverride && (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_SERVICE_ROLE_KEY"])) {
             return Response.json(
               {
                 error:
@@ -30,9 +33,10 @@ export const Route = createFileRoute("/api/admin/upload")({
           const ext = (file.name.split(".").pop() ?? "bin").toLowerCase().slice(0, 8);
           const path = `${folder || "misc"}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { error } = await supabaseAdmin.storage
-            .from("site-assets")
+          const { getStorage } = await import("@/lib/storage.server");
+          const { client, bucket } = await getStorage();
+          const { error } = await client.storage
+            .from(bucket)
             .upload(path, await file.arrayBuffer(), {
               contentType: file.type || "application/octet-stream",
               upsert: false,

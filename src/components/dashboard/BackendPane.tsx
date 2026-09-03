@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Database, RefreshCw, CheckCircle2, XCircle, HardDrive } from "lucide-react";
+import { Database, RefreshCw, CheckCircle2, XCircle, HardDrive, KeyRound } from "lucide-react";
+import { clearStorageTarget, saveStorageTarget, storageTargetInfo } from "@/lib/admin.functions";
+import { notify } from "@/lib/notify";
 
 type Status = {
   env: Record<string, boolean>;
@@ -19,6 +21,51 @@ const ENV_LABELS: Record<string, string> = {
 export function BackendPane() {
   const [status, setStatus] = useState<Status | null>(null);
   const [busy, setBusy] = useState(false);
+  const [target, setTarget] = useState<{ custom: boolean; url: string; bucket: string; host: string } | null>(null);
+  const [form, setForm] = useState({ url: "", serviceKey: "", bucket: "site-assets" });
+  const [saving, setSaving] = useState(false);
+
+  async function loadTarget() {
+    try {
+      const t = await storageTargetInfo();
+      setTarget(t);
+      setForm((f) => ({ ...f, url: t.url, bucket: t.bucket }));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const res = await saveStorageTarget({ data: form });
+      if (!res.ok) notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
+      else
+        notify({
+          kind: res.warning ? "error" : "success",
+          title: res.warning ? "با هشدار ذخیره شد" : "اتصال ذخیره شد",
+          detail: res.warning ?? undefined,
+        });
+      await loadTarget();
+      await load();
+    } catch (e) {
+      notify({ kind: "error", title: "خطا", detail: e instanceof Error ? e.message : "" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function reset() {
+    setSaving(true);
+    try {
+      await clearStorageTarget();
+      setForm({ url: "", serviceKey: "", bucket: "site-assets" });
+      notify({ kind: "success", title: "به بک‌اند پیش‌فرض برگشت" });
+      await loadTarget();
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function load() {
     setBusy(true);
@@ -39,6 +86,7 @@ export function BackendPane() {
 
   useEffect(() => {
     void load();
+    void loadTarget();
   }, []);
 
   return (
@@ -80,6 +128,62 @@ export function BackendPane() {
               <span className="mr-auto text-[11px] text-slate-500">{ok ? "تنظیم شده" : "تنظیم نشده"}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-slate-500" />
+          <h3 className="text-sm font-extrabold text-slate-800">اتصال Supabase شخصی (برای فایل و عکس)</h3>
+        </div>
+        <p className="text-[11px] leading-5 text-slate-500">
+          پروژه فعلی فایل‌ها را روی این سرویس ذخیره می‌کند:{" "}
+          <b className="font-mono text-slate-700">{target?.host || "—"}</b>{" "}
+          {target?.custom ? "(اکانت شخصی شما)" : "(بک‌اند پیش‌فرض پروژه)"}. برای استفاده از اکانت
+          Supabase خودتان، نشانی پروژه و کلید <code>service_role</code> را وارد کنید؛ از آن پس آپلود،
+          حذف و مشاهده فایل‌ها از همان اکانت انجام می‌شود.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <input
+            dir="ltr"
+            value={form.url}
+            onChange={(e) => setForm({ ...form, url: e.target.value })}
+            placeholder="https://xxxx.supabase.co"
+            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+          <input
+            dir="ltr"
+            value={form.bucket}
+            onChange={(e) => setForm({ ...form, bucket: e.target.value })}
+            placeholder="site-assets"
+            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+          <input
+            dir="ltr"
+            type="password"
+            value={form.serviceKey}
+            onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
+            placeholder="service_role secret key"
+            className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save()}
+            className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+          >
+            ذخیره و آزمایش اتصال
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void reset()}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 disabled:opacity-50"
+          >
+            بازگشت به بک‌اند پیش‌فرض
+          </button>
         </div>
       </div>
 
