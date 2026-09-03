@@ -21,6 +21,51 @@ const ENV_LABELS: Record<string, string> = {
 export function BackendPane() {
   const [status, setStatus] = useState<Status | null>(null);
   const [busy, setBusy] = useState(false);
+  const [target, setTarget] = useState<{ custom: boolean; url: string; bucket: string; host: string } | null>(null);
+  const [form, setForm] = useState({ url: "", serviceKey: "", bucket: "site-assets" });
+  const [saving, setSaving] = useState(false);
+
+  async function loadTarget() {
+    try {
+      const t = await storageTargetInfo();
+      setTarget(t);
+      setForm((f) => ({ ...f, url: t.url, bucket: t.bucket }));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const res = await saveStorageTarget({ data: form });
+      if (!res.ok) notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
+      else
+        notify({
+          kind: res.warning ? "error" : "success",
+          title: res.warning ? "با هشدار ذخیره شد" : "اتصال ذخیره شد",
+          detail: res.warning ?? undefined,
+        });
+      await loadTarget();
+      await load();
+    } catch (e) {
+      notify({ kind: "error", title: "خطا", detail: e instanceof Error ? e.message : "" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function reset() {
+    setSaving(true);
+    try {
+      await clearStorageTarget();
+      setForm({ url: "", serviceKey: "", bucket: "site-assets" });
+      notify({ kind: "success", title: "به بک‌اند پیش‌فرض برگشت" });
+      await loadTarget();
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function load() {
     setBusy(true);
