@@ -1,4 +1,3 @@
-import logoSaman from "@/assets/logo-saman.svg";
 import { supabase } from "@/integrations/supabase/client";
 
 export type SocialLayout = {
@@ -166,7 +165,7 @@ export type Branding = {
   brandFont: string;
 };
 
-export const DASHBOARD_LOGO = logoSaman;
+export const DASHBOARD_LOGO = "https://si8452.ir/img/logoheder.png";
 
 export const DEFAULT_BRANDING: Branding = {
   siteTitle: "بیمه سامان — نمایندگی آذرخش",
