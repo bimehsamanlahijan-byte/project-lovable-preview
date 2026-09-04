@@ -38,7 +38,7 @@ export function BrandCartBadge({
         {showGif ? (
           <motion.img
             key="gif"
-            src={gifUrl || brandGif.url}
+            src={gifUrl || brandGif}
             alt=""
             className="absolute inset-0 w-full h-full object-cover bg-white"
             initial={{ rotateY: -90, opacity: 0 }}
