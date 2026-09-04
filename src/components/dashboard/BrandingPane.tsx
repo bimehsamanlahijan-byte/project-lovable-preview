@@ -286,7 +286,7 @@ export function BrandingPane() {
       <div className={`${cardCls} space-y-5 mb-6`}>
         <LogoField label="لوگوی هدر" value={cfg.headerLogoUrl} fallback={SITE_LOGO_HEADER} height={cfg.logoHeightHeader} onChange={(headerLogoUrl) => setCfg({ ...cfg, headerLogoUrl })} />
         <LogoField label="لوگوی فوتر" value={cfg.footerLogoUrl} fallback={SITE_LOGO} height={cfg.logoHeightFooter} onChange={(footerLogoUrl) => setCfg({ ...cfg, footerLogoUrl })} />
-        <LogoField label="آیکن نوار مرورگر (favicon)" value={cfg.faviconUrl} fallback="/favicon.ico" height={24} onChange={(faviconUrl) => setCfg({ ...cfg, faviconUrl })} />
+        <LogoField label="آیکن نوار مرورگر (favicon)" value={cfg.faviconUrl} fallback="/favicon.png" height={24} onChange={(faviconUrl) => setCfg({ ...cfg, faviconUrl })} />
         <LogoField label="لوگوی پیشخوان مدیریت" value={cfg.dashboardLogoUrl} fallback={DASHBOARD_LOGO} height={cfg.logoHeightDashboard} onChange={(dashboardLogoUrl) => setCfg({ ...cfg, dashboardLogoUrl })} />
       </div>
 

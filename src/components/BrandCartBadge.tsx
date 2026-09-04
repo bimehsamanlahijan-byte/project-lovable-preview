@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
-import brandGif from "@/assets/brand-logo.gif.asset.json";
+import brandGif from "@/assets/brand-logo.gif";
 
 /**
  * Circular badge that alternates between a crisp SVG icon (cart by default)
@@ -38,7 +38,7 @@ export function BrandCartBadge({
         {showGif ? (
           <motion.img
             key="gif"
-            src={gifUrl || brandGif.url}
+            src={gifUrl || brandGif}
             alt=""
             className="absolute inset-0 w-full h-full object-cover bg-white"
             initial={{ rotateY: -90, opacity: 0 }}
