@@ -1,3 +1,5 @@
+import logoSaman from "@/assets/logo-saman.svg";
+
 export type NavItem = { label: string; href?: string; children?: NavItem[] };
 
 // Menu structure mirrored from the reference site si24.ir (full sub-sub structure)
