@@ -25,7 +25,10 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const WHEEL_BG_URL = "https://si8452.ir/img/50a0af3b.png";
+import wheelBg from "@/assets/wheel-bg.jpg";
+
+/* Bundled locally — no external host, so no 404 on Cloudflare. */
+const WHEEL_BG_URL = wheelBg;
 
 const announcements = [
   "بیمه درمان خانواده: «بیمه درمان خانواده سامان، افزایش اطمینان از سلامتی و آرامش خود و خانواده‌مان است.»",

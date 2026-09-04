@@ -1,3 +1,5 @@
+import logoSaman from "@/assets/logo-saman.svg";
+
 export type NavItem = { label: string; href?: string; children?: NavItem[] };
 
 // Menu structure mirrored from the reference site si24.ir (full sub-sub structure)
@@ -111,8 +113,9 @@ export const navItems: NavItem[] = [
   { label: "مجله و خبر", href: "/blog" },
 ];
 
-export const SITE_LOGO = "https://si8452.ir/img/logofooter.png";
-export const SITE_LOGO_HEADER = "https://si8452.ir/img/logoheder.png";
+/* Bundled locally so the logos never depend on an external host (no 404 on Cloudflare). */
+export const SITE_LOGO = logoSaman;
+export const SITE_LOGO_HEADER = logoSaman;
 
 // Contact info — update these once for whole site
 export const SITE_CONTACT = {
