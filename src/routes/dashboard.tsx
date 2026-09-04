@@ -1,4 +1,4 @@
-﻿import headerLogo from "@/assets/logoheder.png";
+import headerLogo from "@/assets/logoheder.png";
 import { adminDb, adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { AdminToaster } from "@/lib/notify";
 import { createFileRoute } from "@tanstack/react-router";
@@ -61,8 +61,8 @@ import { BackendPane } from "@/components/dashboard/BackendPane";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "ظ¾غŒط´ط®ظˆط§ظ† ظ…ط¯غŒط±غŒطھ | ط¨غŒظ…ظ‡ ط³ط§ظ…ط§ظ† â€” ظ†ظ…ط§غŒظ†ط¯ع¯غŒ ط¢ط°ط±ط®ط´" },
-      { name: "description", content: "ظ¾غŒط´ط®ظˆط§ظ† ظ…ط¯غŒط±غŒطھ ظ…ط­طھظˆط§غŒ ظˆط¨â€Œط³ط§غŒطھ" },
+      { title: "پیشخوان مدیریت | بیمه سامان — نمایندگی آذرخش" },
+      { name: "description", content: "پیشخوان مدیریت محتوای وب‌سایت" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -112,24 +112,24 @@ function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const nav: { key: TabKey; label: string; icon: any }[] = [
-    { key: "overview", label: "ظ¾غŒط´ط®ظˆط§ظ†", icon: LayoutDashboard },
-    { key: "editor", label: "ظˆغŒط±ط§غŒط´ع¯ط± ط¨طµط±غŒ ط³ط§غŒطھ", icon: Wand2 },
-    { key: "inspector", label: "ظ…ظˆط³ ط§غŒط±ط§ط¯غŒط§ط¨ ظˆ ع©ط¯غŒط§ط¨", icon: Bug },
-    { key: "contacts", label: "ط¯ط±ط®ظˆط§ط³طھâ€Œظ‡ط§غŒ ظ…ط´ط§ظˆط±ظ‡", icon: MessageSquare },
-    { key: "damages", label: "ع¯ط²ط§ط±ط´â€Œظ‡ط§غŒ ط®ط³ط§ط±طھ", icon: AlertTriangle },
-    { key: "menu", label: "ظ…ظ†ظˆغŒ ظ‡ط¯ط± (ط¯ط³ع©طھط§ظ¾/ظ…ظˆط¨ط§غŒظ„)", icon: MenuIcon },
-    { key: "footer", label: "ظپظˆطھط± ظˆ ط³طھظˆظ†â€Œظ‡ط§", icon: PanelBottom },
-    { key: "social", label: "ط´ط¨ع©ظ‡â€Œظ‡ط§غŒ ط§ط¬طھظ…ط§ط¹غŒ", icon: Share2 },
-    { key: "ai", label: "ع†طھ ظ‡ظˆط´ ظ…طµظ†ظˆط¹غŒ", icon: Bot },
-    { key: "chat", label: "ع†طھ ط±ظˆظ… ط¢ظ†ظ„ط§غŒظ†", icon: MessagesSquare },
-    { key: "docs", label: "ظ…ط®ط²ظ† ظ…ط¯ط§ط±ع© ظ…ط´طھط±غŒط§ظ†", icon: FolderOpen },
-    { key: "branding", label: "ظ„ظˆع¯ظˆطŒ ط¢غŒع©ظ†â€Œظ‡ط§ ظˆ ط¹ظ†ظˆط§ظ†", icon: ImageIcon },
-    { key: "medialib", label: "ع©طھط§ط¨ط®ط§ظ†ظ‡ ط±ط³ط§ظ†ظ‡ (ط¹ع©ط³/ظˆغŒط¯ط¦ظˆ)", icon: ImageIcon },
-    { key: "backend", label: "ط§طھطµط§ظ„ Supabase (ط¯غŒطھط§ط¨غŒط³ ظˆ ظپط§غŒظ„)", icon: Database },
-    { key: "telegram", label: "ط±ط¨ط§طھ طھظ„ع¯ط±ط§ظ… ظˆ ط§طھظˆظ…ط§ط³غŒظˆظ†", icon: Send },
-    { key: "seo", label: "ط³ط¦ظˆ ظˆ ظ†طھط§غŒط¬ ع¯ظˆع¯ظ„", icon: SearchIcon },
-    { key: "deploy", label: "ط§ظ†طھط´ط§ط± ط¯ط± Cloudflare", icon: Cloud },
-    { key: "github", label: "ط§طھطµط§ظ„ ع¯غŒطھâ€Œظ‡ط§ط¨", icon: Github },
+    { key: "overview", label: "پیشخوان", icon: LayoutDashboard },
+    { key: "editor", label: "ویرایشگر بصری سایت", icon: Wand2 },
+    { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
+    { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
+    { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
+    { key: "menu", label: "منوی هدر (دسکتاپ/موبایل)", icon: MenuIcon },
+    { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
+    { key: "social", label: "شبکه‌های اجتماعی", icon: Share2 },
+    { key: "ai", label: "چت هوش مصنوعی", icon: Bot },
+    { key: "chat", label: "چت روم آنلاین", icon: MessagesSquare },
+    { key: "docs", label: "مخزن مدارک مشتریان", icon: FolderOpen },
+    { key: "branding", label: "لوگو، آیکن‌ها و عنوان", icon: ImageIcon },
+    { key: "medialib", label: "کتابخانه رسانه (عکس/ویدئو)", icon: ImageIcon },
+    { key: "backend", label: "اتصال Supabase (دیتابیس و فایل)", icon: Database },
+    { key: "telegram", label: "ربات تلگرام و اتوماسیون", icon: Send },
+    { key: "seo", label: "سئو و نتایج گوگل", icon: SearchIcon },
+    { key: "deploy", label: "انتشار در Cloudflare", icon: Cloud },
+    { key: "github", label: "اتصال گیت‌هاب", icon: Github },
   ];
 
   return (
@@ -149,13 +149,13 @@ function Dashboard() {
             <div className="flex items-center gap-2">
               <img
                 src={branding.dashboardLogoUrl || DASHBOARD_LOGO}
-                alt="ظ¾غŒط´ط®ظˆط§ظ† ظ…ط¯غŒط±غŒطھ"
+                alt="پیشخوان مدیریت"
                 style={{ height: branding.logoHeightDashboard }}
                 className="w-auto object-contain rounded-lg bg-white/95 p-1"
               />
               <div className="leading-tight">
-                <div className="font-extrabold text-sm">ظ¾غŒط´ط®ظˆط§ظ† ظ…ط¯غŒط±غŒطھ</div>
-                <div className="text-[11px] opacity-70">ط¨غŒظ…ظ‡ ط³ط§ظ…ط§ظ† â€” ظ†ظ…ط§غŒظ†ط¯ع¯غŒ ط¢ط°ط±ط®ط´</div>
+                <div className="font-extrabold text-sm">پیشخوان مدیریت</div>
+                <div className="text-[11px] opacity-70">بیمه سامان — نمایندگی آذرخش</div>
               </div>
             </div>
           </div>
@@ -164,9 +164,9 @@ function Dashboard() {
               onClick={async () => { await lockDashboard(); window.location.href = "/"; }}
               className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
             >
-              <LogOut className="w-3.5 h-3.5" /> ط®ط±ظˆط¬
+              <LogOut className="w-3.5 h-3.5" /> خروج
             </button>
-            <a href="/" className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition">ظ…ط´ط§ظ‡ط¯ظ‡ ط³ط§غŒطھ</a>
+            <a href="/" className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition">مشاهده سایت</a>
           </div>
         </div>
       </header>
@@ -250,14 +250,14 @@ function DashboardGate() {
       const res = await unlockDashboard({ data: { password } });
       if (res.ok) setState("open");
       else if (res.reason === "not-configured")
-        setError("ط±ظ…ط² ظ¾غŒط´ط®ظˆط§ظ† ط±ظˆغŒ ط³ط±ظˆط± طھظ†ط¸غŒظ… ظ†ط´ط¯ظ‡ ط§ط³طھ (DASHBOARD_PASSWORD).");
+        setError("رمز پیشخوان روی سرور تنظیم نشده است (DASHBOARD_PASSWORD).");
       else if (res.reason === "no-session-secret")
-        setError("ظ…طھط؛غŒط± SESSION_SECRET ط±ظˆغŒ ط³ط±ظˆط± طھظ†ط¸غŒظ… ظ†ط´ط¯ظ‡ ط§ط³طھ.");
+        setError("متغیر SESSION_SECRET روی سرور تنظیم نشده است.");
       else if (res.reason === "server-error")
-        setError(res.message ?? "ط®ط·ط§غŒ ط³ط±ظˆط± ط¯ط± ط¨ط±ط±ط³غŒ ط±ظ…ط².");
-      else setError("ط±ظ…ط² ظˆط±ظˆط¯ ظ†ط§ط¯ط±ط³طھ ط§ط³طھ.");
+        setError(res.message ?? "خطای سرور در بررسی رمز.");
+      else setError("رمز ورود نادرست است.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "ط§ط±طھط¨ط§ط· ط¨ط§ ط³ط±ظˆط± ط¨ط±ظ‚ط±ط§ط± ظ†ط´ط¯.");
+      setError(err instanceof Error ? err.message : "ارتباط با سرور برقرار نشد.");
     } finally {
       setBusy(false);
     }
@@ -271,14 +271,14 @@ function DashboardGate() {
         <div className="w-14 h-14 rounded-2xl bg-[#0b1e3f] grid place-items-center text-white mx-auto mb-5">
           <Lock className="w-6 h-6" />
         </div>
-        <h1 className="text-lg font-extrabold text-[#0b1e3f] text-center">ظˆط±ظˆط¯ ط¨ظ‡ ظ¾غŒط´ط®ظˆط§ظ†</h1>
-        <p className="text-xs text-slate-500 text-center mt-1 mb-6">ط±ظ…ط² ظˆط±ظˆط¯ ط±ط§ ظˆط§ط±ط¯ ع©ظ†غŒط¯.</p>
+        <h1 className="text-lg font-extrabold text-[#0b1e3f] text-center">ورود به پیشخوان</h1>
+        <p className="text-xs text-slate-500 text-center mt-1 mb-6">رمز ورود را وارد کنید.</p>
         <div className="relative mb-3">
           <input
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="ط±ظ…ط² ظˆط±ظˆط¯"
+            placeholder="رمز ورود"
             autoFocus
             className="w-full text-sm rounded-xl border border-slate-300 px-4 py-3 ps-12 text-center"
             dir="ltr"
@@ -286,8 +286,8 @@ function DashboardGate() {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "ظ¾ظ†ظ‡ط§ظ† ع©ط±ط¯ظ† ط±ظ…ط²" : "ظ†ظ…ط§غŒط´ ط±ظ…ط²"}
-            title={showPassword ? "ظ¾ظ†ظ‡ط§ظ† ع©ط±ط¯ظ† ط±ظ…ط²" : "ظ†ظ…ط§غŒط´ ط±ظ…ط²"}
+            aria-label={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
+            title={showPassword ? "پنهان کردن رمز" : "نمایش رمز"}
             className="absolute inset-y-0 left-2 my-auto h-8 w-8 grid place-items-center rounded-lg text-slate-500 hover:text-[#0b1e3f] hover:bg-slate-100"
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -299,7 +299,7 @@ function DashboardGate() {
           disabled={busy || state === "loading"}
           className="w-full bg-[#0b1e3f] hover:bg-[#122b57] text-white text-sm font-bold py-3 rounded-xl disabled:opacity-50"
         >
-          {busy ? "ط¯ط± ط­ط§ظ„ ط¨ط±ط±ط³غŒ..." : "ظˆط±ظˆط¯"}
+          {busy ? "در حال بررسی..." : "ورود"}
         </button>
       </form>
     </div>
@@ -310,9 +310,9 @@ function DashboardGate() {
 
 
 const FONT_OPTIONS = [
-  { v: "", label: "ظ¾غŒط´â€Œظپط±ط¶ ظ‚ط§ظ„ط¨" },
-  { v: "Vazirmatn, sans-serif", label: "ظˆط²غŒط±ظ…طھظ†" },
-  { v: "IRANSans, Vazirmatn, sans-serif", label: "ط§غŒط±ط§ظ†â€Œط³ظ†ط³" },
+  { v: "", label: "پیش‌فرض قالب" },
+  { v: "Vazirmatn, sans-serif", label: "وزیرمتن" },
+  { v: "IRANSans, Vazirmatn, sans-serif", label: "ایران‌سنس" },
   { v: "Tahoma, sans-serif", label: "Tahoma" },
   { v: "Georgia, serif", label: "Georgia" },
   { v: "monospace", label: "Monospace" },
@@ -322,33 +322,33 @@ const FONT_OPTIONS = [
 const BLOCK_TEMPLATES: { key: string; label: string; html: string }[] = [
   {
     key: "text",
-    label: "ط³ع©ط´ظ† ظ…طھظ†غŒ ط³ط§ط¯ظ‡",
-    html: `<section style="padding:32px 16px;text-align:center"><h2 style="font-weight:800;font-size:22px;color:#0b1e3f">ط¹ظ†ظˆط§ظ† ط³ع©ط´ظ† ط¬ط¯غŒط¯</h2><p style="margin-top:8px;color:#475569;font-size:14px">ظ…طھظ† طھظˆط¶غŒط­غŒ ط§غŒظ† ط¨ط®ط´ ط±ط§ ط§ط² ظ‡ظ…غŒظ†â€Œط¬ط§ ظˆغŒط±ط§غŒط´ ع©ظ†غŒط¯.</p></section>`,
+    label: "سکشن متنی ساده",
+    html: `<section style="padding:32px 16px;text-align:center"><h2 style="font-weight:800;font-size:22px;color:#0b1e3f">عنوان سکشن جدید</h2><p style="margin-top:8px;color:#475569;font-size:14px">متن توضیحی این بخش را از همین‌جا ویرایش کنید.</p></section>`,
   },
   {
     key: "cta",
-    label: "ط¨ظ†ط± ظپط±ط§ط®ظˆط§ظ† ط¨ط§ ط¯ع©ظ…ظ‡",
-    html: `<section style="margin:24px 16px;padding:28px;border-radius:24px;background:linear-gradient(120deg,#0b1e3f,#c81e35);color:#fff;text-align:center"><h2 style="font-weight:800;font-size:20px">ظ‡ظ…غŒظ† ط­ط§ظ„ط§ ظ…ط´ط§ظˆط±ظ‡ ط±ط§غŒع¯ط§ظ† ط¨ع¯غŒط±غŒط¯</h2><p style="margin-top:8px;font-size:13px;opacity:.9">ع©ط§ط±ط´ظ†ط§ط³ط§ظ† ظ†ظ…ط§غŒظ†ط¯ع¯غŒ ط¢ط°ط±ط®ط´ ظ¾ط§ط³ط®ع¯ظˆغŒ ط´ظ…ط§ ظ‡ط³طھظ†ط¯.</p><a href="/contact" style="display:inline-block;margin-top:14px;background:#fff;color:#0b1e3f;font-weight:800;font-size:13px;padding:10px 22px;border-radius:999px">طھظ…ط§ط³ ط¨ط§ ظ…ط§</a></section>`,
+    label: "بنر فراخوان با دکمه",
+    html: `<section style="margin:24px 16px;padding:28px;border-radius:24px;background:linear-gradient(120deg,#0b1e3f,#c81e35);color:#fff;text-align:center"><h2 style="font-weight:800;font-size:20px">همین حالا مشاوره رایگان بگیرید</h2><p style="margin-top:8px;font-size:13px;opacity:.9">کارشناسان نمایندگی آذرخش پاسخگوی شما هستند.</p><a href="/contact" style="display:inline-block;margin-top:14px;background:#fff;color:#0b1e3f;font-weight:800;font-size:13px;padding:10px 22px;border-radius:999px">تماس با ما</a></section>`,
   },
   {
     key: "cards",
-    label: "ط³ظ‡ ع©ط§ط±طھ ع©ظ†ط§ط± ظ‡ظ…",
+    label: "سه کارت کنار هم",
     html: `<section style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:24px 16px">${[1, 2, 3]
       .map(
         (i) =>
-          `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:18px;text-align:center"><h3 style="font-weight:800;color:#0b1e3f;font-size:15px">ط¹ظ†ظˆط§ظ† ${i}</h3><p style="margin-top:6px;color:#64748b;font-size:12px">طھظˆط¶غŒط­ ع©ظˆطھط§ظ‡</p></div>`,
+          `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:18px;text-align:center"><h3 style="font-weight:800;color:#0b1e3f;font-size:15px">عنوان ${i}</h3><p style="margin-top:6px;color:#64748b;font-size:12px">توضیح کوتاه</p></div>`,
       )
       .join("")}</section>`,
   },
   {
     key: "divider",
-    label: "ط¬ط¯ط§ع©ظ†ظ†ط¯ظ‡",
+    label: "جداکننده",
     html: `<div style="height:1px;background:#e2e8f0;margin:24px 16px"></div>`,
   },
   {
     key: "image",
-    label: "طھطµظˆغŒط± طھظ…ط§ظ…â€Œط¹ط±ط¶",
-    html: `<section style="padding:16px"><img src="${headerLogo}" alt="ط¨غŒظ…ظ‡ ط³ط§ظ…ط§ظ†" style="width:100%;border-radius:20px;object-fit:cover" /></section>`,
+    label: "تصویر تمام‌عرض",
+    html: `<section style="padding:16px"><img src="${headerLogo}" alt="بیمه سامان" style="width:100%;border-radius:20px;object-fit:cover" /></section>`,
   },
 ];
 
@@ -427,7 +427,7 @@ function VisualEditorPane() {
   const send = (msg: Record<string, unknown>) =>
     frame.current?.contentWindow?.postMessage(msg, "*");
 
-  /* On phones the settings panel sits under the preview â€” bring it into view. */
+  /* On phones the settings panel sits under the preview — bring it into view. */
   useEffect(() => {
     if (!sel) return;
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
@@ -496,28 +496,28 @@ function VisualEditorPane() {
   return (
     <div>
       <div className="mb-5">
-        <h1 className="text-xl font-extrabold text-[#0b1e3f]">ظˆغŒط±ط§غŒط´ع¯ط± ط¨طµط±غŒ ط³ط§غŒطھ</h1>
+        <h1 className="text-xl font-extrabold text-[#0b1e3f]">ویرایشگر بصری سایت</h1>
         <p className="text-xs text-slate-500 mt-1 leading-6">
-          ط±ظˆغŒ ظ‡ط± ط¹ظ†طµط± ط¯ط§ط®ظ„ ط³ط§غŒطھ ع©ظ„غŒع© ع©ظ†غŒط¯ ظˆ ظپظˆظ†طھطŒ ط±ظ†ع¯طŒ ط´ظپط§ظپغŒطھطŒ ط§ظ†غŒظ…غŒط´ظ†طŒ ظ…طھظ†طŒ ط¢غŒع©ظ†/SVG ظˆ ظ„غŒظ†ع© ط¢ظ† ط±ط§ طھط؛غŒغŒط± ط¯ظ‡غŒط¯.
+          روی هر عنصر داخل سایت کلیک کنید و فونت، رنگ، شفافیت، انیمیشن، متن، آیکن/SVG و لینک آن را تغییر دهید.
         </p>
       </div>
 
       <div className="flex flex-wrap rounded-xl overflow-hidden border border-slate-300 bg-white w-fit mb-4">
         <button onClick={() => setTab("elements")}
           className={`px-4 py-2 text-xs font-bold ${tab === "elements" ? "bg-[#0b1e3f] text-white" : ""}`}>
-          ظˆغŒط±ط§غŒط´ ط¹ظ†ط§طµط± طµظپط­ظ‡
+          ویرایش عناصر صفحه
         </button>
         <button onClick={() => setTab("media")}
           className={`px-4 py-2 text-xs font-bold ${tab === "media" ? "bg-[#0b1e3f] text-white" : ""}`}>
-          ط§ط³ظ„ط§غŒط¯ط± ظˆ ط§ظ†غŒظ…غŒط´ظ†â€Œظ‡ط§
+          اسلایدر و انیمیشن‌ها
         </button>
         <button onClick={() => setTab("wheel")}
           className={`px-4 py-2 text-xs font-bold ${tab === "wheel" ? "bg-[#0b1e3f] text-white" : ""}`}>
-          ع†ط±ط®â€Œظˆظپظ„ع© ظˆ ط¯ع©ظ…ظ‡ ط®ط±غŒط¯
+          چرخ‌وفلک و دکمه خرید
         </button>
         <button onClick={() => setTab("menus")}
           className={`px-4 py-2 text-xs font-bold ${tab === "menus" ? "bg-[#0b1e3f] text-white" : ""}`}>
-          ظ…ظ†ظˆظ‡ط§ (ط§ظپط²ظˆط¯ظ†/ط­ط°ظپ)
+          منوها (افزودن/حذف)
         </button>
       </div>
 
@@ -538,34 +538,34 @@ function VisualEditorPane() {
         <div className="flex rounded-xl overflow-hidden border border-slate-300 bg-white">
           <button onClick={() => setDevice("desktop")}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "desktop" ? "bg-[#0b1e3f] text-white" : ""}`}>
-            <Monitor className="w-3.5 h-3.5" /> ط¯ط³ع©طھط§ظ¾
+            <Monitor className="w-3.5 h-3.5" /> دسکتاپ
           </button>
           <button onClick={() => setDevice("mobile")}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "mobile" ? "bg-[#0b1e3f] text-white" : ""}`}>
-            <Smartphone className="w-3.5 h-3.5" /> ظ…ظˆط¨ط§غŒظ„
+            <Smartphone className="w-3.5 h-3.5" /> موبایل
           </button>
         </div>
         <div className="flex rounded-xl overflow-hidden border border-slate-300 bg-white">
           <button onClick={() => setMode("select")}
             className={`px-3 py-2 text-xs font-bold ${mode === "select" ? "bg-[#0b1e3f] text-white" : ""}`}>
-            ط­ط§ظ„طھ ط§ظ†طھط®ط§ط¨
+            حالت انتخاب
           </button>
           <button onClick={() => setMode("interact")}
             className={`px-3 py-2 text-xs font-bold ${mode === "interact" ? "bg-[#0b1e3f] text-white" : ""}`}>
-            ط­ط§ظ„طھ طھط¹ط§ظ…ظ„
+            حالت تعامل
           </button>
         </div>
         <button
           onClick={() => { if (frame.current) frame.current.src = `${page}?ve=1&t=${Date.now()}`; }}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs flex items-center gap-1.5"
         >
-          <RefreshCw className="w-3.5 h-3.5" /> ط¨ط§ط²ط®ظˆط§ظ†غŒ
+          <RefreshCw className="w-3.5 h-3.5" /> بازخوانی
         </button>
         <button
           onClick={() => setWide((w) => !w)}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs"
         >
-          {wide ? "ظ†ظ…ط§غŒ ظ…ط¹ظ…ظˆظ„غŒ" : "ظ†ظ…ط§غŒ ط¨ط²ط±ع¯"}
+          {wide ? "نمای معمولی" : "نمای بزرگ"}
         </button>
         <form
           onSubmit={(e) => {
@@ -587,24 +587,24 @@ function VisualEditorPane() {
             className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs w-56"
           />
           <button type="submit" className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs">
-            ط¨ط§ط² ع©ظ†
+            باز کن
           </button>
         </form>
         {published && (
-          <span className="text-[11px] text-emerald-600 font-bold px-2">ط±ظˆغŒ ط³ط§غŒطھ ظ…ظ†طھط´ط± ط´ط¯ âœ“</span>
+          <span className="text-[11px] text-emerald-600 font-bold px-2">روی سایت منتشر شد ✓</span>
         )}
         <button
-          onClick={() => { if (confirm("ظ‡ظ…ظ‡ طھط؛غŒغŒط±ط§طھ ط¸ط§ظ‡ط±غŒ ط­ط°ظپ ط´ظˆط¯طں")) send({ type: "ve:resetAll" }); }}
+          onClick={() => { if (confirm("همه تغییرات ظاهری حذف شود؟")) send({ type: "ve:resetAll" }); }}
           className="px-3 py-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 text-xs flex items-center gap-1.5"
         >
-          <Trash2 className="w-3.5 h-3.5" /> ط¨ط§ط²ظ†ط´ط§ظ†غŒ ع©ظ„ طھط؛غŒغŒط±ط§طھ
+          <Trash2 className="w-3.5 h-3.5" /> بازنشانی کل تغییرات
         </button>
         <span className="text-[11px] text-slate-500 font-mono px-2" dir="ltr">{currentPath}</span>
       </div>
 
       <p className="text-[11px] text-slate-500 mb-3 leading-6">
-        ط¯ط± آ«ط­ط§ظ„طھ طھط¹ط§ظ…ظ„آ» ط³ط§غŒطھ ط¯ظ‚غŒظ‚ط§ظ‹ ظ…ط«ظ„ ط­ط§ظ„طھ ظˆط§ظ‚ط¹غŒ ع©ط§ط± ظ…غŒâ€Œع©ظ†ط¯ (ط¯ع©ظ…ظ‡ ط®ط±غŒط¯ ط¢ظ†ظ„ط§غŒظ†طŒ ع†ط±ط®â€Œظˆظپظ„ع©طŒ ط§ط³ظ„ط§غŒط¯ط± ظˆ ظ…ظ†ظˆظ‡ط§)ط›
-        ط¨ط±ط§غŒ ط§ظ†طھط®ط§ط¨ غŒع© ط¹ظ†طµط± ط¯ط± ط§غŒظ† ط­ط§ظ„طھطŒ ط¯ط± ع©ط§ظ…ظ¾غŒظˆطھط± ع©ظ„غŒط¯ Alt ط±ط§ ظ†ع¯ظ‡ ط¯ط§ط±غŒط¯ ظˆ ع©ظ„غŒع© ع©ظ†غŒط¯ ظˆ ط¯ط± ظ…ظˆط¨ط§غŒظ„ ط§ظ†ع¯ط´طھ ط®ظˆط¯ ط±ط§ ط±ظˆغŒ ط¹ظ†طµط± ظ†ع¯ظ‡ ط¯ط§ط±غŒط¯ (ظ„ظ…ط³ ط·ظˆظ„ط§ظ†غŒ).
+        در «حالت تعامل» سایت دقیقاً مثل حالت واقعی کار می‌کند (دکمه خرید آنلاین، چرخ‌وفلک، اسلایدر و منوها)؛
+        برای انتخاب یک عنصر در این حالت، در کامپیوتر کلید Alt را نگه دارید و کلیک کنید و در موبایل انگشت خود را روی عنصر نگه دارید (لمس طولانی).
       </p>
 
       <div className={wide ? "grid gap-4" : "grid lg:grid-cols-[1fr_320px] gap-4"}>
@@ -623,7 +623,7 @@ function VisualEditorPane() {
         <aside ref={panel} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 h-fit lg:sticky lg:top-24">
           {!sel ? (
             <p className="text-xs text-slate-500 leading-6">
-              ط¨ط±ط§غŒ ط´ط±ظˆط¹طŒ ط¯ط§ط®ظ„ ظ¾غŒط´â€Œظ†ظ…ط§غŒط´ ط±ظˆغŒ ط¹ظ†طµط± ظ…ظˆط±ط¯ ظ†ط¸ط± ع©ظ„غŒع© ع©ظ†غŒط¯.
+              برای شروع، داخل پیش‌نمایش روی عنصر مورد نظر کلیک کنید.
             </p>
           ) : (
             <div className="space-y-3">
@@ -632,35 +632,35 @@ function VisualEditorPane() {
               </div>
 
               {sel.text !== "" && (
-                <Field label="ظ…طھظ†">
+                <Field label="متن">
                   <textarea rows={3} value={draft.text ?? ""} onChange={(e) => field("text", e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
                 </Field>
               )}
 
-              <Field label="ط¢غŒع©ظ† / SVG / ظ…ط­طھظˆط§غŒ HTML">
+              <Field label="آیکن / SVG / محتوای HTML">
                 <textarea rows={3} value={draft.html ?? ""} onChange={(e) => field("html", e.target.value)}
                   dir="ltr" className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono" />
               </Field>
 
-              <Field label="ظ„غŒظ†ع© (href)">
+              <Field label="لینک (href)">
                 <input value={draft.href ?? ""} onChange={(e) => field("href", e.target.value)} dir="ltr"
-                  placeholder="/contact غŒط§ https://..."
+                  placeholder="/contact یا https://..."
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
               </Field>
 
               <div className="grid grid-cols-2 gap-2">
-                <Field label="ط¨ط§ط² ط´ط¯ظ†">
+                <Field label="باز شدن">
                   <select value={draft.target ?? ""} onChange={(e) => field("target", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
-                    <option value="">ظ‡ظ…غŒظ† طھط¨</option>
-                    <option value="_blank">طھط¨ ط¬ط¯غŒط¯</option>
+                    <option value="">همین تب</option>
+                    <option value="_blank">تب جدید</option>
                   </select>
                 </Field>
-                <Field label="rel (ط¨ع©â€Œظ„غŒظ†ع©)">
+                <Field label="rel (بک‌لینک)">
                   <select value={draft.rel ?? ""} onChange={(e) => field("rel", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
-                    <option value="">ظ¾غŒط´â€Œظپط±ط¶</option>
+                    <option value="">پیش‌فرض</option>
                     <option value="dofollow">dofollow</option>
                     <option value="nofollow">nofollow</option>
                     <option value="noopener noreferrer">noopener noreferrer</option>
@@ -668,7 +668,7 @@ function VisualEditorPane() {
                 </Field>
               </div>
 
-              <Field label="ظپظˆظ†طھ">
+              <Field label="فونت">
                 <select value={draft["font-family"] ?? ""} onChange={(e) => field("font-family", e.target.value)}
                   className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
                   {FONT_OPTIONS.map((f) => <option key={f.label} value={f.v}>{f.label}</option>)}
@@ -676,58 +676,58 @@ function VisualEditorPane() {
               </Field>
 
               <div className="grid grid-cols-2 gap-2">
-                <Field label="ط§ظ†ط¯ط§ط²ظ‡ ظپظˆظ†طھ">
+                <Field label="اندازه فونت">
                   <input value={draft["font-size"] ?? ""} onChange={(e) => field("font-size", e.target.value)} dir="ltr"
                     className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
                 </Field>
-                <Field label="ط¶ط®ط§ظ…طھ">
+                <Field label="ضخامت">
                   <select value={draft["font-weight"] ?? ""} onChange={(e) => field("font-weight", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
                     {["", "300", "400", "500", "600", "700", "800", "900"].map((w) => (
-                      <option key={w} value={w}>{w || "ظ¾غŒط´â€Œظپط±ط¶"}</option>
+                      <option key={w} value={w}>{w || "پیش‌فرض"}</option>
                     ))}
                   </select>
                 </Field>
               </div>
 
-              <Field label="ط±ظ†ع¯ ظ…طھظ†">
+              <Field label="رنگ متن">
                 <input type="color" value={draft.color || "#000000"} onChange={(e) => field("color", e.target.value)}
                   className="w-full h-10 rounded-xl border border-slate-300" />
               </Field>
 
-              {/* Hover / touch colors â€” works for menu items and their sub-items */}
+              {/* Hover / touch colors — works for menu items and their sub-items */}
               <div className="rounded-xl border border-slate-200 p-2.5 space-y-2">
-                <Field label="ظ‡ط§ظˆط± ظˆ ظ„ظ…ط³ (ط¯ط³ع©طھط§ظ¾ ظˆ ظ…ظˆط¨ط§غŒظ„)">
+                <Field label="هاور و لمس (دسکتاپ و موبایل)">
                   <select value={draft["hover-on"] ?? ""} onChange={(e) => field("hover-on", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
-                    <option value="">ط¨ط¯ظˆظ† طھط؛غŒغŒط±</option>
-                    <option value="1">ظپط¹ط§ظ„ ع©ط±ط¯ظ† ط±ظ†ع¯ ظ‡ط§ظˆط±</option>
-                    <option value="0">ط­ط°ظپ ط±ظ†ع¯ ظ‡ط§ظˆط±</option>
+                    <option value="">بدون تغییر</option>
+                    <option value="1">فعال کردن رنگ هاور</option>
+                    <option value="0">حذف رنگ هاور</option>
                   </select>
                 </Field>
                 {draft["hover-on"] === "1" && (
                   <>
-                    <Field label="ط±ظ†ع¯ ظ…طھظ† ط¯ط± ظ‡ط§ظˆط±">
+                    <Field label="رنگ متن در هاور">
                       <input type="color" value={draft["hover-color"] || "#0b1e3f"}
                         onChange={(e) => field("hover-color", e.target.value)}
                         className="w-full h-10 rounded-xl border border-slate-300" />
                     </Field>
-                    <Field label="ظ¾ط³â€Œط²ظ…غŒظ†ظ‡ ط¯ط± ظ‡ط§ظˆط±">
+                    <Field label="پس‌زمینه در هاور">
                       <select value={draft["hover-bg-mode"] ?? "keep"} onChange={(e) => field("hover-bg-mode", e.target.value)}
                         className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
-                        <option value="keep">ط¨ط¯ظˆظ† طھط؛غŒغŒط±</option>
-                        <option value="transparent">ع©ط§ظ…ظ„ط§ظ‹ ط´ظپط§ظپ</option>
-                        <option value="custom">ط±ظ†ع¯غŒ ط¨ط§ ع©ظ†طھط±ظ„ ط´ظپط§ظپغŒطھ</option>
+                        <option value="keep">بدون تغییر</option>
+                        <option value="transparent">کاملاً شفاف</option>
+                        <option value="custom">رنگی با کنترل شفافیت</option>
                       </select>
                     </Field>
                     {draft["hover-bg-mode"] === "custom" && (
                       <>
-                        <Field label="ط±ظ†ع¯ ظ¾ط³â€Œط²ظ…غŒظ†ظ‡ ظ‡ط§ظˆط±">
+                        <Field label="رنگ پس‌زمینه هاور">
                           <input type="color" value={draft["hover-bg"] || "#ffffff"}
                             onChange={(e) => field("hover-bg", e.target.value)}
                             className="w-full h-10 rounded-xl border border-slate-300" />
                         </Field>
-                        <Field label={`ط´ظپط§ظپغŒطھ ظ¾ط³â€Œط²ظ…غŒظ†ظ‡ ظ‡ط§ظˆط±: ${draft["hover-bg-alpha"] ?? "100"}%`}>
+                        <Field label={`شفافیت پس‌زمینه هاور: ${draft["hover-bg-alpha"] ?? "100"}%`}>
                           <input type="range" min={0} max={100} step={1}
                             value={Number(draft["hover-bg-alpha"] ?? "100")}
                             onChange={(e) => field("hover-bg-alpha", e.target.value)}
@@ -735,7 +735,7 @@ function VisualEditorPane() {
                         </Field>
                       </>
                     )}
-                    <Field label="ط±ظ†ع¯ ط­ط§ط´غŒظ‡ ط¯ط± ظ‡ط§ظˆط±">
+                    <Field label="رنگ حاشیه در هاور">
                       <input type="color" value={draft["hover-border"] || "#0b1e3f"}
                         onChange={(e) => field("hover-border", e.target.value)}
                         className="w-full h-10 rounded-xl border border-slate-300" />
@@ -743,15 +743,15 @@ function VisualEditorPane() {
                     <label className="flex items-center gap-2 text-xs text-slate-600">
                       <input type="checkbox" checked={draft["hover-underline"] === "1"}
                         onChange={(e) => field("hover-underline", e.target.checked ? "1" : "")} />
-                      ط²غŒط±ط®ط·â€Œط¯ط§ط± ط´ط¯ظ† ط¯ط± ظ‡ط§ظˆط±
+                      زیرخط‌دار شدن در هاور
                     </label>
                     <label className="flex items-center gap-2 text-xs text-slate-600">
                       <input type="checkbox" checked={draft["hover-deep"] === "1"}
                         onChange={(e) => field("hover-deep", e.target.checked ? "1" : "")} />
-                      ط§ط¹ظ…ط§ظ„ ط±ظˆغŒ ط¢غŒع©ظ†â€Œظ‡ط§ ظˆ ط²غŒط± ط¢غŒطھظ…â€Œظ‡ط§غŒ ط¯ط§ط®ظ„ ط§غŒظ† ط¹ظ†طµط±
+                      اعمال روی آیکن‌ها و زیر آیتم‌های داخل این عنصر
                     </label>
                     <p className="text-[11px] text-slate-500 leading-5">
-                      ط±ظˆغŒ ط¢غŒطھظ… ظپظ‡ط±ط³طھ غŒط§ ط²غŒط±ط¢غŒطھظ… ع©ظ„غŒع© ع©ظ†غŒط¯ ظˆ ط±ظ†ع¯ ط¯ظ„ط®ظˆط§ظ‡ ظ‡ط§ظˆط± ط±ط§ ط§ظ†طھط®ط§ط¨ ع©ظ†غŒط¯ط› ط¯ط± ظ…ظˆط¨ط§غŒظ„ ظ‡ظ†ع¯ط§ظ… ظ„ظ…ط³ ظ‡ظ…ط§ظ† ط±ظ†ع¯ ظ†ظ…ط§غŒط´ ط¯ط§ط¯ظ‡ ظ…غŒâ€Œط´ظˆط¯.
+                      روی آیتم فهرست یا زیرآیتم کلیک کنید و رنگ دلخواه هاور را انتخاب کنید؛ در موبایل هنگام لمس همان رنگ نمایش داده می‌شود.
                     </p>
                   </>
                 )}
@@ -760,22 +760,22 @@ function VisualEditorPane() {
 
 
               <div className="rounded-xl border border-slate-200 p-2.5 space-y-2">
-                <Field label="ظ¾ط³â€Œط²ظ…غŒظ†ظ‡">
+                <Field label="پس‌زمینه">
                   <select value={draft["bg-mode"] ?? "keep"} onChange={(e) => field("bg-mode", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
-                    <option value="keep">ط¨ط¯ظˆظ† طھط؛غŒغŒط±</option>
-                    <option value="transparent">ع©ط§ظ…ظ„ط§ظ‹ ط´ظپط§ظپ</option>
-                    <option value="custom">ط±ظ†ع¯غŒ ط¨ط§ ع©ظ†طھط±ظ„ ط´ظپط§ظپغŒطھ</option>
+                    <option value="keep">بدون تغییر</option>
+                    <option value="transparent">کاملاً شفاف</option>
+                    <option value="custom">رنگی با کنترل شفافیت</option>
                   </select>
                 </Field>
                 {(draft["bg-mode"] ?? "keep") === "custom" && (
                   <>
-                    <Field label="ط±ظ†ع¯ ظ¾ط³â€Œط²ظ…غŒظ†ظ‡">
+                    <Field label="رنگ پس‌زمینه">
                       <input type="color" value={draft["background-color"] || "#ffffff"}
                         onChange={(e) => field("background-color", e.target.value)}
                         className="w-full h-10 rounded-xl border border-slate-300" />
                     </Field>
-                    <Field label={`ظ…غŒط²ط§ظ† ط´ظپط§ظپغŒطھ: ${draft["bg-alpha"] ?? "100"}%`}>
+                    <Field label={`میزان شفافیت: ${draft["bg-alpha"] ?? "100"}%`}>
                       <input type="range" min={0} max={100} step={1}
                         value={Number(draft["bg-alpha"] ?? "100")}
                         onChange={(e) => field("bg-alpha", e.target.value)}
@@ -786,7 +786,7 @@ function VisualEditorPane() {
               </div>
 
               <div className="rounded-xl border border-slate-200 p-2.5 space-y-2">
-                <Field label="ط§ظ†غŒظ…غŒط´ظ† ط¹ظ†طµط±">
+                <Field label="انیمیشن عنصر">
                   <select value={draft["anim-name"] ?? ""} onChange={(e) => field("anim-name", e.target.value)}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
                     {VE_ANIMATIONS.map((a) => <option key={a.v} value={a.v}>{a.label}</option>)}
@@ -794,32 +794,32 @@ function VisualEditorPane() {
                 </Field>
                 {draft["anim-name"] && (
                   <div className="grid grid-cols-3 gap-2">
-                    <Field label="ظ…ط¯طھ (ms)">
+                    <Field label="مدت (ms)">
                       <input dir="ltr" value={draft["anim-duration"] ?? "700"} onChange={(e) => field("anim-duration", e.target.value)}
                         className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs" />
                     </Field>
-                    <Field label="طھط£ط®غŒط± (ms)">
+                    <Field label="تأخیر (ms)">
                       <input dir="ltr" value={draft["anim-delay"] ?? "0"} onChange={(e) => field("anim-delay", e.target.value)}
                         className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs" />
                     </Field>
-                    <Field label="طھع©ط±ط§ط±">
+                    <Field label="تکرار">
                       <select value={draft["anim-iteration"] ?? "1"} onChange={(e) => field("anim-iteration", e.target.value)}
                         className="w-full px-1 py-2 rounded-xl border border-slate-300 text-xs">
-                        <option value="1">غ± ط¨ط§ط±</option>
-                        <option value="2">غ² ط¨ط§ط±</option>
-                        <option value="3">غ³ ط¨ط§ط±</option>
-                        <option value="infinite">ط¨غŒâ€Œظ†ظ‡ط§غŒطھ</option>
+                        <option value="1">۱ بار</option>
+                        <option value="2">۲ بار</option>
+                        <option value="3">۳ بار</option>
+                        <option value="infinite">بی‌نهایت</option>
                       </select>
                     </Field>
                   </div>
                 )}
               </div>
 
-              <Field label="ع†غŒظ†ط´ ظ…طھظ†">
+              <Field label="چینش متن">
                 <select value={draft["text-align"] ?? ""} onChange={(e) => field("text-align", e.target.value)}
                   className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs">
                   {["", "right", "center", "left", "justify"].map((a) => (
-                    <option key={a} value={a}>{a || "ظ¾غŒط´â€Œظپط±ط¶"}</option>
+                    <option key={a} value={a}>{a || "پیش‌فرض"}</option>
                   ))}
                 </select>
               </Field>
@@ -827,7 +827,7 @@ function VisualEditorPane() {
 
               {/* Insert a new block / section right after this element */}
               <div className="rounded-xl border border-slate-200 p-2.5 space-y-2">
-                <Field label="ط§ظپط²ظˆط¯ظ† ط¨ظ„ظˆع© غŒط§ ط³ع©ط´ظ† ط¬ط¯غŒط¯ (ط¨ط¹ط¯ ط§ط² ط§غŒظ† ط¹ظ†طµط±)">
+                <Field label="افزودن بلوک یا سکشن جدید (بعد از این عنصر)">
                   <select
                     value=""
                     onChange={(e) => {
@@ -836,7 +836,7 @@ function VisualEditorPane() {
                     }}
                     className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs"
                   >
-                    <option value="">غŒع© ظ‚ط§ظ„ط¨ ط¢ظ…ط§ط¯ظ‡ ط§ظ†طھط®ط§ط¨ ع©ظ†غŒط¯â€¦</option>
+                    <option value="">یک قالب آماده انتخاب کنید…</option>
                     {BLOCK_TEMPLATES.map((b) => (
                       <option key={b.key} value={b.key}>{b.label}</option>
                     ))}
@@ -847,7 +847,7 @@ function VisualEditorPane() {
                   dir="ltr"
                   value={draft.block ?? ""}
                   onChange={(e) => field("block", e.target.value)}
-                  placeholder="<section>â€¦</section>"
+                  placeholder="<section>…</section>"
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono"
                 />
                 <div className="flex gap-2">
@@ -855,13 +855,13 @@ function VisualEditorPane() {
                     onClick={() => send({ type: "ve:update", selector: sel.selector, patch: { block: draft.block ?? "" } })}
                     className="flex-1 text-xs font-bold bg-emerald-600 text-white rounded-xl py-2"
                   >
-                    ط§ظپط²ظˆط¯ظ† / ط¨ظ‡â€Œط±ظˆط²ط±ط³ط§ظ†غŒ ط¨ظ„ظˆع©
+                    افزودن / به‌روزرسانی بلوک
                   </button>
                   <button
                     onClick={() => { field("block", ""); send({ type: "ve:update", selector: sel.selector, patch: { block: "" } }); }}
                     className="px-3 text-xs rounded-xl border border-slate-300"
                   >
-                    ط­ط°ظپ ط¨ظ„ظˆع©
+                    حذف بلوک
                   </button>
                 </div>
               </div>
@@ -870,18 +870,18 @@ function VisualEditorPane() {
               <div className="flex gap-2 pt-1">
                 <button onClick={apply}
                   className="flex-1 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5">
-                  <Save className="w-4 h-4" /> ط§ط¹ظ…ط§ظ„
+                  <Save className="w-4 h-4" /> اعمال
                 </button>
                 <button onClick={() => send({ type: "ve:reset", selector: sel.selector })}
-                  className="px-3 rounded-xl border border-slate-300 text-xs">ط­ط°ظپ طھط؛غŒغŒط±</button>
+                  className="px-3 rounded-xl border border-slate-300 text-xs">حذف تغییر</button>
               </div>
               <button
                 onClick={() => send({ type: "ve:update", selector: sel.selector, patch: { hidden: true } })}
                 className="w-full text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-xl py-2"
               >
-                ط­ط°ظپ / ظ¾ظ†ظ‡ط§ظ†â€Œط³ط§ط²غŒ ط§غŒظ† ط¨ط®ط´
+                حذف / پنهان‌سازی این بخش
               </button>
-              {saved && <div className="text-[11px] text-emerald-600">ط°ط®غŒط±ظ‡ ط´ط¯.</div>}
+              {saved && <div className="text-[11px] text-emerald-600">ذخیره شد.</div>}
             </div>
           )}
         </aside>
@@ -919,21 +919,21 @@ function OverviewPane() {
     })();
   }, []);
   const cards = [
-    { label: "ط¯ط±ط®ظˆط§ط³طھâ€Œظ‡ط§غŒ ظ…ط´ط§ظˆط±ظ‡", value: cCount, icon: MessageSquare, color: "from-blue-500 to-indigo-600" },
-    { label: "ع¯ط²ط§ط±ط´â€Œظ‡ط§غŒ ط®ط³ط§ط±طھ", value: dCount, icon: AlertTriangle, color: "from-amber-500 to-orange-600" },
-    { label: "ط¢غŒطھظ…â€Œظ‡ط§غŒ ظ…ظ†ظˆ", value: mCount, icon: MenuIcon, color: "from-emerald-500 to-teal-600" },
+    { label: "درخواست‌های مشاوره", value: cCount, icon: MessageSquare, color: "from-blue-500 to-indigo-600" },
+    { label: "گزارش‌های خسارت", value: dCount, icon: AlertTriangle, color: "from-amber-500 to-orange-600" },
+    { label: "آیتم‌های منو", value: mCount, icon: MenuIcon, color: "from-emerald-500 to-teal-600" },
   ];
   return (
     <div>
-      <h1 className="text-2xl font-extrabold text-[#0b1e3f] mb-2">ط®ظˆط´ ط¢ظ…ط¯غŒط¯ ًں‘‹</h1>
-      <p className="text-sm text-slate-500 mb-8">ط®ظ„ط§طµظ‡â€Œط§غŒ ط§ط² ظ…ط­طھظˆط§غŒ ظˆط¨â€Œط³ط§غŒطھ ط´ظ…ط§.</p>
+      <h1 className="text-2xl font-extrabold text-[#0b1e3f] mb-2">خوش آمدید 👋</h1>
+      <p className="text-sm text-slate-500 mb-8">خلاصه‌ای از محتوای وب‌سایت شما.</p>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {cards.map((c) => (
           <div key={c.label} className="bg-white rounded-3xl p-6 shadow-md border border-slate-100 hover:shadow-xl transition">
             <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${c.color} grid place-items-center text-white mb-4`}>
               <c.icon className="w-6 h-6" />
             </div>
-            <div className="text-3xl font-black text-[#0b1e3f]">{c.value ?? "â€”"}</div>
+            <div className="text-3xl font-black text-[#0b1e3f]">{c.value ?? "—"}</div>
             <div className="text-xs text-slate-500 mt-1">{c.label}</div>
           </div>
         ))}
@@ -953,18 +953,18 @@ function ContactsPane() {
   };
   useEffect(() => { load(); }, []);
   const del = async (id: string) => {
-    if (!confirm("ط­ط°ظپ ط´ظˆط¯طں")) return;
+    if (!confirm("حذف شود؟")) return;
     await adminDb("contact_messages").delete().eq("id", id);
     load();
   };
   return (
-    <PaneShell title="ط¯ط±ط®ظˆط§ط³طھâ€Œظ‡ط§غŒ ظ…ط´ط§ظˆط±ظ‡" onRefresh={load}>
-      {loading ? <Empty text="ط¯ط± ط­ط§ظ„ ط¨ط§ط±ع¯ط°ط§ط±غŒ..." /> : rows.length === 0 ? <Empty text="ظ…ظˆط±ط¯غŒ ط«ط¨طھ ظ†ط´ط¯ظ‡." /> : (
+    <PaneShell title="درخواست‌های مشاوره" onRefresh={load}>
+      {loading ? <Empty text="در حال بارگذاری..." /> : rows.length === 0 ? <Empty text="موردی ثبت نشده." /> : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <Th>ظ†ط§ظ…</Th><Th>طھظ„ظپظ†</Th><Th>ط§غŒظ…غŒظ„</Th><Th>ط§ط³طھط§ظ†</Th><Th>ظ†ظˆط¹ ط¨غŒظ…ظ‡</Th><Th>طھط§ط±غŒط®</Th><Th></Th>
+                <Th>نام</Th><Th>تلفن</Th><Th>ایمیل</Th><Th>استان</Th><Th>نوع بیمه</Th><Th>تاریخ</Th><Th></Th>
               </tr>
             </thead>
             <tbody>
@@ -972,9 +972,9 @@ function ContactsPane() {
                 <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/60">
                   <Td>{r.full_name}</Td>
                   <Td dir="ltr">{r.phone}</Td>
-                  <Td>{r.email || "â€”"}</Td>
-                  <Td>{r.province || "â€”"}</Td>
-                  <Td>{r.insurance_type || "â€”"}</Td>
+                  <Td>{r.email || "—"}</Td>
+                  <Td>{r.province || "—"}</Td>
+                  <Td>{r.insurance_type || "—"}</Td>
                   <Td className="text-slate-500">{new Date(r.created_at).toLocaleDateString("fa-IR")}</Td>
                   <Td><IconBtn onClick={() => del(r.id)} tone="danger"><Trash2 className="w-4 h-4" /></IconBtn></Td>
                 </tr>
@@ -1002,18 +1002,18 @@ function DamagesPane() {
     load();
   };
   const del = async (id: string) => {
-    if (!confirm("ط­ط°ظپ ط´ظˆط¯طں")) return;
+    if (!confirm("حذف شود؟")) return;
     await adminDb("damage_reports").delete().eq("id", id);
     load();
   };
   return (
-    <PaneShell title="ع¯ط²ط§ط±ط´â€Œظ‡ط§غŒ ط®ط³ط§ط±طھ" onRefresh={load}>
-      {loading ? <Empty text="ط¯ط± ط­ط§ظ„ ط¨ط§ط±ع¯ط°ط§ط±غŒ..." /> : rows.length === 0 ? <Empty text="ظ…ظˆط±ط¯غŒ ط«ط¨طھ ظ†ط´ط¯ظ‡." /> : (
+    <PaneShell title="گزارش‌های خسارت" onRefresh={load}>
+      {loading ? <Empty text="در حال بارگذاری..." /> : rows.length === 0 ? <Empty text="موردی ثبت نشده." /> : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <Th>ظ†ط§ظ…</Th><Th>طھظ„ظپظ†</Th><Th>ط´ظ…ط§ط±ظ‡ ط¨غŒظ…ظ‡â€Œظ†ط§ظ…ظ‡</Th><Th>طھط§ط±غŒط® ط­ط§ط¯ط«ظ‡</Th><Th>ظˆط¶ط¹غŒطھ</Th><Th>ط«ط¨طھ</Th><Th></Th>
+                <Th>نام</Th><Th>تلفن</Th><Th>شماره بیمه‌نامه</Th><Th>تاریخ حادثه</Th><Th>وضعیت</Th><Th>ثبت</Th><Th></Th>
               </tr>
             </thead>
             <tbody>
@@ -1021,14 +1021,14 @@ function DamagesPane() {
                 <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/60">
                   <Td>{r.full_name}</Td>
                   <Td dir="ltr">{r.phone}</Td>
-                  <Td>{r.policy_number || "â€”"}</Td>
-                  <Td>{r.accident_date || "â€”"}</Td>
+                  <Td>{r.policy_number || "—"}</Td>
+                  <Td>{r.accident_date || "—"}</Td>
                   <Td>
                     <select value={r.status} onChange={(e) => setStatus(r.id, e.target.value)}
                       className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1">
-                      <option value="new">ط¬ط¯غŒط¯</option>
-                      <option value="in_progress">ط¯ط± ط­ط§ظ„ ط±ط³غŒط¯ع¯غŒ</option>
-                      <option value="done">ط±ط³غŒط¯ع¯غŒ ط´ط¯ظ‡</option>
+                      <option value="new">جدید</option>
+                      <option value="in_progress">در حال رسیدگی</option>
+                      <option value="done">رسیدگی شده</option>
                     </select>
                   </Td>
                   <Td className="text-slate-500">{new Date(r.created_at).toLocaleDateString("fa-IR")}</Td>
@@ -1065,9 +1065,9 @@ function MenuPane() {
   const childrenOf = (id: string) => shown.filter((i) => i.parent_id === id);
 
   const add = async (parent_id: string | null) => {
-    const label = prompt("ط¹ظ†ظˆط§ظ† ط¢غŒطھظ… ظ…ظ†ظˆ:");
+    const label = prompt("عنوان آیتم منو:");
     if (!label) return;
-    const href = prompt("ظ„غŒظ†ع© (ط§ط®طھغŒط§ط±غŒ):") || null;
+    const href = prompt("لینک (اختیاری):") || null;
     const siblings = items.filter((i) => i.parent_id === parent_id);
     await adminDb("site_menu_items").insert({
       label, href, parent_id, position: siblings.length,
@@ -1080,14 +1080,14 @@ function MenuPane() {
     load();
   };
   const del = async (id: string) => {
-    if (!confirm("ط§غŒظ† ط¢غŒطھظ… ظˆ ظ‡ظ…ظ‡ ط²غŒط±ط¢غŒطھظ…â€Œظ‡ط§غŒط´ ط­ط°ظپ ط´ظˆط¯طں")) return;
+    if (!confirm("این آیتم و همه زیرآیتم‌هایش حذف شود؟")) return;
     await adminDb("site_menu_items").delete().eq("id", id);
     load();
   };
 
   /** Fills the table with the menu currently shown on the site, so it can be edited. */
   const importCurrent = async () => {
-    if (items.length && !confirm("ظ…ظ†ظˆغŒ ظپط¹ظ„غŒ ط³ط§غŒطھ ط¨ظ‡ ظپظ‡ط±ط³طھ ط§ط¶ط§ظپظ‡ ط´ظˆط¯طں")) return;
+    if (items.length && !confirm("منوی فعلی سایت به فهرست اضافه شود؟")) return;
     const rows: Record<string, unknown>[] = [];
     const walk = (list: NavItem[], parent_id: string | null) => {
       list.forEach((n, i) => {
@@ -1110,23 +1110,23 @@ function MenuPane() {
   };
 
   return (
-    <PaneShell title="ظ…ط¯غŒط±غŒطھ ط¢غŒطھظ…â€Œظ‡ط§غŒ ظ…ظ†ظˆ" onRefresh={load}
+    <PaneShell title="مدیریت آیتم‌های منو" onRefresh={load}
       extra={
         <div className="flex items-center gap-2">
           <DeviceToggle value={device} onChange={setDevice} />
           <button onClick={importCurrent}
             className="text-xs font-bold px-3 py-2 rounded-xl border border-slate-300 bg-white">
-            ط¯ط±ظˆظ†â€Œط±غŒط²غŒ ظ…ظ†ظˆغŒ ظپط¹ظ„غŒ ط³ط§غŒطھ
+            درون‌ریزی منوی فعلی سایت
           </button>
           <button onClick={() => add(null)}
             className="flex items-center gap-1.5 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-xs font-bold px-3 py-2 rounded-xl transition">
-            <Plus className="w-4 h-4" /> ط§ظپط²ظˆط¯ظ† ط¢غŒطھظ… ط§طµظ„غŒ
+            <Plus className="w-4 h-4" /> افزودن آیتم اصلی
           </button>
         </div>
       }
     >
-      {loading ? <Empty text="ط¯ط± ط­ط§ظ„ ط¨ط§ط±ع¯ط°ط§ط±غŒ..." /> : roots.length === 0 ? (
-        <Empty text="ظ‡ظ†ظˆط² ط¢غŒطھظ…غŒ ط¨ط±ط§غŒ ط§غŒظ† ظ†ظ…ط§ طھط¹ط±غŒظپ ظ†ط´ط¯ظ‡ â€” ط¨ط§ آ«ط§ظپط²ظˆط¯ظ† ط¢غŒطھظ… ط§طµظ„غŒآ» ط´ط±ظˆط¹ ع©ظ†غŒط¯." />
+      {loading ? <Empty text="در حال بارگذاری..." /> : roots.length === 0 ? (
+        <Empty text="هنوز آیتمی برای این نما تعریف نشده — با «افزودن آیتم اصلی» شروع کنید." />
       ) : (
         <ul className="space-y-2">
           {roots.map((r) => (
@@ -1163,13 +1163,13 @@ function MenuRow({
             className="w-full sm:w-40 px-2 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-[#0b1e3f] outline-none" />
           <select value={item.device} onChange={(e) => onUpdate(item.id, { device: e.target.value as any })}
             className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5">
-            <option value="both">ظ‡ط± ط¯ظˆ</option>
-            <option value="desktop">ط¯ط³ع©طھط§ظ¾</option>
-            <option value="mobile">ظ…ظˆط¨ط§غŒظ„</option>
+            <option value="both">هر دو</option>
+            <option value="desktop">دسکتاپ</option>
+            <option value="mobile">موبایل</option>
           </select>
           <label className="flex items-center gap-1 text-xs text-slate-600">
             <input type="checkbox" checked={item.is_active} onChange={(e) => onUpdate(item.id, { is_active: e.target.checked })} />
-            ظپط¹ط§ظ„
+            فعال
           </label>
           {dirty && (
             <IconBtn tone="primary" onClick={() => onUpdate(item.id, { label, href: href || null })}>
@@ -1211,7 +1211,7 @@ function FooterPane() {
   useEffect(() => { load(); }, []);
 
   const addSection = async () => {
-    const title = prompt("ط¹ظ†ظˆط§ظ† ط³طھظˆظ† ظپظˆطھط±:");
+    const title = prompt("عنوان ستون فوتر:");
     if (!title) return;
     await adminDb("site_footer_sections").insert({ title, position: sections.length, is_active: true } as any);
     load();
@@ -1220,12 +1220,12 @@ function FooterPane() {
     await adminDb("site_footer_sections").update(patch as any).eq("id", id); load();
   };
   const delSection = async (id: string) => {
-    if (!confirm("ط§غŒظ† ط³طھظˆظ† ظˆ ظ‡ظ…ظ‡ ظ„غŒظ†ع©â€Œظ‡ط§غŒط´ ط­ط°ظپ ط´ظˆط¯طں")) return;
+    if (!confirm("این ستون و همه لینک‌هایش حذف شود؟")) return;
     await adminDb("site_footer_sections").delete().eq("id", id); load();
   };
   const addLink = async (section_id: string) => {
-    const label = prompt("ط¹ظ†ظˆط§ظ† ظ„غŒظ†ع©:"); if (!label) return;
-    const href = prompt("ط¢ط¯ط±ط³ ظ„غŒظ†ع©:") || "#";
+    const label = prompt("عنوان لینک:"); if (!label) return;
+    const href = prompt("آدرس لینک:") || "#";
     const siblings = links.filter((l) => l.section_id === section_id);
     await adminDb("site_footer_links").insert({ section_id, label, href, position: siblings.length } as any);
     load();
@@ -1238,16 +1238,16 @@ function FooterPane() {
   };
 
   return (
-    <PaneShell title="ظ…ط¯غŒط±غŒطھ ظپظˆطھط±" onRefresh={load}
+    <PaneShell title="مدیریت فوتر" onRefresh={load}
       extra={
         <button onClick={addSection}
           className="flex items-center gap-1.5 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-xs font-bold px-3 py-2 rounded-xl transition">
-          <Plus className="w-4 h-4" /> ط³طھظˆظ† ط¬ط¯غŒط¯
+          <Plus className="w-4 h-4" /> ستون جدید
         </button>
       }
     >
-      {loading ? <Empty text="ط¯ط± ط­ط§ظ„ ط¨ط§ط±ع¯ط°ط§ط±غŒ..." /> : sections.length === 0 ? (
-        <Empty text="ظ‡ظ†ظˆط² ط³طھظˆظ†غŒ طھط¹ط±غŒظپ ظ†ط´ط¯ظ‡ â€” ط¨ط§ آ«ط³طھظˆظ† ط¬ط¯غŒط¯آ» ط´ط±ظˆط¹ ع©ظ†غŒط¯." />
+      {loading ? <Empty text="در حال بارگذاری..." /> : sections.length === 0 ? (
+        <Empty text="هنوز ستونی تعریف نشده — با «ستون جدید» شروع کنید." />
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {sections.map((s) => (
@@ -1270,7 +1270,7 @@ function FooterPane() {
                   </li>
                 ))}
                 {links.filter((l) => l.section_id === s.id).length === 0 && (
-                  <li className="text-xs text-slate-400 text-center py-2">ظ‡ظ†ظˆط² ظ„غŒظ†ع©غŒ ط§ط¶ط§ظپظ‡ ظ†ط´ط¯ظ‡.</li>
+                  <li className="text-xs text-slate-400 text-center py-2">هنوز لینکی اضافه نشده.</li>
                 )}
               </ul>
             </div>
@@ -1294,7 +1294,7 @@ function PaneShell({ title, children, onRefresh, extra }: {
           {onRefresh && (
             <button onClick={onRefresh}
               className="flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl transition">
-              <RefreshCw className="w-3.5 h-3.5" /> ط¨ظ‡â€Œط±ظˆط²ط±ط³ط§ظ†غŒ
+              <RefreshCw className="w-3.5 h-3.5" /> به‌روزرسانی
             </button>
           )}
         </div>
@@ -1311,11 +1311,11 @@ function DeviceToggle({ value, onChange }: { value: "desktop" | "mobile"; onChan
     <div className="inline-flex bg-slate-100 rounded-xl p-1 text-xs font-bold">
       <button onClick={() => onChange("desktop")}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${value === "desktop" ? "bg-white text-[#0b1e3f] shadow" : "text-slate-500"}`}>
-        <Monitor className="w-3.5 h-3.5" /> ط¯ط³ع©طھط§ظ¾
+        <Monitor className="w-3.5 h-3.5" /> دسکتاپ
       </button>
       <button onClick={() => onChange("mobile")}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${value === "mobile" ? "bg-white text-[#0b1e3f] shadow" : "text-slate-500"}`}>
-        <Smartphone className="w-3.5 h-3.5" /> ظ…ظˆط¨ط§غŒظ„
+        <Smartphone className="w-3.5 h-3.5" /> موبایل
       </button>
     </div>
   );
@@ -1345,5 +1345,3 @@ function Td({ children, className = "", dir }: { children?: React.ReactNode; cla
 function Empty({ text }: { text: string }) {
   return <div className="text-center text-sm text-slate-400 py-16">{text}</div>;
 }
-
-

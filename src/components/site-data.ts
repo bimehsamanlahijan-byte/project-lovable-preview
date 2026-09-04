@@ -1,135 +1,130 @@
-﻿import headerLogo from "@/assets/logoheder.png";
+import headerLogo from "@/assets/logoheder.png";
 import footerLogo from "@/assets/logofooter.png";
-
 export type NavItem = { label: string; href?: string; children?: NavItem[] };
 
 // Menu structure mirrored from the reference site si24.ir (full sub-sub structure)
 export const navItems: NavItem[] = [
-  { label: "طµظپط­ظ‡ ط§طµظ„غŒ", href: "/" },
+  { label: "صفحه اصلی", href: "/" },
   {
-    label: "ط§ظ†ظˆط§ط¹ ط¨غŒظ…ظ‡â€Œظ‡ط§",
+    label: "انواع بیمه‌ها",
     href: "/insurance",
     children: [
       {
-        label: "ط¨غŒظ…ظ‡ ط¢طھط´â€Œط³ظˆط²غŒ",
+        label: "بیمه آتش‌سوزی",
         href: "/insurance/fire",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ظ…ظ†ط§ط²ظ„ ظ…ط³ع©ظˆظ†غŒ", href: "/insurance/fire/residential" },
-          { label: "ط¨غŒظ…ظ‡ ط¢طھط´â€Œط³ظˆط²غŒ طµظ†ط¹طھغŒ", href: "/insurance/fire/industrial" },
-          { label: "ط¨غŒظ…ظ‡ ط¢طھط´â€Œط³ظˆط²غŒ ط؛غŒط±طµظ†ط¹طھغŒ", href: "/insurance/fire/non-industrial" },
-          { label: "ط¨غŒظ…ظ‡ ط¹غŒظˆط¨ ط§ط³ط§ط³غŒ ظˆ ظ¾ظ†ظ‡ط§ظ† ط³ط§ط®طھظ…ط§ظ†", href: "/insurance/fire/hidden-defects" },
+          { label: "بیمه منازل مسکونی", href: "/insurance/fire/residential" },
+          { label: "بیمه آتش‌سوزی صنعتی", href: "/insurance/fire/industrial" },
+          { label: "بیمه آتش‌سوزی غیرصنعتی", href: "/insurance/fire/non-industrial" },
+          { label: "بیمه عیوب اساسی و پنهان ساختمان", href: "/insurance/fire/hidden-defects" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ط§طھظˆظ…ط¨غŒظ„",
+        label: "بیمه اتومبیل",
         href: "/insurance/car",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ط´ط®طµ ط«ط§ظ„ط«", href: "/insurance/car/third-party" },
-          { label: "ط¨غŒظ…ظ‡ ط¨ط¯ظ†ظ‡", href: "/insurance/car/body" },
-          { label: "ط¨غŒظ…ظ‡ ط­ظˆط§ط¯ط« ط±ط§ظ†ظ†ط¯ظ‡", href: "/insurance/car/driver-accident" },
+          { label: "بیمه شخص ثالث", href: "/insurance/car/third-party" },
+          { label: "بیمه بدنه", href: "/insurance/car/body" },
+          { label: "بیمه حوادث راننده", href: "/insurance/car/driver-accident" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ط¨ط§ط±ط¨ط±غŒ",
+        label: "بیمه باربری",
         href: "/insurance/cargo",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ط¨ط§ط±ط¨ط±غŒ ظˆط§ط±ط¯ط§طھغŒ", href: "/insurance/cargo/import-cargo" },
-          { label: "ط¨غŒظ…ظ‡ ط¨ط§ط±ط¨ط±غŒ طµط§ط¯ط±ط§طھغŒ", href: "/insurance/cargo/export-cargo" },
-          { label: "ط¨غŒظ…ظ‡ ط¨ط§ط±ط¨ط±غŒ ط¯ط§ط®ظ„غŒ", href: "/insurance/cargo/internal-cargo" },
+          { label: "بیمه باربری وارداتی", href: "/insurance/cargo/import-cargo" },
+          { label: "بیمه باربری صادراتی", href: "/insurance/cargo/export-cargo" },
+          { label: "بیمه باربری داخلی", href: "/insurance/cargo/internal-cargo" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ طھط¬ظ‡غŒط²ط§طھ ط§ظ„ع©طھط±ظˆظ†غŒع©",
+        label: "بیمه تجهیزات الکترونیک",
         href: "/insurance/e-e",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ظ…ظˆط¨ط§غŒظ„ ظˆ طھط¨ظ„طھ", href: "/insurance/e-e/phone" },
-          { label: "ط¨غŒظ…ظ‡ طھط¬ظ‡غŒط²ط§طھ ط§ظ„ع©طھط±ظˆظ†غŒع©", href: "/insurance/e-e/equipment" },
+          { label: "بیمه موبایل و تبلت", href: "/insurance/e-e/phone" },
+          { label: "بیمه تجهیزات الکترونیک", href: "/insurance/e-e/equipment" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ط¯ط±ظ…ط§ظ†",
+        label: "بیمه درمان",
         href: "/insurance/health",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ط¯ط±ظ…ط§ظ† ط®ط§ظ†ظˆط§ط¯ظ‡", href: "/insurance/health/private-health" },
-          { label: "ط¨غŒظ…ظ‡ ط¯ط±ظ…ط§ظ† ع¯ط±ظˆظ‡غŒ", href: "/insurance/health/group" },
-          { label: "ط¨غŒظ…ظ‡ ط¯ط±ظ…ط§ظ† ظ…ط³ط§ظپط±طھغŒ", href: "/insurance/health/travel-health" },
+          { label: "بیمه درمان خانواده", href: "/insurance/health/private-health" },
+          { label: "بیمه درمان گروهی", href: "/insurance/health/group" },
+          { label: "بیمه درمان مسافرتی", href: "/insurance/health/travel-health" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ط²ظ†ط¯ع¯غŒ",
+        label: "بیمه زندگی",
         href: "/insurance/life",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ط¹ظ…ط± ط¨ط± ظ¾ط§غŒظ‡ ط·ظ„ط§ (ط²ط±ط³ط§ظ…)", href: "/insurance/life/gold" },
-          { label: "ط¨غŒظ…ظ‡ ط¹ظ…ط± ظˆ ط³ط±ظ…ط§غŒظ‡â€Œع¯ط°ط§ط±غŒ", href: "/insurance/life/investment" },
-          { label: "ط¨غŒظ…ظ‡ ط¹ظ…ط± ط²ظ…ط§ظ†غŒ", href: "/insurance/life/term" },
-          { label: "ط¨غŒظ…ظ‡ ظ…ط§ظ†ط¯ظ‡ ط¨ط¯ظ‡ع©ط§ط±", href: "/insurance/life/debit-balance" },
-          { label: "ط¨غŒظ…ظ‡ ط­ظˆط§ط¯ط« ط§ظ†ظپط±ط§ط¯غŒ", href: "/insurance/life/accident/individual-personal-accident" },
-          { label: "ط¨غŒظ…ظ‡ ط­ظˆط§ط¯ط« ع¯ط±ظˆظ‡غŒ", href: "/insurance/life/accident/group-accident" },
+          { label: "بیمه عمر بر پایه طلا (زرسام)", href: "/insurance/life/gold" },
+          { label: "بیمه عمر و سرمایه‌گذاری", href: "/insurance/life/investment" },
+          { label: "بیمه عمر زمانی", href: "/insurance/life/term" },
+          { label: "بیمه مانده بدهکار", href: "/insurance/life/debit-balance" },
+          { label: "بیمه حوادث انفرادی", href: "/insurance/life/accident/individual-personal-accident" },
+          { label: "بیمه حوادث گروهی", href: "/insurance/life/accident/group-accident" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ع©ط´طھغŒ ظˆ ظ‡ظˆط§ظ¾غŒظ…ط§",
+        label: "بیمه کشتی و هواپیما",
         href: "/insurance/marine-aviation",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ط¨ط¯ظ†ظ‡ ط´ظ†ط§ظˆط±", href: "/insurance/marine-aviation/hull" },
-          { label: "ط¨غŒظ…ظ‡ ط¨ط¯ظ†ظ‡ ظ‡ظˆط§ظ¾غŒظ…ط§", href: "/insurance/marine-aviation/aircraft" },
+          { label: "بیمه بدنه شناور", href: "/insurance/marine-aviation/hull" },
+          { label: "بیمه بدنه هواپیما", href: "/insurance/marine-aviation/aircraft" },
         ],
       },
       {
-        label: "ط¨غŒظ…ظ‡ ظ…ط³ط¦ظˆظ„غŒطھ",
+        label: "بیمه مسئولیت",
         href: "/insurance/liability",
         children: [
-          { label: "ط¨غŒظ…ظ‡ ظ…ط³ط¦ظˆظ„غŒطھ ع©ط§ط±ظپط±ظ…ط§", href: "/insurance/liability/employer" },
-          { label: "ط¨غŒظ…ظ‡ ظ…ط³ط¦ظˆظ„غŒطھ ط­ط±ظپظ‡â€Œط§غŒ ظ¾ط²ط´ع©ط§ظ†", href: "/insurance/liability/medical" },
-          { label: "ط¨غŒظ…ظ‡ ظ…ط³ط¦ظˆظ„غŒطھ ط³ط§ط²ظ†ط¯ع¯ط§ظ† ط§ط¨ظ†غŒظ‡", href: "/insurance/liability/construction" },
-          { label: "ط¨غŒظ…ظ‡ ظ…ط³ط¦ظˆظ„غŒطھ ط¹ظ…ظˆظ…غŒ", href: "/insurance/liability/general" },
+          { label: "بیمه مسئولیت کارفرما", href: "/insurance/liability/employer" },
+          { label: "بیمه مسئولیت حرفه‌ای پزشکان", href: "/insurance/liability/medical" },
+          { label: "بیمه مسئولیت سازندگان ابنیه", href: "/insurance/liability/construction" },
+          { label: "بیمه مسئولیت عمومی", href: "/insurance/liability/general" },
         ],
       },
-      { label: "ط¨غŒظ…ظ‡ ظ…ط³ط§ظپط±طھغŒ", href: "/insurance/travel" },
+      { label: "بیمه مسافرتی", href: "/insurance/travel" },
       {
-        label: "ط¨غŒظ…ظ‡ ظ…ظ‡ظ†ط¯ط³غŒ",
+        label: "بیمه مهندسی",
         href: "/insurance/engineering",
         children: [
-          { label: "طھظ…ط§ظ… ط®ط·ط± ظ¾غŒظ…ط§ظ†ع©ط§ط±ط§ظ†", href: "/insurance/engineering/contractor-all-risk" },
-          { label: "ط¨غŒظ…ظ‡ ط³ط§ط²ظ‡â€Œظ‡ط§غŒ طھع©ظ…غŒظ„â€Œط´ط¯ظ‡", href: "/insurance/engineering/completed-structures" },
-          { label: "ط¨غŒظ…ظ‡ ظ…ط§ط´غŒظ†â€Œط¢ظ„ط§طھ", href: "/insurance/engineering/machinery" },
+          { label: "تمام خطر پیمانکاران", href: "/insurance/engineering/contractor-all-risk" },
+          { label: "بیمه سازه‌های تکمیل‌شده", href: "/insurance/engineering/completed-structures" },
+          { label: "بیمه ماشین‌آلات", href: "/insurance/engineering/machinery" },
         ],
       },
-      { label: "ط¨غŒظ…ظ‡â€Œظ‡ط§غŒ ط®ط§طµ", href: "/insurance/special" },
-      { label: "ط§ظ†ظˆط§ط¹ ط¨غŒظ…ظ‡â€Œظ‡ط§غŒ ط³ط§ظ…ط§ظ†", href: "/insurance" },
+      { label: "بیمه‌های خاص", href: "/insurance/special" },
+      { label: "انواع بیمه‌های سامان", href: "/insurance" },
     ],
   },
-  { label: "ط´ط¹ط¨ ظˆ ظ†ظ…ط§غŒظ†ط¯ع¯ط§ظ†", href: "/branches" },
+  { label: "شعب و نمایندگان", href: "/branches" },
   {
-    label: "ط®ط¯ظ…ط§طھ ط§ظ„ع©طھط±ظˆظ†غŒع©",
+    label: "خدمات الکترونیک",
     href: "/e-services",
     children: [
-      { label: "ط§ط³طھط¹ظ„ط§ظ… ظˆط¶ط¹غŒطھ ط¨غŒظ…ظ‡â€Œظ†ط§ظ…ظ‡", href: "/e-services/insurance-status" },
-      { label: "ع©ط§ط±طھط§ط¨ظ„ ط¨غŒظ…ظ‡â€Œع¯ط°ط§ط±ط§ظ†", href: "/e-services/insured-dashboard" },
-      { label: "ظ¾ط±ط¯ط§ط®طھ ط¢ظ†ظ„ط§غŒظ† ط­ظ‚ ط¨غŒظ…ظ‡", href: "/e-services/insurance-payment" },
+      { label: "استعلام وضعیت بیمه‌نامه", href: "/e-services/insurance-status" },
+      { label: "کارتابل بیمه‌گذاران", href: "/e-services/insured-dashboard" },
+      { label: "پرداخت آنلاین حق بیمه", href: "/e-services/insurance-payment" },
     ],
   },
-  { label: "ع¯ط²ط§ط±ط´ع¯ط±غŒ ظˆ ط§ظپط´ط§غŒ ط§ط·ظ„ط§ط¹ط§طھ", href: "/reporting" },
-  { label: "ط§ط±طھط¨ط§ط· ط¨ط§ ظ…ط§", href: "/contact" },
-  { label: "ظ…ط¬ظ„ظ‡ ظˆ ط®ط¨ط±", href: "/blog" },
+  { label: "گزارشگری و افشای اطلاعات", href: "/reporting" },
+  { label: "ارتباط با ما", href: "/contact" },
+  { label: "مجله و خبر", href: "/blog" },
 ];
 
 export const SITE_LOGO = footerLogo;
 export const SITE_LOGO_HEADER = headerLogo;
 
-// Contact info â€” update these once for whole site
+// Contact info — update these once for whole site
 export const SITE_CONTACT = {
-  address: "ظ„ط§ظ‡غŒط¬ط§ظ†طŒ ط®غŒط§ط¨ط§ظ† ط§ظ…ط§ظ… ط®ظ…غŒظ†غŒطŒ ط±ظˆط¨ط±ظˆغŒ ط¨ط§ظ†ع© طھظˆط³ط¹ظ‡ ظˆ طھط¹ط§ظˆظ†طŒ ظ…ط¬طھظ…ط¹ ظ¾ط§ط±ط§ط¯ط§غŒط³",
+  address: "لاهیجان، خیابان امام خمینی، روبروی بانک توسعه و تعاون، مجتمع پارادایس",
   mobilePhone: "09116169215",
   landlinePhone: "01342249250",
   email: "info@parsianbimeh.ir",
 };
 
-// Webhook for the consultation form (placeholder â€” replace later with the real URL)
+// Webhook for the consultation form (placeholder — replace later with the real URL)
 export const FORM_WEBHOOK_URL =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_FORM_WEBHOOK_URL) ||
   "https://example.com/webhook/insurance-consultation";
-
-
-
-
