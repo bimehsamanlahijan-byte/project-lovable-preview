@@ -1,3 +1,4 @@
+import logoSaman from "@/assets/logo-saman.svg";
 import { supabase } from "@/integrations/supabase/client";
 
 export type SocialLayout = {
