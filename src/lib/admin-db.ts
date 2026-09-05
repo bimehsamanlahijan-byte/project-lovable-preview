@@ -105,14 +105,27 @@ export async function adminWriteSetting(key: string, value: unknown) {
     { onConflict: "key" },
   );
   const { notifySaved, notifyFailed } = await import("./notify");
-  const err = (res as { error?: { message?: string } } | null)?.error;
-  if (err) notifyFailed("تغییرات", err.message);
+  let err = (res as { error?: { message?: string } } | null)?.error?.message ?? null;
+
+  // Honest confirmation: only claim success when the row is really in the
+  // database (on Cloudflare a missing service key silently breaks writes).
+  if (!err) {
+    const check = await adminDb("site_settings").select("key").eq("key", key).maybeSingle();
+    const checkErr = (check as { error?: { message?: string } } | null)?.error?.message ?? null;
+    if (checkErr) err = checkErr;
+    else if (!check.data) err = "نوشتن در دیتابیس انجام نشد (کلید سرور تنظیم نشده است).";
+  }
+
+  if (err) notifyFailed("تغییرات", err);
   else {
     notifySaved("تغییرات");
     void autoPushToGithub(key);
   }
-  return res;
+  return { ...(res as object), ok: !err, error: err ? { message: err } : null } as Result & {
+    ok: boolean;
+  };
 }
+
 
 /** Mirrors the saved content to the default GitHub repo when auto-sync is on. */
 async function autoPushToGithub(changedKey: string) {
