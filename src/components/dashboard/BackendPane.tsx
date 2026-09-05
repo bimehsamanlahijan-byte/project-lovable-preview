@@ -22,6 +22,7 @@ export function BackendPane() {
   const [status, setStatus] = useState<Status | null>(null);
   const [busy, setBusy] = useState(false);
   const [target, setTarget] = useState<{ custom: boolean; url: string; bucket: string; host: string } | null>(null);
+  const [mode, setMode] = useState<"lovable" | "personal">("lovable");
   const [form, setForm] = useState({ url: "", serviceKey: "", bucket: "site-assets" });
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +30,7 @@ export function BackendPane() {
     try {
       const t = await storageTargetInfo();
       setTarget(t);
+      setMode(t.custom ? "personal" : "lovable");
       setForm((f) => ({ ...f, url: t.url, bucket: t.bucket }));
     } catch {
       /* ignore */
@@ -38,16 +40,17 @@ export function BackendPane() {
   async function save() {
     setSaving(true);
     try {
-      const res = await saveStorageTarget({ data: form });
-      if (!res.ok) notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
-      else
+      const res = await saveStorageTarget({ data: { ...form, mode } });
+      if (!res.ok) {
+        notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
+      } else {
         notify({
-          kind: res.warning ? "error" : "success",
-          title: res.warning ? "با هشدار ذخیره شد" : "اتصال ذخیره شد",
-          detail: res.warning ?? undefined,
+          kind: "success",
+          title: mode === "personal" ? "اتصال شخصی ذخیره و آزمایش شد" : "ذخیره‌سازی روی بک‌اند لاوابل تنظیم شد",
         });
-      await loadTarget();
-      await load();
+        await loadTarget();
+        await load();
+      }
     } catch (e) {
       notify({ kind: "error", title: "خطا", detail: e instanceof Error ? e.message : "" });
     } finally {
@@ -60,12 +63,14 @@ export function BackendPane() {
     try {
       await clearStorageTarget();
       setForm({ url: "", serviceKey: "", bucket: "site-assets" });
+      setMode("lovable");
       notify({ kind: "success", title: "به بک‌اند پیش‌فرض برگشت" });
       await loadTarget();
     } finally {
       setSaving(false);
     }
   }
+
 
   async function load() {
     setBusy(true);
