@@ -148,30 +148,48 @@ export function BackendPane() {
           Supabase خودتان، نشانی پروژه و کلید <code>service_role</code> را وارد کنید؛ از آن پس آپلود،
           حذف و مشاهده فایل‌ها از همان اکانت انجام می‌شود.
         </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <input
-            dir="ltr"
-            value={form.url}
-            onChange={(e) => setForm({ ...form, url: e.target.value })}
-            placeholder="https://xxxx.supabase.co"
-            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-          <input
-            dir="ltr"
-            value={form.bucket}
-            onChange={(e) => setForm({ ...form, bucket: e.target.value })}
-            placeholder="site-assets"
-            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-          <input
-            dir="ltr"
-            type="password"
-            value={form.serviceKey}
-            onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
-            placeholder="service_role secret key"
-            className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-        </div>
+        <label className="block space-y-1">
+          <span className="text-[11px] font-bold text-slate-700">فایل‌ها و عکس‌ها کجا ذخیره شوند؟</span>
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value as "lovable" | "personal")}
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800"
+          >
+            <option value="lovable">فضای پیش‌فرض پروژه (ساخته‌شده توسط لاوابل)</option>
+            <option value="personal">اکانت Supabase شخصی خودم</option>
+          </select>
+        </label>
+        {mode === "personal" ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            <input
+              dir="ltr"
+              value={form.url}
+              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              placeholder="https://xxxx.supabase.co"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+            <input
+              dir="ltr"
+              value={form.bucket}
+              onChange={(e) => setForm({ ...form, bucket: e.target.value })}
+              placeholder="site-assets"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+            <input
+              dir="ltr"
+              type="password"
+              value={form.serviceKey}
+              onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
+              placeholder="service_role secret key"
+              className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+          </div>
+        ) : null}
+        <p className="text-[11px] text-slate-500">
+          پیام «ذخیره شد» فقط زمانی نمایش داده می‌شود که اتصال آزمایش و ثبت آن در دیتابیس تأیید شده
+          باشد؛ در غیر این صورت دلیل خطا نشان داده می‌شود.
+        </p>
+
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
