@@ -86,10 +86,14 @@ export function InspectorPane() {
         setSavedOk(false);
       }
       if (d?.type === "ve:map" && d.map) {
-        void adminWriteSetting(VE_SETTING_KEY, { map: d.map });
-        setPublished(true);
-        window.setTimeout(() => setPublished(false), 2000);
+        void (async () => {
+          const res = await adminWriteSetting(VE_SETTING_KEY, { map: d.map });
+          if (!res.ok) return;
+          setPublished(true);
+          window.setTimeout(() => setPublished(false), 2000);
+        })();
       }
+
       if ((d?.type === "ve:ready" || d?.type === "ve:navigate" || d?.type === "ve:inspect-ready") && d.path) {
         setCurrentPath(d.path.replace(/[?&]ve=1/, "").replace(/[?&]inspect=1/, "").replace(/\?$/, "") || "/");
       }

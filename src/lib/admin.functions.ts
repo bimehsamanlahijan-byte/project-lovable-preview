@@ -199,10 +199,18 @@ export const storageTargetInfo = createServerFn({ method: "GET" }).handler(async
 });
 
 export const saveStorageTarget = createServerFn({ method: "POST" })
-  .inputValidator((data: { url: string; serviceKey: string; bucket?: string }) => data)
+  .inputValidator((data: { mode?: "lovable" | "personal"; url: string; serviceKey: string; bucket?: string }) => data)
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { writeStorageTarget, getStorage } = await import("./storage.server");
+    const { writeStorageTarget } = await import("./storage.server");
+
+    // Explicit choice: keep using the backend Lovable created for this project.
+    if ((data.mode ?? "personal") === "lovable") {
+      const res = await writeStorageTarget({ url: "", serviceKey: "", bucket: "site-assets" });
+      if (res.error) return { ok: false as const, error: res.error };
+      return { ok: true as const, warning: null };
+    }
+
     // Accept pasted REST/dashboard URLs too: keep only the project origin.
     let url = (data.url ?? "").trim();
     try {
@@ -215,14 +223,31 @@ export const saveStorageTarget = createServerFn({ method: "POST" })
     if (!/^https:\/\/.+/.test(url)) return { ok: false as const, error: "نشانی پروژه باید با https:// شروع شود." };
     if (serviceKey.length < 20) return { ok: false as const, error: "کلید سرویس‌رول نامعتبر است." };
 
+    // Test the connection BEFORE saving, so no false "saved" message appears.
+    const { createClient } = await import("@supabase/supabase-js");
+    const probe = createClient(url, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { error: probeError } = await probe.storage.from(bucket).list("", { limit: 1 });
+    if (probeError) {
+      return {
+        ok: false as const,
+        error: `اتصال برقرار نشد و ذخیره نشد: ${probeError.message} — نشانی، کلید service_role و نام باکت را بررسی کنید.`,
+      };
+    }
+
     const res = await writeStorageTarget({ url, serviceKey, bucket });
     if (res.error) return { ok: false as const, error: res.error };
 
-    const { client } = await getStorage();
-    const { error } = await client.storage.from(bucket).list("", { limit: 1 });
-    if (error) return { ok: true as const, warning: `ذخیره شد اما دسترسی به باکت خطا داد: ${error.message}` };
+    // Confirm the value really landed in the database before reporting success.
+    const { readStorageTarget } = await import("./storage.server");
+    const saved = await readStorageTarget();
+    if (!saved?.url || !saved.serviceKey) {
+      return { ok: false as const, error: "ذخیره در دیتابیس تأیید نشد (کلید سرور روی Cloudflare تنظیم نشده است)." };
+    }
     return { ok: true as const, warning: null };
   });
+
 
 export const clearStorageTarget = createServerFn({ method: "POST" }).handler(async () => {
   await requireUnlocked();

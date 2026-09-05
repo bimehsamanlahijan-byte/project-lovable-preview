@@ -22,6 +22,7 @@ export function BackendPane() {
   const [status, setStatus] = useState<Status | null>(null);
   const [busy, setBusy] = useState(false);
   const [target, setTarget] = useState<{ custom: boolean; url: string; bucket: string; host: string } | null>(null);
+  const [mode, setMode] = useState<"lovable" | "personal">("lovable");
   const [form, setForm] = useState({ url: "", serviceKey: "", bucket: "site-assets" });
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +30,7 @@ export function BackendPane() {
     try {
       const t = await storageTargetInfo();
       setTarget(t);
+      setMode(t.custom ? "personal" : "lovable");
       setForm((f) => ({ ...f, url: t.url, bucket: t.bucket }));
     } catch {
       /* ignore */
@@ -38,16 +40,17 @@ export function BackendPane() {
   async function save() {
     setSaving(true);
     try {
-      const res = await saveStorageTarget({ data: form });
-      if (!res.ok) notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
-      else
+      const res = await saveStorageTarget({ data: { ...form, mode } });
+      if (!res.ok) {
+        notify({ kind: "error", title: "ذخیره نشد", detail: res.error });
+      } else {
         notify({
-          kind: res.warning ? "error" : "success",
-          title: res.warning ? "با هشدار ذخیره شد" : "اتصال ذخیره شد",
-          detail: res.warning ?? undefined,
+          kind: "success",
+          title: mode === "personal" ? "اتصال شخصی ذخیره و آزمایش شد" : "ذخیره‌سازی روی بک‌اند لاوابل تنظیم شد",
         });
-      await loadTarget();
-      await load();
+        await loadTarget();
+        await load();
+      }
     } catch (e) {
       notify({ kind: "error", title: "خطا", detail: e instanceof Error ? e.message : "" });
     } finally {
@@ -60,12 +63,14 @@ export function BackendPane() {
     try {
       await clearStorageTarget();
       setForm({ url: "", serviceKey: "", bucket: "site-assets" });
+      setMode("lovable");
       notify({ kind: "success", title: "به بک‌اند پیش‌فرض برگشت" });
       await loadTarget();
     } finally {
       setSaving(false);
     }
   }
+
 
   async function load() {
     setBusy(true);
@@ -143,30 +148,48 @@ export function BackendPane() {
           Supabase خودتان، نشانی پروژه و کلید <code>service_role</code> را وارد کنید؛ از آن پس آپلود،
           حذف و مشاهده فایل‌ها از همان اکانت انجام می‌شود.
         </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <input
-            dir="ltr"
-            value={form.url}
-            onChange={(e) => setForm({ ...form, url: e.target.value })}
-            placeholder="https://xxxx.supabase.co"
-            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-          <input
-            dir="ltr"
-            value={form.bucket}
-            onChange={(e) => setForm({ ...form, bucket: e.target.value })}
-            placeholder="site-assets"
-            className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-          <input
-            dir="ltr"
-            type="password"
-            value={form.serviceKey}
-            onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
-            placeholder="service_role secret key"
-            className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
-          />
-        </div>
+        <label className="block space-y-1">
+          <span className="text-[11px] font-bold text-slate-700">فایل‌ها و عکس‌ها کجا ذخیره شوند؟</span>
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value as "lovable" | "personal")}
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800"
+          >
+            <option value="lovable">فضای پیش‌فرض پروژه (ساخته‌شده توسط لاوابل)</option>
+            <option value="personal">اکانت Supabase شخصی خودم</option>
+          </select>
+        </label>
+        {mode === "personal" ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            <input
+              dir="ltr"
+              value={form.url}
+              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              placeholder="https://xxxx.supabase.co"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+            <input
+              dir="ltr"
+              value={form.bucket}
+              onChange={(e) => setForm({ ...form, bucket: e.target.value })}
+              placeholder="site-assets"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+            <input
+              dir="ltr"
+              type="password"
+              value={form.serviceKey}
+              onChange={(e) => setForm({ ...form, serviceKey: e.target.value })}
+              placeholder="service_role secret key"
+              className="sm:col-span-2 rounded-xl border border-slate-300 px-3 py-2 text-xs"
+            />
+          </div>
+        ) : null}
+        <p className="text-[11px] text-slate-500">
+          پیام «ذخیره شد» فقط زمانی نمایش داده می‌شود که اتصال آزمایش و ثبت آن در دیتابیس تأیید شده
+          باشد؛ در غیر این صورت دلیل خطا نشان داده می‌شود.
+        </p>
+
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
