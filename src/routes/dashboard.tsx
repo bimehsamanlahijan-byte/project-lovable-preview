@@ -385,10 +385,14 @@ function VisualEditorPane() {
       const d = e.data as { type?: string; payload?: Selection };
       const m = e.data as { type?: string; map?: OverrideMap };
       if (m?.type === "ve:map" && m.map) {
-        void adminWriteSetting(VE_SETTING_KEY, { map: m.map });
-        setPublished(true);
-        window.setTimeout(() => setPublished(false), 2000);
+        void (async () => {
+          const res = await adminWriteSetting(VE_SETTING_KEY, { map: m.map });
+          if (!res.ok) return;
+          setPublished(true);
+          window.setTimeout(() => setPublished(false), 2000);
+        })();
       }
+
       if (d?.type === "ve:selected" && d.payload) {
         setSel(d.payload);
         setDraft({
