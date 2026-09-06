@@ -22,13 +22,37 @@ export type Override = {
   block?: string;
 };
 
-
-
 export type OverrideMap = Record<string, Override>;
 
 export const VE_STORAGE_KEY = "site-visual-overrides-v1";
 export const VE_EDIT_PARAM = "ve";
 export const VE_SETTING_KEY = "visual_overrides";
+
+/** Strips dangerous tags and attributes from unsafe HTML input. */
+function sanitizeHtml(rawHtml: string): string {
+  if (typeof window === "undefined") return rawHtml;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(rawHtml, "text/html");
+  
+  const dangerousTags = ["script", "iframe", "object", "embed", "base"];
+  for (const tag of dangerousTags) {
+    const elements = doc.querySelectorAll(tag);
+    elements.forEach((el) => el.remove());
+  }
+
+  const allElements = doc.querySelectorAll("*");
+  allElements.forEach((el) => {
+    for (const attr of Array.from(el.attributes)) {
+      const name = attr.name.toLowerCase();
+      const val = attr.value.toLowerCase();
+      if (name.startsWith("on") || val.startsWith("javascript:")) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  });
+
+  return doc.body.innerHTML;
+}
 
 export function loadOverrides(): OverrideMap {
   if (typeof window === "undefined") return {};
@@ -61,7 +85,6 @@ export async function loadRemoteOverrides(): Promise<OverrideMap | null> {
   return ((value as { map?: OverrideMap }).map ?? (value as OverrideMap)) || null;
 }
 
-
 /** Stable-ish CSS path for an element. */
 export function getSelector(el: Element): string {
   const parts: string[] = [];
@@ -84,7 +107,7 @@ export function getSelector(el: Element): string {
 }
 
 export function applyOverride(el: HTMLElement, ov: Override, selector?: string) {
-  if (ov.html !== undefined) el.innerHTML = ov.html;
+  if (ov.html !== undefined) el.innerHTML = sanitizeHtml(ov.html);
   else if (ov.text !== undefined) el.textContent = ov.text;
   if (ov.href !== undefined && ov.href !== "") {
     el.setAttribute("href", ov.href);
@@ -173,7 +196,8 @@ function applyBlock(el: HTMLElement, selector: string, block?: string) {
     node.setAttribute("data-ve-block", key);
     el.insertAdjacentElement("afterend", node);
   }
-  if (node.innerHTML !== block) node.innerHTML = block;
+  const cleanBlock = sanitizeHtml(block);
+  if (node.innerHTML !== cleanBlock) node.innerHTML = cleanBlock;
 }
 
 const VE_HOVER_STYLE_ID = "ve-hover-styles";
@@ -328,7 +352,6 @@ export function enableTouchHover(): () => void {
   };
 }
 
-
 export function applyAll(map: OverrideMap) {
   if (typeof document === "undefined") return;
   for (const [selector, ov] of Object.entries(map)) {
@@ -342,5 +365,3 @@ export function applyAll(map: OverrideMap) {
   }
   applyHoverStyles(map);
 }
-
-

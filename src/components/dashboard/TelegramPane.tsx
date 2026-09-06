@@ -78,6 +78,7 @@ export function TelegramPane() {
     await adminDb("telegram_bots").insert({
       name: "ربات جدید",
       bot_token: "",
+      webhook_secret: crypto.randomUUID().replace(/-/g, ""),
       default_chat_ids: "",
       is_active: true,
     });
@@ -86,11 +87,13 @@ export function TelegramPane() {
 
   async function saveBot(b: TgBot) {
     setBusy(true);
+    const secret = b.webhook_secret || crypto.randomUUID().replace(/-/g, "");
     const res = await adminDb("telegram_bots")
       .update({
         name: b.name,
         bot_token: b.bot_token,
         bot_username: b.bot_username,
+        webhook_secret: secret,
         default_chat_ids: b.default_chat_ids,
         is_active: b.is_active,
       })
@@ -108,8 +111,12 @@ export function TelegramPane() {
   async function hook(b: TgBot) {
     setBusy(true);
     try {
+      const secret = b.webhook_secret || crypto.randomUUID().replace(/-/g, "");
+      if (!b.webhook_secret) {
+        await adminDb("telegram_bots").update({ webhook_secret: secret }).eq("id", b.id);
+      }
       const url = `${origin}/api/public/telegram/webhook/${b.id}`;
-      const res = await telegramSetWebhook({ data: { botId: b.id, url } });
+      const res = await telegramSetWebhook({ data: { botId: b.id, url, secretToken: secret } });
       setMsg(res.ok ? `وب‌هوک متصل شد: ${url}` : "اتصال وب‌هوک ناموفق بود.");
       void load();
     } catch (e) {
