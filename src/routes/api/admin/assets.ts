@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-function clean(p: string) {
-  return p.replace(/^\/+/, "").replace(/\.\./g, "");
+/**
+ * Safely normalizes and sanitizes asset paths to prevent directory traversal attacks.
+ */
+function clean(p: string): string {
+  if (!p || typeof p !== "string") return "";
+  // Remove null bytes and standardize backslashes to forward slashes
+  const sanitized = p.replace(/\0/g, "").replace(/\\/g, "/");
+  // Filter out empty parts, current directory '.' and parent directory '..'
+  const parts = sanitized.split("/").filter((part) => part && part !== "." && part !== "..");
+  return parts.join("/");
 }
 
 /** Password-gated media library: list and delete files in the site-assets bucket. */
@@ -25,7 +33,7 @@ export const Route = createFileRoute("/api/admin/assets")({
         const files = (data ?? [])
           .filter((e) => e.id !== null)
           .map((e) => {
-            const path = folder ? `${folder}/${e.name}` : e.name;
+            const path = clean(folder ? `${folder}/${e.name}` : e.name);
             return {
               name: e.name,
               path,

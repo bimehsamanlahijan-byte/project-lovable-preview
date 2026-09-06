@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual, createHash } from "node:crypto";
 
 type TgUpdate = {
   update_id?: number;
@@ -6,6 +7,14 @@ type TgUpdate = {
   edited_message?: { chat?: { id?: number }; from?: { username?: string }; text?: string };
   channel_post?: { chat?: { id?: number }; text?: string };
 };
+
+/** Constant-time comparison to protect secret token checks against timing attacks. */
+function safeTokenCompare(a: string, b: string): boolean {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const hashA = createHash("sha256").update(a, "utf8").digest();
+  const hashB = createHash("sha256").update(b, "utf8").digest();
+  return timingSafeEqual(hashA, hashB);
+}
 
 /** Incoming Telegram webhook: /api/public/telegram/webhook/<botId> */
 export const Route = createFileRoute("/api/public/telegram/webhook/$botId")({
@@ -23,11 +32,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook/$botId")({
         if (!bot) return new Response("Unknown bot", { status: 404 });
 
         const provided = request.headers.get("X-Telegram-Bot-Api-Secret-Token") ?? "";
-        if (!bot.webhook_secret || provided !== bot.webhook_secret) {
+        if (!bot.webhook_secret || !safeTokenCompare(provided, bot.webhook_secret)) {
           return new Response("Unauthorized", { status: 401 });
         }
 
-        const update = (await request.json()) as TgUpdate;
+        let update: TgUpdate;
+        try {
+          update = (await request.json()) as TgUpdate;
+        } catch {
+          return new Response("Invalid JSON payload", { status: 400 });
+        }
+
         const msg = update.message ?? update.edited_message ?? update.channel_post;
         if (typeof update.update_id !== "number" || !msg) return Response.json({ ok: true });
 
