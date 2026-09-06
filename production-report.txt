@@ -1,0 +1,9 @@
+/drop
+/add       .github\workflows\deploy-cloudflare.yml
+/add       src\components\dashboard\DeployPane.tsx
+/add       src\components\dashboard\TelegramPane.tsx
+/add       src\lib\devops.server.ts
+/add       src\lib\seo-config.ts
+/add       src\lib\telegram.server.ts
+/add       src\lib\visual-editor.ts
+/add       src\routes\api\public\telegram\webhook.$botId.ts
