@@ -8,11 +8,20 @@ export const Route = createFileRoute("/api/admin/backend")({
         const { isUnlocked, ADMIN_TABLES } = await import("@/lib/dashboard-auth.server");
         if (!(await isUnlocked())) return new Response("Unauthorized", { status: 401 });
 
+        const {
+          getSessionSecret,
+          getSupabasePublishableKey,
+          getSupabaseServiceKey,
+          getSupabaseUrl,
+          loadRuntimeEnv,
+        } = await import("@/lib/server-env");
+        await loadRuntimeEnv();
+
         const env = {
-          SUPABASE_URL: Boolean(process.env["SUPABASE_URL"]),
-          SUPABASE_PUBLISHABLE_KEY: Boolean(process.env["SUPABASE_PUBLISHABLE_KEY"]),
-          SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env["SUPABASE_SERVICE_ROLE_KEY"]),
-          SESSION_SECRET: Boolean(process.env["SESSION_SECRET"]),
+          SUPABASE_URL: Boolean(getSupabaseUrl()),
+          SUPABASE_PUBLISHABLE_KEY: Boolean(getSupabasePublishableKey()),
+          SUPABASE_SERVICE_ROLE_KEY: Boolean(getSupabaseServiceKey()),
+          SESSION_SECRET: Boolean(getSessionSecret()),
         };
 
         if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -26,7 +35,8 @@ export const Route = createFileRoute("/api/admin/backend")({
         }
 
         try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const supabaseAdmin = await getSupabaseAdmin();
           const { data: buckets } = await supabaseAdmin.storage.listBuckets();
 
           const tables: { table: string; count: number | null }[] = [];

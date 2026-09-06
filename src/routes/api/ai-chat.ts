@@ -47,11 +47,10 @@ export const Route = createFileRoute("/api/ai-chat")({
         let knowledge = "";
         try {
           const { createClient } = await import("@supabase/supabase-js");
-          const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"];
-          const key =
-            process.env["SUPABASE_PUBLISHABLE_KEY"] ||
-            process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
-            process.env["SUPABASE_ANON_KEY"];
+          const { getSupabasePublishableKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
+          await loadRuntimeEnv();
+          const url = getSupabaseUrl();
+          const key = getSupabasePublishableKey();
           if (url && key) {
             const db = createClient(url, key, {
               auth: { persistSession: false, autoRefreshToken: false },

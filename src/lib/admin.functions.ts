@@ -18,7 +18,10 @@ export const dashboardStatus = createServerFn({ method: "GET" }).handler(async (
 export const unlockDashboard = createServerFn({ method: "POST" })
   .inputValidator((data: { password: string }) => data)
   .handler(async ({ data }) => {
-    if (!process.env["SESSION_SECRET"] || process.env["SESSION_SECRET"].length < 32) {
+    const { getSessionSecret, loadRuntimeEnv } = await import("./server-env");
+    await loadRuntimeEnv();
+    const sessionSecret = getSessionSecret();
+    if (!sessionSecret || sessionSecret.length < 32) {
       return { ok: false as const, reason: "no-session-secret" as const };
     }
     try {
@@ -175,7 +178,8 @@ export const adminSignedUrl = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireUnlocked();
     if (!["customer-documents", "site-assets"].includes(data.bucket)) throw new Error("BAD_BUCKET");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = await getSupabaseAdmin();
     const { data: res, error } = await supabaseAdmin.storage
       .from(data.bucket)
       .createSignedUrl(data.path, data.expiresIn ?? 300);
@@ -193,7 +197,7 @@ export const storageTargetInfo = createServerFn({ method: "GET" }).handler(async
     custom: Boolean(t?.url && t?.serviceKey),
     url: t?.url ?? "",
     bucket: t?.bucket ?? "site-assets",
-    host: t?.url ? safeHost(t.url) : safeHost(process.env["SUPABASE_URL"] ?? ""),
+    host: t?.url ? safeHost(t.url) : safeHost((await import("./server-env")).getSupabaseUrl() ?? ""),
     updatedAt: t?.updatedAt ?? null,
   };
 });

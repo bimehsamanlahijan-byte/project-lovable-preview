@@ -13,7 +13,9 @@ export const Route = createFileRoute("/api/admin/upload")({
           const { readStorageTarget } = await import("@/lib/storage.server");
           const override = await readStorageTarget();
           const hasOverride = Boolean(override?.url && override?.serviceKey);
-          if (!hasOverride && (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_SERVICE_ROLE_KEY"])) {
+          const { getSupabaseServiceKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
+          await loadRuntimeEnv();
+          if (!hasOverride && (!getSupabaseUrl() || !getSupabaseServiceKey())) {
             return Response.json(
               {
                 error:

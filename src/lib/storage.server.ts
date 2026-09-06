@@ -44,12 +44,14 @@ export async function getStorage(): Promise<{
       host: safeHost(target.url),
     };
   }
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseUrl } = await import("./server-env");
+  const supabaseAdmin = await getSupabaseAdmin();
   return {
     client: supabaseAdmin as unknown as SupabaseClient,
     bucket: "site-assets",
     custom: false,
-    host: safeHost(process.env["SUPABASE_URL"] ?? ""),
+    host: safeHost(getSupabaseUrl() ?? ""),
   };
 }
 

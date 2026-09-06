@@ -35,8 +35,10 @@ export const Route = createFileRoute("/api/consult")({
 
         try {
           const { createClient } = await import("@supabase/supabase-js");
-          const url = process.env.SUPABASE_URL!;
-          const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const { getSupabaseServiceKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
+          await loadRuntimeEnv();
+          const url = getSupabaseUrl()!;
+          const key = getSupabaseServiceKey()!;
           const supabase = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 
           const { error } = await supabase.from("contact_messages").insert({

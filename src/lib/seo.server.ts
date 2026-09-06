@@ -1,15 +1,16 @@
 import { DEFAULT_SEO, SEO_SETTING_KEY, type SeoConfig } from "./seo-config";
+import { getSupabasePublishableKey, getSupabaseUrl, loadRuntimeEnv } from "./server-env";
 
 /** Reads the dashboard-managed SEO settings with the public (anon) key. */
 export async function readSeoConfig(): Promise<SeoConfig> {
   try {
-    const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
-    const key =
-      process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+    await loadRuntimeEnv();
+    const url = getSupabaseUrl();
+    const key = getSupabasePublishableKey();
     if (!url || !key) return DEFAULT_SEO;
     const res = await fetch(
       `${url}/rest/v1/site_settings?select=value&key=eq.${SEO_SETTING_KEY}&limit=1`,
-      { headers: { apikey: key, Accept: "application/json" } },
+      { headers: { apikey: key, Accept: "application/json" }, cache: "no-store" },
     );
     if (!res.ok) return DEFAULT_SEO;
     const rows = (await res.json()) as Array<{ value?: Partial<SeoConfig> }>;

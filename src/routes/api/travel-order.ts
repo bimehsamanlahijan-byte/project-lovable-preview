@@ -24,10 +24,6 @@ function trackingCode() {
   return "TRV-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(Math.random() * 900 + 100);
 }
 
-function sanitizeText(str: string): string {
-  return str.replace(/[\0\x01-\x08\x0B\x0C\x0E-\x1F]/g, "");
-}
-
 export const Route = createFileRoute("/api/travel-order")({
   server: {
     handlers: {
@@ -47,7 +43,7 @@ export const Route = createFileRoute("/api/travel-order")({
 
         const d = parsed.data;
         const code = trackingCode();
-        const description = sanitizeText([
+        const description = [
           `کد پیگیری: ${code}`,
           `مقصد: ${d.zoneLabel}`,
           `مدت سفر: ${d.durationLabel}`,
@@ -61,11 +57,13 @@ export const Route = createFileRoute("/api/travel-order")({
           d.note ? `توضیحات: ${d.note}` : "",
         ]
           .filter(Boolean)
-          .join("\n"));
+          .join("\n");
 
         try {
           const { createClient } = await import("@supabase/supabase-js");
-          const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+          const { getSupabaseServiceKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
+          await loadRuntimeEnv();
+          const supabase = createClient(getSupabaseUrl()!, getSupabaseServiceKey()!, {
             auth: { autoRefreshToken: false, persistSession: false },
           });
           const { error } = await supabase.from("contact_messages").insert({

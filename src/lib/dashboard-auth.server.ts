@@ -1,18 +1,20 @@
 import { useSession } from "@tanstack/react-start/server";
 import { createHash, timingSafeEqual } from "node:crypto";
+import { envValue, getSessionSecret, loadRuntimeEnv } from "./server-env";
 
 export type GateSession = { unlocked?: boolean };
 
 function sessionConfig() {
   return {
-    password: process.env["SESSION_SECRET"]!,
+    password: getSessionSecret()!,
     name: "azarakhsh-dashboard",
     maxAge: 60 * 60 * 24 * 7,
     cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
   };
 }
 
-export function getGateSession() {
+export async function getGateSession() {
+  await loadRuntimeEnv();
   return useSession<GateSession>(sessionConfig());
 }
 
@@ -23,7 +25,8 @@ export function passwordMatches(input: string, expected: string): boolean {
 }
 
 export async function isUnlocked(): Promise<boolean> {
-  const secret = process.env["SESSION_SECRET"];
+  await loadRuntimeEnv();
+  const secret = getSessionSecret();
   if (!secret || secret.length < 32) return false;
   try {
     const session = await getGateSession();
@@ -43,7 +46,8 @@ export async function readPrivateSetting<T>(key: string): Promise<T | null> {
   // Never throw: when the service-role key is missing on the Worker we fall back
   // to the DASHBOARD_PASSWORD env var instead of breaking the login request.
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = await getSupabaseAdmin();
     const { data } = await supabaseAdmin
       .from("admin_private_settings" as never)
       .select("value")
@@ -58,7 +62,8 @@ export async function readPrivateSetting<T>(key: string): Promise<T | null> {
 
 export async function writePrivateSetting(key: string, value: unknown) {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = await getSupabaseAdmin();
     const { error } = await supabaseAdmin
       .from("admin_private_settings" as never)
       .upsert({ key, value, updated_at: new Date().toISOString() } as never, { onConflict: "key" });
@@ -93,7 +98,7 @@ export async function verifyDashboardPassword(input: string): Promise<
     return (await bcrypt.compare(plainInput, stored.hash)) ? { ok: true } : { ok: false };
   }
 
-  const envPassword = process.env["DASHBOARD_PASSWORD"];
+  const envPassword = envValue("DASHBOARD_PASSWORD");
   if (!envPassword) return { ok: false, reason: "not-configured" };
   if (!passwordMatches(plainInput, envPassword)) return { ok: false };
   await writePrivateSetting(PASSWORD_KEY, {
@@ -113,7 +118,7 @@ export async function setDashboardPassword(next: string) {
 export async function dashboardPasswordSource(): Promise<"database" | "env" | "none"> {
   const stored = await readPrivateSetting<{ hash?: string }>(PASSWORD_KEY);
   if (stored?.hash) return "database";
-  return process.env["DASHBOARD_PASSWORD"] ? "env" : "none";
+  return envValue("DASHBOARD_PASSWORD") ? "env" : "none";
 }
 
 
@@ -156,7 +161,18 @@ export async function runAdminOp(op: AdminOp) {
   if (!(ADMIN_TABLES as readonly string[]).includes(op.table)) {
     throw new Error("TABLE_NOT_ALLOWED");
   }
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin, hasServiceKey } = await import("@/integrations/supabase/client.server");
+  if (!(await hasServiceKey())) {
+    return {
+      data: null as unknown,
+      count: null as number | null,
+      error: {
+        message:
+          "کلید سرور بک‌اند (SUPABASE_SERVICE_ROLE_KEY) در محیط اجرا ثبت نشده است؛ به همین دلیل تغییرات ذخیره نمی‌شود. این مقدار را در Secrets همان Worker/Pages در Cloudflare ثبت و دوباره Deploy کنید.",
+      },
+    };
+  }
+  const supabaseAdmin = await getSupabaseAdmin();
   const from = supabaseAdmin.from(op.table as never);
   let q: any;
 

@@ -52,6 +52,14 @@
 - داده ساختاریافته `WebSite` و `SiteNavigationElement` در صفحه اصلی درج می‌شود تا گوگل صفحات انتخابی را به‌عنوان سایت‌لینک زیر دامنه اصلی نشان دهد.
 - پس از اتصال دامنه در Cloudflare: آدرس دامنه را در پیشخوان ثبت کنید، سپس در Google Search Console دامنه را تأیید و `https://دامنه/sitemap.xml` را ثبت کنید.
 
+## ۶.۱) رفع مشکل «ذخیره نشدن تغییرات پیشخوان» روی Cloudflare
+همه ذخیره‌سازی‌های پیشخوان (ویرایشگر بصری، سئو و نتایج گوگل، منوها، رسانه‌ها) با «کلید سرور» بک‌اند انجام می‌شوند.
+- کد اکنون این کلید را هم از `process.env` و هم از Bindings/Secrets خود Worker می‌خواند و نام‌های جایگزین را هم می‌پذیرد: `SUPABASE_SERVICE_ROLE_KEY`، `SUPABASE_SERVICE_KEY`، `SUPABASE_SECRET_KEY`، `SUPABASE_SERVICE_ROLE`، `SERVICE_ROLE_KEY`.
+- نشانی بک‌اند از `SUPABASE_URL` یا `VITE_SUPABASE_URL` و کلید عمومی از `SUPABASE_PUBLISHABLE_KEY`/`VITE_SUPABASE_PUBLISHABLE_KEY`/`SUPABASE_ANON_KEY` خوانده می‌شود.
+- اگر کلید سرور اصلاً ثبت نشده باشد، پیشخوان به‌جای «ذخیره شد» پیام روشن فارسی نشان می‌دهد و توضیح می‌دهد کدام متغیر کم است.
+- نشست پیشخوان از `SESSION_SECRET` یا `DASHBOARD_SESSION_SECRET` (حداقل ۳۲ نویسه) استفاده می‌کند.
+پس از ثبت این مقادیر در Settings → Variables and Secrets، حتماً یک Deploy تازه انجام دهید.
+
 ## ۷) انتشار خودکار از گیت‌هاب (CI/CD)
 فایل `.github/workflows/deploy-cloudflare.yml` هر push به شاخه `main` را می‌گیرد، پروژه را `bun run build` می‌کند و با `npx wrangler deploy --config dist/server/wrangler.json` روی Cloudflare منتشر می‌کند.
 
