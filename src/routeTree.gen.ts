@@ -28,6 +28,7 @@ import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiPublicEnvCheckRouteImport } from './routes/api/public/env-check'
 import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
 import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
 
@@ -126,6 +127,11 @@ const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   path: '/api/admin/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEnvCheckRoute = ApiPublicEnvCheckRouteImport.update({
+  id: '/api/public/env-check',
+  path: '/api/public/env-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAssetSplatRoute = ApiPublicAssetSplatRouteImport.update({
   id: '/api/public/asset/$',
   path: '/api/public/asset/$',
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/env-check'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesByTo: FileRoutesByTo
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/env-check'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   id:
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/env-check'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesById: FileRoutesById
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   ApiAdminAssetsRoute: typeof ApiAdminAssetsRoute
   ApiAdminBackendRoute: typeof ApiAdminBackendRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
+  ApiPublicEnvCheckRoute: typeof ApiPublicEnvCheckRoute
   ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
   ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -439,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/env-check': {
+      id: '/api/public/env-check'
+      path: '/api/public/env-check'
+      fullPath: '/api/public/env-check'
+      preLoaderRoute: typeof ApiPublicEnvCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/asset/$': {
       id: '/api/public/asset/$'
       path: '/api/public/asset/$'
@@ -476,6 +496,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAssetsRoute: ApiAdminAssetsRoute,
   ApiAdminBackendRoute: ApiAdminBackendRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
+  ApiPublicEnvCheckRoute: ApiPublicEnvCheckRoute,
   ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
   ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
 }

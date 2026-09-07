@@ -111,12 +111,8 @@ export function TelegramPane() {
   async function hook(b: TgBot) {
     setBusy(true);
     try {
-      const secret = b.webhook_secret || crypto.randomUUID().replace(/-/g, "");
-      if (!b.webhook_secret) {
-        await adminDb("telegram_bots").update({ webhook_secret: secret }).eq("id", b.id);
-      }
       const url = `${origin}/api/public/telegram/webhook/${b.id}`;
-      const res = await telegramSetWebhook({ data: { botId: b.id, url, secretToken: secret } });
+      const res = await telegramSetWebhook({ data: { botId: b.id, url } });
       setMsg(res.ok ? `وب‌هوک متصل شد: ${url}` : "اتصال وب‌هوک ناموفق بود.");
       void load();
     } catch (e) {

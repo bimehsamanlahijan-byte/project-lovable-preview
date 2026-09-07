@@ -24,6 +24,21 @@
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Text | کلید عمومی سمت مرورگر |
 | `VITE_SUPABASE_PROJECT_ID` | Text | شناسه پروژه سرویس داده |
 
+
+### مقادیر فعلی سرویس داده (پروژه شخصی)
+از تاریخ ۲۰۲۶-۰۹-۰۷ پروژه روی دیتابیس شخصی زیر کار می‌کند:
+
+- `SUPABASE_URL` و `VITE_SUPABASE_URL` = `https://zgqdludxnmzqwiyprxoq.supabase.co`
+- `SUPABASE_PROJECT_ID` و `VITE_SUPABASE_PROJECT_ID` = `zgqdludxnmzqwiyprxoq`
+- `SUPABASE_PUBLISHABLE_KEY` و `VITE_SUPABASE_PUBLISHABLE_KEY` = کلید anon همان پروژه
+- `SUPABASE_SERVICE_ROLE_KEY` = کلید service_role همان پروژه (Secret)
+
+ساختار جدول‌ها با فایل `supabase/personal-db-setup.sql` ساخته شده است.
+پس از تغییر این مقادیر در Cloudflare حتماً یک Deploy تازه انجام دهید.
+
+سلامت تنظیمات را می‌توانید از نشانی `/api/public/env-check` ببینید؛ باید
+`projectRef` و `serviceKeyRef` یکسان و `dbProbe.status` برابر ۲۰۰ باشد.
+
 نکته: متغیرهای `VITE_*` در زمان بیلد درون کد قرار می‌گیرند، بنابراین پس از تغییر آن‌ها باید دوباره Deploy انجام شود.
 
 ## ۳) دامنه اختصاصی
