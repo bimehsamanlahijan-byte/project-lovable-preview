@@ -16,6 +16,7 @@ import { VisualEditorRuntime } from "../components/VisualEditorRuntime";
 import { FloatingWidgets } from "../components/FloatingWidgets";
 import { BrandingHead } from "../components/BrandingHead";
 import { SplashScreen } from "../components/SplashScreen";
+import { publicEnvScript } from "../lib/public-env";
 
 function NotFoundComponent() {
   return (
@@ -109,6 +110,8 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* Runtime public config (Cloudflare Worker vars) — must run before the app bundle. */}
+        <script dangerouslySetInnerHTML={{ __html: publicEnvScript() }} />
         <HeadContent />
       </head>
       <body>
