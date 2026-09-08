@@ -47,27 +47,13 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
         run: bun run build
 
-      - name: Fix wrangler config (worker name, nodejs_compat, assets path)
+      - name: Generate wrangler config (worker name, nodejs_compat, assets path)
         env:
           WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
-        run: |
-          test -f dist/server/wrangler.json
-          test -d dist/client
-          node -e '
-            const fs = require("fs");
-            const p = "dist/server/wrangler.json";
-            const c = JSON.parse(fs.readFileSync(p, "utf8"));
-            if (process.env.WORKER_NAME) c.name = process.env.WORKER_NAME;
-            const flags = new Set(c.compatibility_flags || []);
-            flags.add("nodejs_compat");
-            c.compatibility_flags = [...flags];
-            c.assets = { ...(c.assets || {}), binding: "ASSETS", directory: "../client" };
-            fs.writeFileSync(p, JSON.stringify(c, null, 2));
-            console.log(c);
-          '
+        run: node scripts/make-wrangler-config.mjs
 
       - name: Deploy with Wrangler
-        working-directory: dist/server
+        working-directory: dist
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
