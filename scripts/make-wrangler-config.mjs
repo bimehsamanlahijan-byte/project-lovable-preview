@@ -1,18 +1,64 @@
-// Nitro's cloudflare-module preset emits dist/server/index.mjs + dist/client
-// but no wrangler config, so we generate one here at the dist root.
+// Generates the wrangler config next to the real build output.
+// The output directory/entry name comes from the Nitro build manifest (nitro.json),
+// which can be dist/ locally and .output/ elsewhere — never assume a fixed path.
 import fs from "node:fs";
 import path from "node:path";
 
-const distDir = path.resolve("dist");
-const serverEntry = path.join(distDir, "server/index.mjs");
-const clientDir = path.join(distDir, "client");
+const root = process.cwd();
 
-if (!fs.existsSync(serverEntry)) {
-  console.error(`Missing build output: ${serverEntry}. Run \`bun run build\` first.`);
-  process.exit(1);
+function findManifests(dir, depth = 0, found = []) {
+  if (depth > 3) return found;
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return found;
+  }
+  for (const e of entries) {
+    if (e.isFile() && e.name === "nitro.json") found.push(dir);
+    else if (
+      e.isDirectory() &&
+      e.name !== "node_modules" &&
+      e.name !== "src" &&
+      !e.name.startsWith(".git")
+    ) {
+      findManifests(path.join(dir, e.name), depth + 1, found);
+    }
+  }
+  return found;
 }
-if (!fs.existsSync(clientDir)) {
-  console.error(`Missing build output: ${clientDir}. Run \`bun run build\` first.`);
+
+const serverCandidates = ["server/index.mjs", "server/index.js", "index.mjs", "_worker.js"];
+const assetCandidates = ["public", "client", "static", "assets"];
+
+function inspect(outDir) {
+  const main = serverCandidates.find((p) => fs.existsSync(path.join(outDir, p)));
+  const assets = assetCandidates.find((p) => {
+    const full = path.join(outDir, p);
+    return fs.existsSync(full) && fs.statSync(full).isDirectory();
+  });
+  return main && assets ? { outDir, main, assets } : null;
+}
+
+const roots = [...findManifests(root), path.join(root, "dist"), path.join(root, ".output")];
+let resolved = null;
+for (const dir of roots) {
+  const hit = inspect(dir);
+  if (hit) {
+    resolved = hit;
+    break;
+  }
+}
+
+if (!resolved) {
+  console.error("Build output not found. Run `bun run build` first.");
+  for (const dir of [root, path.join(root, "dist"), path.join(root, ".output")]) {
+    try {
+      console.error(`- ${dir}: ${fs.readdirSync(dir).join(", ")}`);
+    } catch {
+      console.error(`- ${dir}: (missing)`);
+    }
+  }
   process.exit(1);
 }
 
@@ -26,7 +72,7 @@ if (!name) {
   process.exit(1);
 }
 
-const configPath = path.join(distDir, "wrangler.json");
+const configPath = path.join(resolved.outDir, "wrangler.json");
 const existing = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, "utf8"))
   : {};
@@ -34,13 +80,20 @@ const existing = fs.existsSync(configPath)
 const config = {
   ...existing,
   name,
-  main: "server/index.mjs",
+  main: resolved.main,
   compatibility_date: existing.compatibility_date ?? "2025-09-01",
   compatibility_flags: [...new Set([...(existing.compatibility_flags ?? []), "nodejs_compat"])],
-  assets: { ...(existing.assets ?? {}), binding: "ASSETS", directory: "./client" },
+  assets: { ...(existing.assets ?? {}), binding: "ASSETS", directory: `./${resolved.assets}` },
   // Never declare vars/secrets here: Cloudflare-side variables must stay untouched.
 };
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 console.log(`Wrote ${configPath}`);
 console.log(JSON.stringify(config, null, 2));
+
+if (process.env.GITHUB_OUTPUT) {
+  fs.appendFileSync(
+    process.env.GITHUB_OUTPUT,
+    `dir=${path.relative(root, resolved.outDir) || "."}\n`,
+  );
+}
