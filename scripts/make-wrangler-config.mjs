@@ -72,7 +72,15 @@ if (!name) {
   process.exit(1);
 }
 
-const configPath = path.join(resolved.outDir, "wrangler.json");
+// The deploy step may run from dist/ (fixed in the workflow file), so always emit
+// the config in dist/ with paths relative to it, pointing at the real output dir.
+const configDir = path.join(root, "dist");
+fs.mkdirSync(configDir, { recursive: true });
+const rel = (p2) => {
+  const r = path.relative(configDir, path.join(resolved.outDir, p2)).split(path.sep).join("/");
+  return r.startsWith(".") ? r : `./${r}`;
+};
+const configPath = path.join(configDir, "wrangler.json");
 const existing = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, "utf8"))
   : {};
@@ -80,10 +88,10 @@ const existing = fs.existsSync(configPath)
 const config = {
   ...existing,
   name,
-  main: resolved.main,
+  main: rel(resolved.main),
   compatibility_date: existing.compatibility_date ?? "2025-09-01",
   compatibility_flags: [...new Set([...(existing.compatibility_flags ?? []), "nodejs_compat"])],
-  assets: { ...(existing.assets ?? {}), binding: "ASSETS", directory: `./${resolved.assets}` },
+  assets: { ...(existing.assets ?? {}), binding: "ASSETS", directory: rel(resolved.assets) },
   // Never declare vars/secrets here: Cloudflare-side variables must stay untouched.
 };
 
@@ -94,6 +102,6 @@ console.log(JSON.stringify(config, null, 2));
 if (process.env.GITHUB_OUTPUT) {
   fs.appendFileSync(
     process.env.GITHUB_OUTPUT,
-    `dir=${path.relative(root, resolved.outDir) || "."}\n`,
+    `dir=dist\n`,
   );
 }
