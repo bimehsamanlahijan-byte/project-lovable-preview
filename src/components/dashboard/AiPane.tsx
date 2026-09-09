@@ -1,7 +1,10 @@
 import { adminDb, adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { useEffect, useState } from "react";
 import { Plus, Save, Trash2, Bot, Loader2 } from "lucide-react";
-import { AI_MODELS, DEFAULT_AI, type AiAssistantSettings } from "@/lib/site-config";
+import { DEFAULT_AI, type AiAssistantSettings } from "@/lib/site-config";
+import { AI_PROVIDERS, getProvider } from "@/lib/ai-providers";
+
+type ProviderStatus = { id: string; hasKey: boolean; missing: string[] };
 
 type Know = { id: string; title: string; content: string; tags: string | null; position: number; is_active: boolean };
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
@@ -14,12 +17,20 @@ export function AiPane() {
   const [test, setTest] = useState("");
   const [testOut, setTestOut] = useState("");
   const [testing, setTesting] = useState(false);
+  const [status, setStatus] = useState<ProviderStatus[]>([]);
 
   useEffect(() => {
     void (async () => {
       setCfg(await adminReadSetting<AiAssistantSettings>("ai_assistant", DEFAULT_AI));
       const { data } = await adminDb("ai_knowledge").select("*").order("position", { ascending: true });
       setRows((data ?? []) as Know[]);
+      try {
+        const res = await fetch("/api/admin/ai-providers");
+        const json = (await res.json()) as { status?: ProviderStatus[] };
+        setStatus(json.status ?? []);
+      } catch {
+        setStatus([]);
+      }
     })();
   }, []);
 
@@ -70,6 +81,9 @@ export function AiPane() {
     }
   }
 
+  const activeProvider = getProvider(cfg.provider);
+  const activeMissing = status.find((s) => s.id === activeProvider.id)?.missing ?? [];
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -87,12 +101,47 @@ export function AiPane() {
 
       <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 grid md:grid-cols-2 gap-4">
         <label className="text-xs">
-          <span className="block font-bold text-slate-600 mb-1">موتور هوش مصنوعی</span>
+          <span className="block font-bold text-slate-600 mb-1">سرویس‌دهنده هوش مصنوعی</span>
+          <select
+            value={cfg.provider ?? "lovable"}
+            onChange={(e) => {
+              const p = getProvider(e.target.value);
+              setCfg({ ...cfg, provider: p.id, model: p.models[0]?.value ?? cfg.model });
+            }}
+            className={inputCls}
+          >
+            {AI_PROVIDERS.map((p) => {
+              const st = status.find((s) => s.id === p.id);
+              const mark = st ? (st.missing.length === 0 ? "✓" : "•") : "";
+              return (
+                <option key={p.id} value={p.id}>{`${mark} ${p.label}`}</option>
+              );
+            })}
+          </select>
+          <span className="block text-[10px] text-slate-400 mt-1 leading-5">{activeProvider.note}</span>
+          {activeMissing.length > 0 && (
+            <span className="block text-[10px] text-rose-600 mt-1 leading-5">
+              برای فعال شدن این سرویس، متغیر(های) {activeMissing.join("، ")} را در تنظیمات Cloudflare (Workers → Settings → Variables) ثبت کنید.
+            </span>
+          )}
+        </label>
+        <label className="text-xs">
+          <span className="block font-bold text-slate-600 mb-1">مدل</span>
           <select value={cfg.model} onChange={(e) => setCfg({ ...cfg, model: e.target.value })} className={inputCls}>
-            {AI_MODELS.map((m) => (
+            {activeProvider.models.map((m) => (
               <option key={m.value} value={m.value}>{m.label}</option>
             ))}
+            {!activeProvider.models.some((m) => m.value === cfg.model) && (
+              <option value={cfg.model}>{cfg.model}</option>
+            )}
           </select>
+          <input
+            dir="ltr"
+            value={cfg.model}
+            onChange={(e) => setCfg({ ...cfg, model: e.target.value })}
+            placeholder="نام مدل دلخواه"
+            className={`${inputCls} mt-2`}
+          />
         </label>
         <label className="text-xs">
           <span className="block font-bold text-slate-600 mb-1">عنوان پنجره چت</span>

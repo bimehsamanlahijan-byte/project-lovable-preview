@@ -8,7 +8,12 @@ import {
 } from "@/lib/site-config";
 import { SocialIcon } from "./SocialIcon";
 
-export function SocialBar({ className = "" }: { className?: string }) {
+/**
+ * Public site: icons only — the username is never printed next to the icon.
+ * The dashboard preview passes `adminPreview` so the site owner can still see
+ * which account each icon points to.
+ */
+export function SocialBar({ className = "", adminPreview = false }: { className?: string; adminPreview?: boolean }) {
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [layout, setLayout] = useState<SocialLayout>(DEFAULT_SOCIAL_LAYOUT);
 
@@ -52,7 +57,8 @@ export function SocialBar({ className = "" }: { className?: string }) {
           href={l.url}
           target={l.url.startsWith("http") ? "_blank" : undefined}
           rel="noopener noreferrer"
-          title={`${l.label}${l.username ? ` — ${l.username}` : ""}`}
+          title={l.label}
+          aria-label={l.label}
           className="flex items-center gap-2 hover:opacity-80 transition"
         >
           <SocialIcon
@@ -63,7 +69,7 @@ export function SocialBar({ className = "" }: { className?: string }) {
             shape={layout.shape}
             label={l.label}
           />
-          {(layout.showLabels || layout.showUsernames) && (
+          {adminPreview && (layout.showLabels || layout.showUsernames) && (
             <span className="text-xs leading-5">
               {layout.showLabels && <span className="font-bold">{l.label}</span>}
               {layout.showUsernames && l.username && (

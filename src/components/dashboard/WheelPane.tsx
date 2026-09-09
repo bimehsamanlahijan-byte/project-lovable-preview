@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Save, Trash2, Upload } from "lucide-react";
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
-import { DEFAULT_WHEEL_INTRO, WHEEL_INNER_MODES, type WheelIntroSettings } from "@/lib/site-config";
+import {
+  DEFAULT_WHEEL_BACKGROUND,
+  DEFAULT_WHEEL_INTRO,
+  WHEEL_BG_MODES,
+  WHEEL_INNER_MODES,
+  type WheelBackgroundSettings,
+  type WheelIntroSettings,
+} from "@/lib/site-config";
+import { WheelBackgroundEditor } from "./WheelBackgroundEditor";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
 const cardCls = "bg-white rounded-2xl border border-slate-200 p-5";
@@ -83,6 +91,8 @@ export function WheelPane() {
           e.target.value = "";
         }}
       />
+
+      <WheelBackgroundEditor />
 
       <section className={cardCls}>
         <h2 className="font-extrabold text-[#0b1e3f] mb-1">دکمه شناور «خرید آنلاین»</h2>

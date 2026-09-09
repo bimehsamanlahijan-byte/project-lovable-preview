@@ -14,11 +14,76 @@ const schema = z.object({
 });
 
 type Settings = {
+  provider?: string;
   model?: string;
   systemPrompt?: string;
   temperature?: number;
   enabled?: boolean;
 };
+
+/** Resolves the OpenAI-compatible endpoint + auth headers for a provider. */
+async function resolveTarget(providerId: string): Promise<
+  | { ok: true; url: string; headers: Record<string, string> }
+  | { ok: false; error: string }
+> {
+  const { envValue, loadRuntimeEnv } = await import("@/lib/server-env");
+  const { getProvider } = await import("@/lib/ai-providers");
+  await loadRuntimeEnv();
+
+  const provider = getProvider(providerId);
+  const key = envValue(...provider.keyNames);
+  if (!key) return { ok: false, error: `missing_key_${provider.keyNames[0]}` };
+
+  const bearer = { "Content-Type": "application/json", Authorization: `Bearer ${key}` };
+
+  switch (provider.id) {
+    case "lovable":
+      return {
+        ok: true,
+        url: "https://ai.gateway.lovable.dev/v1/chat/completions",
+        headers: {
+          "Content-Type": "application/json",
+          "Lovable-API-Key": key,
+          "X-Lovable-AIG-SDK": "fetch",
+        },
+      };
+    case "cloudflare": {
+      const account = envValue("CLOUDFLARE_ACCOUNT_ID");
+      if (!account) return { ok: false, error: "missing_key_CLOUDFLARE_ACCOUNT_ID" };
+      return {
+        ok: true,
+        url: `https://api.cloudflare.com/client/v4/accounts/${account}/ai/v1/chat/completions`,
+        headers: bearer,
+      };
+    }
+    case "google":
+      return {
+        ok: true,
+        url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        headers: bearer,
+      };
+    case "groq":
+      return { ok: true, url: "https://api.groq.com/openai/v1/chat/completions", headers: bearer };
+    case "openrouter":
+      return { ok: true, url: "https://openrouter.ai/api/v1/chat/completions", headers: bearer };
+    case "mistral":
+      return { ok: true, url: "https://api.mistral.ai/v1/chat/completions", headers: bearer };
+    case "deepseek":
+      return { ok: true, url: "https://api.deepseek.com/v1/chat/completions", headers: bearer };
+    case "together":
+      return { ok: true, url: "https://api.together.xyz/v1/chat/completions", headers: bearer };
+    case "cerebras":
+      return { ok: true, url: "https://api.cerebras.ai/v1/chat/completions", headers: bearer };
+    case "github":
+      return { ok: true, url: "https://models.github.ai/inference/chat/completions", headers: bearer };
+    case "nvidia":
+      return { ok: true, url: "https://integrate.api.nvidia.com/v1/chat/completions", headers: bearer };
+    case "huggingface":
+      return { ok: true, url: "https://router.huggingface.co/v1/chat/completions", headers: bearer };
+    default:
+      return { ok: false, error: "unknown_provider" };
+  }
+}
 
 export const Route = createFileRoute("/api/ai-chat")({
   server: {
@@ -38,9 +103,6 @@ export const Route = createFileRoute("/api/ai-chat")({
         }
         const parsed = schema.safeParse(raw);
         if (!parsed.success) return json(400, { ok: false, error: "validation_failed" });
-
-        const apiKey = process.env["LOVABLE_API_KEY"];
-        if (!apiKey) return json(500, { ok: false, error: "ai_not_configured" });
 
         // Load assistant settings + approved knowledge from the database (public read).
         let settings: Settings = {};
@@ -86,30 +148,35 @@ export const Route = createFileRoute("/api/ai-chat")({
           .filter(Boolean)
           .join("\n\n");
 
+        const providerId = settings.provider || "lovable";
+        const target = await resolveTarget(providerId);
+        if (!target.ok) return json(500, { ok: false, error: target.error });
+
         const model = settings.model || "google/gemini-3.6-flash";
         const body: Record<string, unknown> = {
           model,
           messages: [{ role: "system", content: systemPrompt }, ...parsed.data.messages],
         };
         if (typeof settings.temperature === "number") body.temperature = settings.temperature;
-        if (model.startsWith("openai/gpt-5.6")) body.reasoning_effort = "none";
+        if (providerId === "lovable" && model.startsWith("openai/gpt-5")) {
+          delete body.temperature;
+          if (model.startsWith("openai/gpt-5.6")) body.reasoning_effort = "none";
+        }
 
         try {
-          const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          const res = await fetch(target.url, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Lovable-API-Key": apiKey,
-              "X-Lovable-AIG-SDK": "fetch",
-            },
+            headers: target.headers,
             body: JSON.stringify(body),
           });
 
           if (!res.ok) {
             const text = await res.text();
-            console.error("[ai-chat] gateway error", res.status, text);
+            console.error("[ai-chat] gateway error", providerId, res.status, text);
             if (res.status === 429) return json(429, { ok: false, error: "rate_limited" });
             if (res.status === 402) return json(402, { ok: false, error: "credits_exhausted" });
+            if (res.status === 401 || res.status === 403)
+              return json(502, { ok: false, error: "provider_auth_failed" });
             return json(502, { ok: false, error: "gateway_error" });
           }
 
@@ -118,7 +185,7 @@ export const Route = createFileRoute("/api/ai-chat")({
           };
           const reply = data.choices?.[0]?.message?.content?.trim();
           if (!reply) return json(502, { ok: false, error: "empty_reply" });
-          return json(200, { ok: true, reply, model });
+          return json(200, { ok: true, reply, model, provider: providerId });
         } catch (e) {
           console.error("[ai-chat] request failed", e);
           return json(502, { ok: false, error: "gateway_unreachable" });

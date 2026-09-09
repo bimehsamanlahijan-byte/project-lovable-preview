@@ -139,17 +139,17 @@ export function SocialPane() {
         </label>
         <label className="text-xs flex items-end gap-2">
           <input type="checkbox" checked={layout.showLabels} onChange={(e) => setLayout({ ...layout, showLabels: e.target.checked })} />
-          <span className="font-bold text-slate-600">نمایش نام شبکه</span>
+          <span className="font-bold text-slate-600">نمایش نام شبکه (فقط در پیشخوان)</span>
         </label>
         <label className="text-xs flex items-end gap-2">
           <input type="checkbox" checked={layout.showUsernames} onChange={(e) => setLayout({ ...layout, showUsernames: e.target.checked })} />
-          <span className="font-bold text-slate-600">نمایش نام کاربری</span>
+          <span className="font-bold text-slate-600">نمایش نام کاربری (فقط در پیشخوان)</span>
         </label>
       </div>
 
       <div className="bg-[#0b1e3f] rounded-2xl p-5 mb-6 text-white">
-        <div className="text-xs font-bold mb-3 opacity-80">پیش‌نمایش فوتر</div>
-        <SocialBar key={nonce} />
+        <div className="text-xs font-bold mb-3 opacity-80">پیش‌نمایش (فقط برای شما — در سایت تنها آیکن دیده می‌شود)</div>
+        <SocialBar key={nonce} adminPreview />
       </div>
 
       <div className="space-y-3">

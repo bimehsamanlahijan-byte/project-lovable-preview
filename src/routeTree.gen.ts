@@ -25,6 +25,7 @@ import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
 import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
 import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
 import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
+import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-providers'
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
@@ -112,6 +113,11 @@ const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
   path: '/insurance/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAiProvidersRoute = ApiAdminAiProvidersRouteImport.update({
+  id: '/api/admin/ai-providers',
+  path: '/api/admin/ai-providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminAssetsRoute = ApiAdminAssetsRouteImport.update({
   id: '/api/admin/assets',
   path: '/api/admin/assets',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services': typeof EServicesIndexRoute
   '/insurance': typeof InsuranceIndexRoute
+  '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   '/insurance/travel': typeof InsuranceTravelRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
+  '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services/'
     | '/insurance/'
+    | '/api/admin/ai-providers'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services'
     | '/insurance'
+    | '/api/admin/ai-providers'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/insurance/travel'
     | '/e-services/'
     | '/insurance/'
+    | '/api/admin/ai-providers'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   InsuranceTravelRoute: typeof InsuranceTravelRoute
   EServicesIndexRoute: typeof EServicesIndexRoute
   InsuranceIndexRoute: typeof InsuranceIndexRoute
+  ApiAdminAiProvidersRoute: typeof ApiAdminAiProvidersRoute
   ApiAdminAssetsRoute: typeof ApiAdminAssetsRoute
   ApiAdminBackendRoute: typeof ApiAdminBackendRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
@@ -431,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsuranceTravelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/ai-providers': {
+      id: '/api/admin/ai-providers'
+      path: '/api/admin/ai-providers'
+      fullPath: '/api/admin/ai-providers'
+      preLoaderRoute: typeof ApiAdminAiProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/assets': {
       id: '/api/admin/assets'
       path: '/api/admin/assets'
@@ -493,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   InsuranceTravelRoute: InsuranceTravelRoute,
   EServicesIndexRoute: EServicesIndexRoute,
   InsuranceIndexRoute: InsuranceIndexRoute,
+  ApiAdminAiProvidersRoute: ApiAdminAiProvidersRoute,
   ApiAdminAssetsRoute: ApiAdminAssetsRoute,
   ApiAdminBackendRoute: ApiAdminBackendRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { CityscapeBackdrop } from "./CityscapeBackdrop";
+import { WheelBackground } from "./WheelBackground";
 import { SITE_CONTACT } from "./site-data";
 import { AnnouncementTicker } from "./AnnouncementTicker";
 import { BrandCartBadge } from "./BrandCartBadge";
@@ -24,8 +25,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
-const WHEEL_BG_URL = "https://si8452.ir/img/50a0af3b.png";
 
 const announcements = [
   "بیمه درمان خانواده: «بیمه درمان خانواده سامان، افزایش اطمینان از سلامتی و آرامش خود و خانواده‌مان است.»",
@@ -175,11 +174,7 @@ function WheelSection() {
     <section className="container mx-auto px-4 mt-10 mb-8" dir="rtl">
       <div className="relative overflow-hidden rounded-3xl bg-primary-soft px-4 sm:px-6">
       <CityscapeBackdrop />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url("${WHEEL_BG_URL}")` }}
-      />
+      <WheelBackground />
       <div className="relative z-10 text-center mb-6 pt-6">
         <h2 className="font-extrabold text-foreground leading-relaxed tracking-tight whitespace-nowrap text-[clamp(1.1rem,3.2vw,2rem)]">
           ارائه کلیه <span className="text-primary">خدمات بیمه‌ای</span> در سریع‌ترین زمان ممکن

@@ -12,6 +12,8 @@ export type SocialLayout = {
 
 export type AiAssistantSettings = {
   enabled: boolean;
+  /** Provider id from src/lib/ai-providers.ts (lovable, cloudflare, google, ...). */
+  provider: string;
   model: string;
   title: string;
   welcome: string;
@@ -51,6 +53,7 @@ export const DEFAULT_SOCIAL_LAYOUT: SocialLayout = {
 
 export const DEFAULT_AI: AiAssistantSettings = {
   enabled: true,
+  provider: "lovable",
   model: "google/gemini-3.6-flash",
   title: "دستیار هوشمند بیمه سامان",
   welcome: "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
@@ -354,3 +357,74 @@ export const DEFAULT_GITHUB_SYNC: GithubSyncSettings = {
   autoSync: false,
   accounts: [],
 };
+
+/* ---------- Wheel section background (editable image / timed slideshow) ---------- */
+export type WheelBgImage = {
+  url: string;
+  label: string;
+  /** Zoom in percent (100 = original cover size). */
+  zoom: number;
+  /** Focal point in percent. */
+  posX: number;
+  posY: number;
+  /** Optional targeting used by the calendar modes. */
+  season?: 0 | 1 | 2 | 3 | null;
+  month?: number | null;
+  hour?: number | null;
+};
+
+export type WheelBackgroundSettings = {
+  enabled: boolean;
+  /** static | interval (timed slideshow) | hourly | daily | monthly | seasonal */
+  mode: "static" | "interval" | "hourly" | "daily" | "monthly" | "seasonal";
+  intervalMs: number;
+  fadeMs: number;
+  fit: "cover" | "contain";
+  /** White veil over the photo so the text stays readable (0..100). */
+  overlay: number;
+  images: WheelBgImage[];
+};
+
+export const DEFAULT_WHEEL_BACKGROUND: WheelBackgroundSettings = {
+  enabled: true,
+  mode: "interval",
+  intervalMs: 8000,
+  fadeMs: 900,
+  fit: "cover",
+  overlay: 25,
+  images: [],
+};
+
+export const WHEEL_BG_MODES = [
+  { v: "static", label: "ثابت (فقط تصویر اول)" },
+  { v: "interval", label: "اسلاید زمان‌دار (لحظه‌ای)" },
+  { v: "hourly", label: "تغییر ساعتی" },
+  { v: "daily", label: "تغییر روزانه" },
+  { v: "monthly", label: "تغییر ماهانه" },
+  { v: "seasonal", label: "تغییر فصلی" },
+] as const;
+
+/** Picks the active background image index for the given time. */
+export function pickWheelBgIndex(cfg: WheelBackgroundSettings, now: Date, tick: number): number {
+  const n = cfg.images.length;
+  if (n === 0) return -1;
+  switch (cfg.mode) {
+    case "static":
+      return 0;
+    case "interval":
+      return tick % n;
+    case "hourly":
+      return now.getHours() % n;
+    case "daily": {
+      const start = new Date(now.getFullYear(), 0, 0);
+      const day = Math.floor((now.getTime() - start.getTime()) / 86400000);
+      return day % n;
+    }
+    case "monthly":
+      return now.getMonth() % n;
+    case "seasonal":
+      return Math.floor(((now.getMonth() + 1) % 12) / 3) % n;
+    default:
+      return 0;
+  }
+}
