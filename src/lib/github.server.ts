@@ -1,4 +1,4 @@
-const GATEWAY = "https://connector-gateway.lovable.dev/github";
+const API_BASE = "https://api.github.com";
 
 export type GithubAccount = {
   id: string;
@@ -11,12 +11,10 @@ export type GithubAccount = {
   isDefault: boolean;
 };
 
-function keys(secretName: string) {
-  const lovableKey = process.env["LOVABLE_API_KEY"];
-  const connectionKey = process.env[secretName] || process.env["GITHUB_API_KEY"];
-  if (!lovableKey) throw new Error("LOVABLE_API_KEY_MISSING");
-  if (!connectionKey) throw new Error(`CONNECTION_KEY_MISSING:${secretName}`);
-  return { lovableKey, connectionKey };
+function token(secretName: string) {
+  const value = process.env[secretName] || process.env["GITHUB_API_KEY"];
+  if (!value) throw new Error(`GITHUB_TOKEN_MISSING:${secretName}`);
+  return value;
 }
 
 export async function githubFetch(
@@ -24,14 +22,14 @@ export async function githubFetch(
   path: string,
   init: { method?: string; body?: unknown } = {},
 ) {
-  const { lovableKey, connectionKey } = keys(secretName);
-  const res = await fetch(`${GATEWAY}/${path.replace(/^\//, "")}`, {
+  const accessToken = token(secretName);
+  const res = await fetch(`${API_BASE}/${path.replace(/^\//, "")}`, {
     method: init.method ?? "GET",
     headers: {
       Accept: "application/vnd.github+json",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${lovableKey}`,
-      "X-Connection-Api-Key": connectionKey,
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": "azarakhsh-dashboard",
     },
     ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) }),
   });
