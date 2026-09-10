@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:54:01.909Z",
+  "exportedAt": "2026-09-10T15:54:39.483Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -399,7 +399,9 @@
             "hoverDeep": false
           },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(2)": {
-            "hover": {},
+            "hover": {
+              "color": "#01164a"
+            },
             "style": {
               "color": "#001200",
               "font-size": "16px",
@@ -698,7 +700,7 @@
           }
         }
       },
-      "updated_at": "2026-09-10T15:53:58.222+00:00"
+      "updated_at": "2026-09-10T15:54:36.64+00:00"
     }
   ]
 }
