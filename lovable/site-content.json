@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:42:53.392Z",
+  "exportedAt": "2026-09-10T15:43:21.558Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -406,7 +406,7 @@
               "text-align": "start",
               "font-family": "Vazirmatn, system-ui, sans-serif",
               "font-weight": "400",
-              "background-color": "rgba(0, 24, 79, 1)"
+              "background-color": "rgba(1, 22, 74, 1)"
             },
             "hoverDeep": false
           },
@@ -675,7 +675,7 @@
           }
         }
       },
-      "updated_at": "2026-09-10T15:42:51.386+00:00"
+      "updated_at": "2026-09-10T15:43:19.476+00:00"
     }
   ]
 }
