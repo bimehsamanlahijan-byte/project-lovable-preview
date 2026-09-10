@@ -24,6 +24,7 @@ import appPromo from "@/assets/app-promo.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { InsuranceWheel } from "@/components/InsuranceWheel";
+import { DarmanetCentersTable } from "@/components/DarmanetCentersTable";
 import { useSiteSetting } from "@/hooks/use-site-setting";
 import { DEFAULT_HERO_SLIDER, type HeroSliderSettings } from "@/lib/site-config";
 
@@ -320,14 +321,14 @@ function EServicesSection() {
   );
 }
 
-/* ---------------- BRANCHES ---------------- */
+/* ---------------- MEDICAL CENTERS ---------------- */
 function BranchesSection() {
   const [sel, setSel] = useState("");
   return (
     <section className="container mx-auto px-4 mt-16 md:mt-24">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-extrabold">شعب و نمایندگان</h2>
-        <p className="mt-2 text-muted-foreground">با بیش از ۱۰۰۰ نمایندگی فعال در سراسر کشور</p>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-red-600">مراکزدرمانی طرف قرارداد</h2>
+        <p className="mt-2 text-muted-foreground">با بیش از ۶۰۰۰ مراکز درمانی طرف قرارداد فعال در سراسر کشور</p>
       </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-muted rounded-3xl p-6">
@@ -336,21 +337,9 @@ function BranchesSection() {
             <option value="">همه استان‌ها</option>
             {provinces.map((p) => <option key={p}>{p}</option>)}
           </select>
-          <div className="mt-6 max-h-72 overflow-auto">
-            {sel ? (
-              <ul className="space-y-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <li key={i} className="bg-card p-4 rounded-xl shadow-soft">
-                    <div className="font-bold text-foreground">نمایندگی شماره {i} - {sel}</div>
-                    <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> آدرس نمایندگی در {sel}</div>
-                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> ۰۲۱-۱۲۳۴۵۶۷۸</div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-center py-8">لطفاً یک استان انتخاب کنید</p>
-            )}
-          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {sel ? `مراکز درمانی استان ${sel} در جدول زیر نمایش داده می‌شود.` : "لطفاً یک استان انتخاب کنید یا از فیلترهای جدول استفاده کنید."}
+          </p>
         </div>
         <div className="bg-gradient-to-br from-primary-soft to-card rounded-3xl p-6 flex items-center justify-center">
           <div className="grid grid-cols-3 gap-2 w-full">
@@ -362,6 +351,7 @@ function BranchesSection() {
           </div>
         </div>
       </div>
+      <DarmanetCentersTable ostan={sel} />
     </section>
   );
 }
