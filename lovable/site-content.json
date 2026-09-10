@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:18:39.004Z",
+  "exportedAt": "2026-09-10T15:19:03.799Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (social_layout)",
   "settings": [
     {
@@ -171,18 +171,6 @@
       "updated_at": "2026-09-08T18:31:34.239+00:00"
     },
     {
-      "key": "social_layout",
-      "value": {
-        "gap": 12,
-        "align": "start",
-        "shape": "circle",
-        "layout": "row",
-        "showLabels": false,
-        "showUsernames": true
-      },
-      "updated_at": "2026-09-10T15:18:38.037+00:00"
-    },
-    {
       "key": "ai_assistant",
       "value": {
         "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
@@ -219,6 +207,18 @@
         "welcome": "به چت روم آنلاین نمایندگی آذرخش خوش آمدید."
       },
       "updated_at": "2026-09-09T15:49:29.452+00:00"
+    },
+    {
+      "key": "social_layout",
+      "value": {
+        "gap": 12,
+        "align": "start",
+        "shape": "circle",
+        "layout": "row",
+        "showLabels": false,
+        "showUsernames": true
+      },
+      "updated_at": "2026-09-10T15:19:02.76+00:00"
     },
     {
       "key": "github_sync",
