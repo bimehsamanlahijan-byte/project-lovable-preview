@@ -642,10 +642,18 @@ function VisualEditorPane() {
                 </Field>
               )}
 
+              {sel.tag === "select" && (
+                <SelectOptionsEditor
+                  html={draft.html ?? ""}
+                  onChange={(h) => field("html", h)}
+                />
+              )}
+
               <Field label="آیکن / SVG / محتوای HTML">
                 <textarea rows={3} value={draft.html ?? ""} onChange={(e) => field("html", e.target.value)}
                   dir="ltr" className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono" />
               </Field>
+
 
               <Field label="لینک (href)">
                 <input value={draft.href ?? ""} onChange={(e) => field("href", e.target.value)} dir="ltr"
@@ -905,6 +913,114 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+
+/* ---------- dropdown (<select>) option editor ---------- */
+type VeOption = { label: string; value: string };
+
+function parseOptions(html: string): VeOption[] {
+  if (typeof window === "undefined" || !html) return [];
+  const doc = new DOMParser().parseFromString(`<select>${html}</select>`, "text/html");
+  return Array.from(doc.querySelectorAll("option")).map((o) => ({
+    label: o.textContent ?? "",
+    value: o.getAttribute("value") ?? "",
+  }));
+}
+
+function serializeOptions(opts: VeOption[]): string {
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return opts.map((o) => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("");
+}
+
+/**
+ * Native dropdowns can't be clicked open inside the editor iframe, so their
+ * items are edited here as a simple list (label + value, add / delete / move).
+ */
+function SelectOptionsEditor({
+  html,
+  onChange,
+}: {
+  html: string;
+  onChange: (html: string) => void;
+}) {
+  const opts = parseOptions(html);
+  const update = (next: VeOption[]) => onChange(serializeOptions(next));
+  const edit = (i: number, patch: Partial<VeOption>) =>
+    update(opts.map((o, idx) => (idx === i ? { ...o, ...patch } : o)));
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= opts.length) return;
+    const next = [...opts];
+    const a = next[i]!;
+    const b = next[j]!;
+    next[i] = b;
+    next[j] = a;
+    update(next);
+  };
+
+  return (
+    <div className="rounded-xl border border-slate-200 p-2 space-y-2 bg-slate-50">
+      <div className="text-[11px] font-bold text-slate-600">گزینه‌های منوی کشویی</div>
+      {opts.length === 0 && (
+        <p className="text-[11px] text-slate-500">گزینه‌ای وجود ندارد. یک گزینه اضافه کنید.</p>
+      )}
+      <div className="space-y-2 max-h-64 overflow-auto pr-1">
+        {opts.map((o, i) => (
+          <div key={i} className="flex items-center gap-1">
+            <input
+              value={o.label}
+              onChange={(e) => edit(i, { label: e.target.value })}
+              placeholder="متن گزینه"
+              className="flex-1 px-2 py-1.5 rounded-lg border border-slate-300 text-xs bg-white"
+            />
+            <input
+              value={o.value}
+              onChange={(e) => edit(i, { value: e.target.value })}
+              placeholder="مقدار"
+              dir="ltr"
+              className="w-24 px-2 py-1.5 rounded-lg border border-slate-300 text-xs bg-white font-mono"
+            />
+            <button
+              type="button"
+              onClick={() => move(i, -1)}
+              title="بالا"
+              className="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs"
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              onClick={() => move(i, 1)}
+              title="پایین"
+              className="px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs"
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              onClick={() => update(opts.filter((_, idx) => idx !== i))}
+              title="حذف"
+              className="px-2 py-1 rounded-lg border border-red-200 text-red-600 bg-white text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => update([...opts, { label: "گزینه جدید", value: "" }])}
+        className="w-full px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold"
+      >
+        افزودن گزینه
+      </button>
+      <p className="text-[10px] text-slate-500 leading-5">
+        پس از ویرایش، دکمه «ذخیره تغییرات» را بزنید تا روی سایت اعمال شود.
+      </p>
+    </div>
+  );
+}
+
 
 
 /* ---------- Overview ---------- */
