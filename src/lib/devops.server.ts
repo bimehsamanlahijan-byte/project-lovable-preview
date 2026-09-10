@@ -62,7 +62,7 @@ export function githubTokenAvailable() {
   );
 }
 
-/** Calls the GitHub REST API with a server-side PAT, or the Lovable connector as a fallback. */
+/** Calls the GitHub REST API with a server-side PAT, or GITHUB_API_KEY as a fallback. */
 export async function ghApi<T = Record<string, unknown>>(path: string): Promise<T> {
   const pat = process.env["GITHUB_PAT"] || process.env["GITHUB_TOKEN"];
   if (pat) {
