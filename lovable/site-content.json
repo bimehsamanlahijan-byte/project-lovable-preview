@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T11:51:17.566Z",
+  "exportedAt": "2026-09-10T11:52:13.203Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (social_layout)",
   "settings": [
     {
@@ -218,7 +218,7 @@
         "showLabels": false,
         "showUsernames": true
       },
-      "updated_at": "2026-09-10T11:51:10.821+00:00"
+      "updated_at": "2026-09-10T11:51:58.518+00:00"
     },
     {
       "key": "github_sync",
