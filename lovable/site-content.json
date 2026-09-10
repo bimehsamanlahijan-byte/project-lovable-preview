@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:18:03.069Z",
+  "exportedAt": "2026-09-10T15:18:39.004Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (social_layout)",
   "settings": [
     {
@@ -47,18 +47,6 @@
         "heightMode": "ratio"
       },
       "updated_at": "2026-09-07T03:43:01.145284+00:00"
-    },
-    {
-      "key": "social_layout",
-      "value": {
-        "gap": 12,
-        "align": "start",
-        "shape": "circle",
-        "layout": "row",
-        "showLabels": false,
-        "showUsernames": true
-      },
-      "updated_at": "2026-09-10T15:18:02.516+00:00"
     },
     {
       "key": "seo_config",
@@ -181,6 +169,18 @@
         "tickerSchematic": true
       },
       "updated_at": "2026-09-08T18:31:34.239+00:00"
+    },
+    {
+      "key": "social_layout",
+      "value": {
+        "gap": 12,
+        "align": "start",
+        "shape": "circle",
+        "layout": "row",
+        "showLabels": false,
+        "showUsernames": true
+      },
+      "updated_at": "2026-09-10T15:18:38.037+00:00"
     },
     {
       "key": "ai_assistant",
