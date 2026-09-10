@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:43:21.558Z",
+  "exportedAt": "2026-09-10T15:43:54.379Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -445,6 +445,17 @@
             },
             "hoverDeep": false
           },
+          "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(1) > p": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
           "body > div:nth-of-type(1) > header > div > div:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(3)": {
             "text": "پرتال تیم نمایندگان 8452",
             "hover": {},
@@ -675,7 +686,7 @@
           }
         }
       },
-      "updated_at": "2026-09-10T15:43:19.476+00:00"
+      "updated_at": "2026-09-10T15:43:49.494+00:00"
     }
   ]
 }
