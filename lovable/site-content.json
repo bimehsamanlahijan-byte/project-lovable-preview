@@ -1,0 +1,657 @@
+{
+  "exportedAt": "2026-09-10T11:51:17.566Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (social_layout)",
+  "settings": [
+    {
+      "key": "wheel_background",
+      "value": {
+        "fit": "cover",
+        "mode": "interval",
+        "fadeMs": 900,
+        "images": [
+          {
+            "url": "/api/public/asset/media/1788943007684-lofv1z0f7d.png",
+            "posX": 50,
+            "posY": 50,
+            "zoom": 100,
+            "label": "تصویر جدید"
+          }
+        ],
+        "enabled": true,
+        "overlay": 25,
+        "intervalMs": 8000
+      },
+      "updated_at": "2026-09-09T08:39:09.126+00:00"
+    },
+    {
+      "key": "docs_intake",
+      "value": {
+        "title": "ارسال مدارک بیمه",
+        "enabled": true,
+        "maxSizeMb": 10,
+        "acceptedTypes": "image/*,application/pdf"
+      },
+      "updated_at": "2026-09-07T03:43:01.145284+00:00"
+    },
+    {
+      "key": "hero_slider",
+      "value": {
+        "fit": "cover",
+        "loop": true,
+        "ratioH": 360,
+        "ratioW": 1200,
+        "slides": [],
+        "autoplay": true,
+        "heightPx": 420,
+        "autoplayMs": 3750,
+        "heightMode": "ratio"
+      },
+      "updated_at": "2026-09-07T03:43:01.145284+00:00"
+    },
+    {
+      "key": "seo_config",
+      "value": {
+        "pages": [
+          {
+            "id": "/",
+            "path": "/https://bimehsaman8452.ir",
+            "title": "صفحه اصلی",
+            "priority": "1.0",
+            "sitelink": false,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "خرید آنلاین انواع بیمه سامان"
+          },
+          {
+            "id": "/insurance",
+            "path": "/insurance",
+            "title": "انواع بیمه‌ها",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "فهرست کامل انواع بیمه‌های سامان"
+          },
+          {
+            "id": "/insurance/travel",
+            "path": "/insurance/travel",
+            "title": "بیمه مسافرتی",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "خرید آنلاین بیمه مسافرتی و صدور فوری"
+          },
+          {
+            "id": "/branches",
+            "path": "/branches",
+            "title": "مراکز درمانی طرف قرار داد بیمه سامان",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "آدرس و اطلاعات تماس مراکز درمانی طرف قرار داد"
+          },
+          {
+            "id": "/e-services",
+            "path": "/e-services",
+            "title": "خدمات الکترونیک",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "استعلام بیمه‌نامه، کارتابل و پرداخت آنلاین"
+          },
+          {
+            "id": "/contact",
+            "path": "/contact",
+            "title": "ارتباط با ما",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "تماس با نمایندگی آذرخش بیمه سامان"
+          },
+          {
+            "id": "/blog",
+            "path": "/blog",
+            "title": "مجله و خبر",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "آخرین اخبار و مقالات بیمه‌ای"
+          },
+          {
+            "id": "/reporting",
+            "path": "/reporting",
+            "title": "گزارشگری و افشای اطلاعات",
+            "priority": "0.8",
+            "sitelink": true,
+            "inSitemap": true,
+            "changefreq": "weekly",
+            "description": "گزارش‌ها و افشای اطلاعات"
+          }
+        ],
+        "siteUrl": "https://bimehsaman8452.ir",
+        "siteName": "بیمه سامان — نمایندگی آذرخش",
+        "defaultTitle": "بیمه سامان | خرید آنلاین انواع بیمه",
+        "searchUrlTemplate": "",
+        "defaultDescription": "خرید آنلاین انواع بیمه شخص ثالث، بدنه، عمر، درمان، مسافرتی، آتش‌سوزی و موبایل از نمایندگی آذرخش بیمه سامان."
+      },
+      "updated_at": "2026-09-09T03:32:00.587+00:00"
+    },
+    {
+      "key": "wheel_intro",
+      "value": {
+        "float": true,
+        "buttonX": 0,
+        "buttonY": 0,
+        "enabled": true,
+        "hintText": "برای دیدن همه بیمه‌نامه‌ها کلیک کنید",
+        "animation": "explode",
+        "innerMode": "modal",
+        "particles": true,
+        "buttonText": "خرید آنلاین بیمه",
+        "durationMs": 900,
+        "innerLabel": "ارائه کلیه خدمات بیمه‌ای در سریع‌ترین زمان ممکن",
+        "buttonScale": 1.6,
+        "centerTitle": "بیمه‌نامه‌های سامان",
+        "innerAnimMs": 500,
+        "tickerGapPx": 0,
+        "tickerBarAnim": "slide",
+        "centerImageUrl": "",
+        "centerSubtitle": "روی هر بیمه قرار بگیرید",
+        "tickerSpeedSec": 38,
+        "centerImageSize": 56,
+        "tickerBarColorA": "#f87171",
+        "tickerBarColorB": "#3b5a86",
+        "tickerSchematic": true
+      },
+      "updated_at": "2026-09-08T18:31:34.239+00:00"
+    },
+    {
+      "key": "ai_assistant",
+      "value": {
+        "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+        "title": "دستیار هوشمند بیمه سامان",
+        "enabled": true,
+        "welcome": "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
+        "provider": "cloudflare",
+        "temperature": 0.4,
+        "systemPrompt": "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی و مؤدبانه پاسخ دهید."
+      },
+      "updated_at": "2026-09-09T10:16:33.945+00:00"
+    },
+    {
+      "key": "branding",
+      "value": {
+        "brandFont": "",
+        "siteTitle": "بیمه سامان — نمایندگی آذرخش",
+        "faviconUrl": "/api/public/asset/branding/1788924264821-fnhjy4g959a.png",
+        "footerLogoUrl": "",
+        "headerLogoUrl": "",
+        "siteDescription": "خدمات بیمه‌ای سامان، صدور آنلاین و پیگیری خسارت — نمایندگی آذرخش",
+        "dashboardLogoUrl": "/assets/logoheder-DarmsdwL.png",
+        "logoHeightFooter": 40,
+        "logoHeightHeader": 48,
+        "logoHeightDashboard": 34
+      },
+      "updated_at": "2026-09-09T03:24:29.55+00:00"
+    },
+    {
+      "key": "live_chat",
+      "value": {
+        "title": "چت روم آنلاین",
+        "enabled": true,
+        "welcome": "به چت روم آنلاین نمایندگی آذرخش خوش آمدید."
+      },
+      "updated_at": "2026-09-09T15:49:29.452+00:00"
+    },
+    {
+      "key": "social_layout",
+      "value": {
+        "gap": 12,
+        "align": "start",
+        "shape": "circle",
+        "layout": "row",
+        "showLabels": false,
+        "showUsernames": true
+      },
+      "updated_at": "2026-09-10T11:51:10.821+00:00"
+    },
+    {
+      "key": "github_sync",
+      "value": {
+        "accounts": [
+          {
+            "id": "acc_1789017905772_0",
+            "path": "lovable/site-content.json",
+            "repo": "project-lovable-preview",
+            "label": "اکانت 1«پروژهproject-lovable-preview-GitHub سایت»",
+            "owner": "bimehsamanlahijan-byte",
+            "branch": "main",
+            "isDefault": true,
+            "secretName": "GITHUB_API_KEY"
+          }
+        ],
+        "autoSync": true
+      },
+      "updated_at": "2026-09-10T06:12:04.863+00:00"
+    },
+    {
+      "key": "visual_overrides",
+      "value": {
+        "map": {
+          "/blog::body > div:nth-of-type(1) > section:nth-of-type(1) > div > p": {
+            "text": "برای بهبود در عملکرد و ارتباط بهتر با انتقادات و پیشنهادات خود ما را یاری کنید",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/blog::body > div:nth-of-type(1) > section:nth-of-type(1) > div > h1": {
+            "text": "انتقادات و پیشنهادات ",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "36px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "800"
+            },
+            "hoverDeep": false
+          },
+          "/contact::body > div:nth-of-type(1) > section:nth-of-type(2) > div > aside": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(1) > p": {
+            "text": "با بیش از ۶۰۰۰ مراکز درمانی طرف قرارداد فعال در سراسر کشور",
+            "hover": {},
+            "style": {
+              "color": "#003181",
+              "font-size": "16px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(1) > h2": {
+            "text": "مراکزدرمانی طرف قرارداد",
+            "hover": {},
+            "style": {
+              "color": "#ff2600",
+              "font-size": "30px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "800"
+            },
+            "hoverDeep": false
+          },
+          "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(3) > p": {
+            "text": "مجموع ۶٬۰۲۷ مرکز درمانی در ۶۰۳ صفحه گرد آوری شده توسط تیم 8452 آذرخش",
+            "hover": {},
+            "style": {
+              "color": "#003000",
+              "font-size": "11px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(3) > p": {
+            "hover": {
+              "text-decoration": "underline"
+            },
+            "style": {
+              "color": "#ff0040",
+              "font-size": "20px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "900"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(3) > h2 > span": {
+            "hover": {},
+            "style": {
+              "color": "#ff0040",
+              "font-size": "32px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "800"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(1) > a": {
+            "href": "",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(3) > a": {
+            "text": "همکاران تیم 8452",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(5) > a": {
+            "html": "انتقادات و پیشنهادات",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(7) > a": {
+            "text": "اعلانات و تخفیفات ویزه",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(3) > div:nth-of-type(1) > a:nth-of-type(2) > h3": {
+            "text": "بیمه عمر و پس انداز",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "16px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(4) > div > div > span": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(4) > div > div > button": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "24px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, sans-serif",
+              "font-weight": "800",
+              "background-color": "rgba(11, 30, 63, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(3)": {
+            "text": "پرتال تیم نمایندگان 8452",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "12px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(1)": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400",
+              "background-color": "rgba(255, 255, 255, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(2)": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400",
+              "background-color": "rgba(255, 255, 255, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(1) > div": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "600",
+              "background-color": "rgba(255, 255, 255, 1)"
+            },
+            "hoverDeep": false
+          },
+          "/contact::body > div:nth-of-type(1) > section:nth-of-type(2) > div > aside > div > ul > li:nth-of-type(1) > span": {
+            "text": "مرکز تماس: ۴۲۲۴۱۶۱۰ - ۰۱۳",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/contact::body > div:nth-of-type(1) > section:nth-of-type(2) > div > aside > div > ul > li:nth-of-type(2) > span": {
+            "text": "ایمیل: info@bimehsaman8452.ir",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/contact::body > div:nth-of-type(1) > section:nth-of-type(2) > div > aside > div > ul > li:nth-of-type(3) > span": {
+            "text": "دفتر : لاهیجان -خیابان امام خمینی - روبروی بانک توسعه وتعاون-مجتمع پارادایس-طبقه دوم",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(2) > div > span:nth-of-type(1)": {
+            "hover": {},
+            "style": {
+              "color": "#d82e3f",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(2) > div > div > div:nth-of-type(12) > a > span": {
+            "text": "",
+            "block": "",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(214, 45, 61, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(0, 245, 82, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(3) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(238, 255, 0, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(4) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(0, 251, 255, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(5) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(255, 0, 0, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(6) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(130, 187, 245, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(8) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(246, 231, 158, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(9) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(212, 255, 0, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(10) > div:nth-of-type(2) > div > a": {
+            "hover": {},
+            "style": {
+              "color": "#ffffff",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700",
+              "background-color": "rgba(166, 170, 34, 1)"
+            },
+            "hoverDeep": false
+          },
+          "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(1) > div > span:nth-of-type(7) > span": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "600",
+              "background-color": "rgba(255, 255, 255, 1)"
+            },
+            "hoverDeep": false
+          }
+        }
+      },
+      "updated_at": "2026-09-10T08:36:14.886+00:00"
+    }
+  ]
+}
