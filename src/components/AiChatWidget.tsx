@@ -87,9 +87,6 @@ export function AiChatWidget() {
               )}
               <div className="min-w-0">
                 <div className="text-sm font-bold truncate">{cfg.title}</div>
-                <div className="text-[10px] opacity-80" dir="ltr">
-                  {cfg.model}
-                </div>
               </div>
             </div>
             <button onClick={() => setOpen(false)} aria-label="بستن" className="p-1 rounded-lg hover:bg-white/20">

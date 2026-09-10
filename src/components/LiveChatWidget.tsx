@@ -62,16 +62,17 @@ export function LiveChatWidget() {
       const { data } = await supabase
         .from("chat_room_messages")
         .select("*")
+        .eq("session_id", sid)
         .order("created_at", { ascending: false })
         .limit(60);
       if (alive) setMsgs(((data ?? []) as RoomMsg[]).slice().reverse());
     })();
 
     const channel = supabase
-      .channel("chat_room_messages")
+      .channel(`chat_room_${sid}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "chat_room_messages" },
+        { event: "INSERT", schema: "public", table: "chat_room_messages", filter: `session_id=eq.${sid}` },
         (payload) => setMsgs((p) => [...p, payload.new as RoomMsg]),
       )
       .subscribe();
@@ -80,7 +81,7 @@ export function LiveChatWidget() {
       alive = false;
       supabase.removeChannel(channel);
     };
-  }, [open]);
+  }, [open, sid]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
