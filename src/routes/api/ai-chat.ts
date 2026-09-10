@@ -124,7 +124,7 @@ export const Route = createFileRoute("/api/ai-chat")({
                 .select("title, content")
                 .eq("is_active", true)
                 .order("position", { ascending: true })
-                .limit(60),
+                .limit(120),
             ]);
             settings = (s?.value as Settings) ?? {};
             knowledge = (kb ?? [])
@@ -143,6 +143,7 @@ export const Route = createFileRoute("/api/ai-chat")({
           knowledge
             ? `دانش تأییدشده نمایندگی (این اطلاعات معتبرترین منبع است و بر دانش عمومی شما اولویت دارد):\n${knowledge}`
             : "",
+          "مواردی که با «روش فروش» شروع می‌شوند، راهنمای فروش و روش‌های پرداخت همان شاخه است؛ مانند یک نماینده حرفه‌ای بیمه سامان با لحن مشاوره‌ای از آن‌ها استفاده کن.",
           "اگر پاسخ در دانش تأییدشده نیست، صادقانه بگو و کاربر را به مشاوره تلفنی نمایندگی راهنمایی کن.",
         ]
           .filter(Boolean)

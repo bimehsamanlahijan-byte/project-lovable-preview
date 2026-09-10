@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Plus, Save, Trash2, Bot, Loader2 } from "lucide-react";
 import { DEFAULT_AI, type AiAssistantSettings } from "@/lib/site-config";
 import { AI_PROVIDERS, getProvider } from "@/lib/ai-providers";
+import { SalesPlaybookSection } from "./SalesPlaybookSection";
 
 type ProviderStatus = { id: string; hasKey: boolean; missing: string[] };
 
@@ -207,6 +208,8 @@ export function AiPane() {
           {rows.length === 0 && <div className="text-xs text-slate-500 text-center py-6">موردی ثبت نشده است.</div>}
         </div>
       </div>
+
+      <SalesPlaybookSection />
 
       <div className="bg-white rounded-2xl border border-slate-200 p-5">
         <h2 className="text-sm font-extrabold text-[#0b1e3f] mb-3 flex items-center gap-2">
