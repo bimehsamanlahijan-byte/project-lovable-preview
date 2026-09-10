@@ -1,4 +1,6 @@
 import { navItems, type NavItem } from "@/components/site-data";
+import { insuranceContent } from "@/components/insurance-content";
+import { hubContent } from "@/components/insurance-hubs";
 
 export type EditorPage = { path: string; label: string };
 
@@ -28,10 +30,31 @@ const EXTRA: EditorPage[] = [
   { path: "/insurance/special", label: "بیمه‌های خاص" },
 ];
 
+/** Static pages that are not part of the main menu. */
+const STATIC_PAGES: EditorPage[] = [
+  { path: "/branches", label: "مراکز درمانی طرف قرارداد" },
+  { path: "/blog", label: "وبلاگ" },
+  { path: "/reporting", label: "گزارش خسارت" },
+  { path: "/contact", label: "ارتباط با ما" },
+  { path: "/insurance", label: "انواع بیمه‌ها" },
+  { path: "/e-services", label: "خدمات الکترونیک" },
+];
+
 /** Pages offered in the visual editor and the code inspector toolbars. */
 export const EDITOR_PAGES: EditorPage[] = (() => {
   const list: EditorPage[] = [];
-  for (const p of EXTRA) if (!list.some((x) => x.path === p.path)) list.push(p);
-  for (const p of collect(navItems)) if (!list.some((x) => x.path === p.path)) list.push(p);
+  const push = (p: EditorPage) => {
+    if (!list.some((x) => x.path === p.path)) list.push(p);
+  };
+  for (const p of EXTRA) push(p);
+  for (const p of STATIC_PAGES) push(p);
+  for (const p of collect(navItems)) push(p);
+  // Every content page (including all sub-pages) is editable.
+  for (const [path, c] of Object.entries(hubContent)) {
+    push({ path, label: (c as { title?: string }).title ?? path });
+  }
+  for (const [path, c] of Object.entries(insuranceContent)) {
+    push({ path, label: (c as { title?: string }).title ?? path });
+  }
   return list;
 })();

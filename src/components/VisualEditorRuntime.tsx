@@ -5,6 +5,8 @@ import {
   applyHoverStyles,
   enableTouchHover,
   getSelector,
+  readLabel,
+  scopeKey,
   loadOverrides,
   loadRemoteOverrides,
   saveOverrides,
@@ -116,7 +118,9 @@ export function VisualEditorRuntime() {
       return {
         selector: getSelector(el),
         tag: el.tagName.toLowerCase(),
-        text: el.children.length === 0 ? (el.textContent ?? "") : "",
+        // Text nodes only, so buttons/links that contain an icon (header menu
+        // items like «انواع بیمه‌نامه‌ها») still expose an editable label.
+        text: readLabel(el),
         html: el.innerHTML.length < 4000 ? el.innerHTML : "",
         href: (el as HTMLAnchorElement).getAttribute?.("href") ?? "",
         computed: {
@@ -202,11 +206,12 @@ export function VisualEditorRuntime() {
       }
 
       if (data.type === "ve:update" && data.selector) {
-        const prev = map[data.selector] ?? {};
+        const key = scopeKey(window.location.pathname, data.selector);
+        const prev = map[key] ?? map[data.selector] ?? {};
         const patch = data.patch ?? {};
         map = {
           ...map,
-          [data.selector]: {
+          [key]: {
             ...prev,
             ...patch,
             style: { ...(prev.style ?? {}), ...(patch.style ?? {}) },
@@ -219,6 +224,7 @@ export function VisualEditorRuntime() {
         publish();
       } else if (data.type === "ve:reset" && data.selector) {
         const next = { ...map };
+        delete next[scopeKey(window.location.pathname, data.selector)];
         delete next[data.selector];
         map = next;
         saveOverrides(map);

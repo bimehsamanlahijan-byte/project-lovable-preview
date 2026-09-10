@@ -655,6 +655,12 @@ function VisualEditorPane() {
               </Field>
 
 
+              <WordLinkEditor
+                html={draft.html ?? ""}
+                text={draft.text ?? ""}
+                onChange={(h) => field("html", h)}
+              />
+
               <Field label="لینک (href)">
                 <input value={draft.href ?? ""} onChange={(e) => field("href", e.target.value)} dir="ltr"
                   placeholder="/contact یا https://..."
@@ -1024,6 +1030,69 @@ function SelectOptionsEditor({
 
 
 /* ---------- Overview ---------- */
+/**
+ * Turns any word or phrase inside the selected element into a real backlink.
+ * It rewrites the element HTML, so it works on headings, paragraphs and menu
+ * items alike.
+ */
+function WordLinkEditor({ html, text, onChange }: {
+  html: string;
+  text: string;
+  onChange: (html: string) => void;
+}) {
+  const [word, setWord] = useState("");
+  const [href, setHref] = useState("");
+  const [blank, setBlank] = useState(false);
+  const [nofollow, setNofollow] = useState(false);
+  const [err, setErr] = useState("");
+
+  const source = html || text;
+
+  const link = () => {
+    const w = word.trim();
+    const u = href.trim();
+    if (!w || !u) { setErr("کلمه و آدرس لینک را وارد کنید."); return; }
+    if (!source.includes(w)) { setErr("این عبارت داخل متن این عنصر پیدا نشد."); return; }
+    const attrs = [`href="${u}"`];
+    if (blank) attrs.push('target="_blank"');
+    attrs.push(`rel="${nofollow ? "nofollow noopener" : "noopener"}"`);
+    const anchor = `<a ${attrs.join(" ")} style="text-decoration:underline">${w}</a>`;
+    onChange(source.replace(w, anchor));
+    setErr("");
+    setWord("");
+    setHref("");
+  };
+
+  return (
+    <div className="rounded-xl border border-slate-200 p-2.5 space-y-2">
+      <Field label="لینک‌دار کردن یک کلمه از متن (بک‌لینک)">
+        <input value={word} onChange={(e) => setWord(e.target.value)}
+          placeholder="کلمه یا عبارت داخل متن"
+          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+      </Field>
+      <input value={href} onChange={(e) => setHref(e.target.value)} dir="ltr"
+        placeholder="/insurance/fire یا https://..."
+        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
+      <div className="flex items-center gap-3 text-[11px] text-slate-600">
+        <label className="flex items-center gap-1.5">
+          <input type="checkbox" checked={blank} onChange={(e) => setBlank(e.target.checked)} /> تب جدید
+        </label>
+        <label className="flex items-center gap-1.5">
+          <input type="checkbox" checked={nofollow} onChange={(e) => setNofollow(e.target.checked)} /> nofollow
+        </label>
+        <button type="button" onClick={link}
+          className="ms-auto px-3 py-1.5 rounded-lg bg-[#0b1e3f] text-white text-[11px] font-bold">
+          افزودن لینک
+        </button>
+      </div>
+      {err && <p className="text-[11px] text-rose-600">{err}</p>}
+      <p className="text-[10px] text-slate-500 leading-5">
+        بعد از افزودن، دکمه «ذخیره تغییرات» را بزنید تا روی سایت منتشر شود.
+      </p>
+    </div>
+  );
+}
+
 function OverviewPane() {
   const [cCount, setCCount] = useState<number | null>(null);
   const [dCount, setDCount] = useState<number | null>(null);

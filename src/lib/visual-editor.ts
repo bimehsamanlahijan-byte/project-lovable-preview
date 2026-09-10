@@ -106,9 +106,64 @@ export function getSelector(el: Element): string {
   return `body > ${parts.join(" > ")}`;
 }
 
+/* ---------------- page scoping ----------------
+ * Override keys are stored as "<pathname>::<selector>" so an edit made on one
+ * page never leaks to another page that happens to have the same DOM path.
+ * Legacy keys without "::" keep applying to every page. */
+export function scopeKey(path: string, selector: string): string {
+  return `${normalizePath(path)}::${selector}`;
+}
+
+export function normalizePath(path: string): string {
+  const clean = (path || "/").split("?")[0]!.split("#")[0]!;
+  const trimmed = clean.replace(/\/+$/, "");
+  return trimmed === "" ? "/" : trimmed;
+}
+
+export function parseKey(key: string): { path: string; selector: string } {
+  const i = key.indexOf("::");
+  if (i === -1) return { path: "*", selector: key };
+  return { path: key.slice(0, i), selector: key.slice(i + 2) };
+}
+
+/** Entries that belong to the page currently shown. */
+export function entriesForPath(map: OverrideMap, path: string) {
+  const here = normalizePath(path);
+  return Object.entries(map)
+    .map(([key, ov]) => ({ ...parseKey(key), ov }))
+    .filter((e) => e.path === "*" || normalizePath(e.path) === here);
+}
+
+/**
+ * Replaces the visible label of an element without destroying its icons or
+ * inner markup: only text nodes are rewritten. Used for header menu buttons
+ * such as «انواع بیمه‌نامه‌ها» that wrap a span plus an arrow icon.
+ */
+export function setLabel(el: HTMLElement, text: string) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  let n = walker.nextNode();
+  while (n) {
+    if ((n.textContent ?? "").trim()) nodes.push(n as Text);
+    n = walker.nextNode();
+  }
+  if (!nodes.length) {
+    if (el.children.length === 0) el.textContent = text;
+    else el.appendChild(document.createTextNode(text));
+    return;
+  }
+  nodes[0]!.textContent = text;
+  for (let i = 1; i < nodes.length; i++) nodes[i]!.textContent = "";
+}
+
+/** Visible label of an element (text nodes only, icons ignored). */
+export function readLabel(el: HTMLElement): string {
+  return (el.textContent ?? "").replace(/\s+/g, " ").trim();
+}
+
 export function applyOverride(el: HTMLElement, ov: Override, selector?: string) {
   if (ov.html !== undefined) el.innerHTML = sanitizeHtml(ov.html);
-  else if (ov.text !== undefined) el.textContent = ov.text;
+  else if (ov.text !== undefined) setLabel(el, ov.text);
   if (ov.href !== undefined && ov.href !== "") {
     el.setAttribute("href", ov.href);
     makeNavigable(el, ov.href, ov.target);
@@ -212,7 +267,9 @@ export function applyHoverStyles(map: OverrideMap) {
   hoverMap = map;
   if (typeof document === "undefined") return;
   const rules: string[] = [];
-  for (const [selector, ov] of Object.entries(map)) {
+  const here = typeof window === "undefined" ? "/" : window.location.pathname;
+  for (const { path, selector, ov } of entriesForPath(map, here)) {
+    void path;
     const hover = ov.hover;
     if (!hover) continue;
     const body = Object.entries(hover)
@@ -246,7 +303,10 @@ function findHoverTarget(
 ): { el: HTMLElement; hover: Record<string, string>; deep: boolean } | null {
   let node: HTMLElement | null = start;
   while (node && node.nodeType === 1) {
-    for (const [selector, ov] of Object.entries(hoverMap)) {
+    for (const { selector, ov } of entriesForPath(
+      hoverMap,
+      typeof window === "undefined" ? "/" : window.location.pathname,
+    )) {
       const hover = ov.hover;
       if (!hover || !Object.values(hover).some(Boolean)) continue;
       let matches = false;
@@ -354,7 +414,7 @@ export function enableTouchHover(): () => void {
 
 export function applyAll(map: OverrideMap) {
   if (typeof document === "undefined") return;
-  for (const [selector, ov] of Object.entries(map)) {
+  for (const { selector, ov } of entriesForPath(map, window.location.pathname)) {
     let el: HTMLElement | null = null;
     try {
       el = document.querySelector(selector) as HTMLElement | null;
