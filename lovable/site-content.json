@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-10T15:42:28.149Z",
+  "exportedAt": "2026-09-10T15:42:53.392Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -386,6 +386,18 @@
             },
             "hoverDeep": false
           },
+          "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(1)": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400",
+              "background-color": "rgba(1, 22, 74, 1)"
+            },
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(2)": {
             "hover": {},
             "style": {
@@ -663,7 +675,7 @@
           }
         }
       },
-      "updated_at": "2026-09-10T15:42:26.903+00:00"
+      "updated_at": "2026-09-10T15:42:51.386+00:00"
     }
   ]
 }
