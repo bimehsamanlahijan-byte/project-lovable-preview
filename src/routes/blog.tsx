@@ -32,7 +32,7 @@ function Blog() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
       <InsuranceWheel />
-      <section className="gradient-hero text-primary-foreground">
+      <section className="page-hero gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 py-12 md:py-16">
           <h1 className="text-3xl md:text-4xl font-extrabold mb-3">مجله و خبر</h1>
           <p className="text-sm md:text-base opacity-90 max-w-2xl leading-7">
