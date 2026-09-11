@@ -436,6 +436,11 @@ function VisualEditorPane() {
   const send = (msg: Record<string, unknown>) =>
     frame.current?.contentWindow?.postMessage(msg, "*");
 
+  const previewSrc = (path: string, bust?: number) => {
+    const separator = path.includes("?") ? "&" : "?";
+    return `${path}${separator}ve=1&veDevice=${device}${bust ? `&t=${bust}` : ""}`;
+  };
+
   /* On phones the settings panel sits under the preview — bring it into view. */
   useEffect(() => {
     if (!sel) return;
@@ -545,15 +550,15 @@ function VisualEditorPane() {
           ))}
         </select>
         <div className="flex rounded-xl overflow-hidden border border-slate-300 bg-white">
-          <button onClick={() => setDevice("desktop")}
+          <button onClick={() => { setDevice("desktop"); setSel(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "desktop" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Monitor className="w-3.5 h-3.5" /> دسکتاپ
           </button>
-          <button onClick={() => setDevice("tablet")}
+          <button onClick={() => { setDevice("tablet"); setSel(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "tablet" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Tablet className="w-3.5 h-3.5" /> تبلت
           </button>
-          <button onClick={() => setDevice("mobile")}
+          <button onClick={() => { setDevice("mobile"); setSel(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "mobile" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Smartphone className="w-3.5 h-3.5" /> موبایل
           </button>
@@ -569,7 +574,7 @@ function VisualEditorPane() {
           </button>
         </div>
         <button
-          onClick={() => { if (frame.current) frame.current.src = `${page}?ve=1&t=${Date.now()}`; }}
+          onClick={() => { if (frame.current) frame.current.src = previewSrc(page, Date.now()); }}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs flex items-center gap-1.5"
         >
           <RefreshCw className="w-3.5 h-3.5" /> بازخوانی
@@ -588,7 +593,7 @@ function VisualEditorPane() {
             const path = p.startsWith("/") ? p : `/${p}`;
             setPage(path);
             setSel(null);
-            if (frame.current) frame.current.src = `${path}?ve=1&t=${Date.now()}`;
+            if (frame.current) frame.current.src = previewSrc(path, Date.now());
           }}
           className="flex items-center gap-1"
         >
@@ -620,7 +625,7 @@ function VisualEditorPane() {
         برای انتخاب یک عنصر در این حالت، در کامپیوتر کلید Alt را نگه دارید و کلیک کنید و در موبایل انگشت خود را روی عنصر نگه دارید (لمس طولانی).
       </p>
 
-      <div className={wide ? "grid gap-4" : "grid lg:grid-cols-[1fr_320px] gap-4"}>
+      <div className={wide || device === "desktop" ? "grid gap-4" : "grid lg:grid-cols-[1fr_320px] gap-4"}>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div
             className={
@@ -633,9 +638,9 @@ function VisualEditorPane() {
           >
             <iframe
               ref={frame}
-              src={`${page}?ve=1`}
+              src={previewSrc(page)}
               title="preview"
-              className={`w-full border-0 bg-white ${wide ? "h-[85vh]" : "h-[70vh]"}`}
+              className={`w-full border-0 bg-white ${wide || device === "desktop" ? "h-[85vh]" : "h-[70vh]"}`}
             />
 
           </div>
