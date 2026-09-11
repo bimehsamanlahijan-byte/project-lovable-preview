@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bug, Copy, Monitor, RefreshCw, Save, Smartphone, Trash2 } from "lucide-react";
+import { Bug, Copy, Monitor, RefreshCw, Save, Smartphone, Tablet, Trash2 } from "lucide-react";
 import { EDITOR_PAGES } from "@/lib/editor-pages";
 import { adminWriteSetting } from "@/lib/admin-db";
 import { VE_SETTING_KEY, type OverrideMap } from "@/lib/visual-editor";
@@ -57,7 +57,7 @@ export function InspectorPane() {
   const [page, setPage] = useState("/");
   const [customPath, setCustomPath] = useState("");
   const [currentPath, setCurrentPath] = useState("/");
-  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
   const [mode, setMode] = useState<"select" | "interact">("select");
   const [wide, setWide] = useState(false);
   const [report, setReport] = useState<Report | null>(null);
@@ -163,6 +163,10 @@ export function InspectorPane() {
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "desktop" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Monitor className="w-3.5 h-3.5" /> دسکتاپ
           </button>
+          <button onClick={() => setDevice("tablet")}
+            className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "tablet" ? "bg-[#0b1e3f] text-white" : ""}`}>
+            <Tablet className="w-3.5 h-3.5" /> تبلت
+          </button>
           <button onClick={() => setDevice("mobile")}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "mobile" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Smartphone className="w-3.5 h-3.5" /> موبایل
@@ -215,7 +219,7 @@ export function InspectorPane() {
 
       <div className={wide ? "grid gap-5" : "grid lg:grid-cols-3 gap-5"}>
         <div className={`${cardCls} ${wide ? "" : "lg:col-span-2"} overflow-hidden`}>
-          <div className="mx-auto" style={{ width: device === "mobile" ? 390 : "100%" }}>
+          <div className="mx-auto" style={{ width: device === "mobile" ? 390 : device === "tablet" ? 834 : "100%", maxWidth: "100%" }}>
             <iframe
               ref={frame}
               src={srcFor(page)}
