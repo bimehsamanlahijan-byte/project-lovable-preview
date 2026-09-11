@@ -23,6 +23,7 @@ export type Override = {
 };
 
 export type OverrideMap = Record<string, Override>;
+export type VisualDevice = "desktop" | "tablet" | "mobile";
 
 export const VE_STORAGE_KEY = "site-visual-overrides-v1";
 export const VE_EDIT_PARAM = "ve";
@@ -110,8 +111,9 @@ export function getSelector(el: Element): string {
  * Override keys are stored as "<pathname>::<selector>" so an edit made on one
  * page never leaks to another page that happens to have the same DOM path.
  * Legacy keys without "::" keep applying to every page. */
-export function scopeKey(path: string, selector: string): string {
-  return `${normalizePath(path)}::${selector}`;
+export function scopeKey(path: string, selector: string, device?: VisualDevice): string {
+  const page = normalizePath(path);
+  return device ? `${page}::@${device}::${selector}` : `${page}::${selector}`;
 }
 
 export function normalizePath(path: string): string {
@@ -120,18 +122,56 @@ export function normalizePath(path: string): string {
   return trimmed === "" ? "/" : trimmed;
 }
 
-export function parseKey(key: string): { path: string; selector: string } {
+export function parseKey(key: string): { path: string; selector: string; device?: VisualDevice } {
   const i = key.indexOf("::");
   if (i === -1) return { path: "*", selector: key };
-  return { path: key.slice(0, i), selector: key.slice(i + 2) };
+  const path = key.slice(0, i);
+  const remainder = key.slice(i + 2);
+  const deviceMatch = remainder.match(/^@(desktop|tablet|mobile)::/);
+  if (!deviceMatch) return { path, selector: remainder };
+  return {
+    path,
+    device: deviceMatch[1] as VisualDevice,
+    selector: remainder.slice(deviceMatch[0].length),
+  };
+}
+
+export function getVisualDevice(): VisualDevice {
+  if (typeof window === "undefined") return "desktop";
+  const requested = new URLSearchParams(window.location.search).get("veDevice");
+  if (requested === "desktop" || requested === "tablet" || requested === "mobile") return requested;
+  if (window.matchMedia("(max-width: 767px)").matches) return "mobile";
+  if (window.matchMedia("(max-width: 1023px)").matches) return "tablet";
+  return "desktop";
 }
 
 /** Entries that belong to the page currently shown. */
-export function entriesForPath(map: OverrideMap, path: string) {
+export function entriesForPath(map: OverrideMap, path: string, device = getVisualDevice()) {
   const here = normalizePath(path);
-  return Object.entries(map)
+  const entries = Object.entries(map)
     .map(([key, ov]) => ({ ...parseKey(key), ov }))
-    .filter((e) => e.path === "*" || normalizePath(e.path) === here);
+    .filter((e) => {
+      const samePage = e.path === "*" || normalizePath(e.path) === here;
+      // Entries saved before device separation came from the mobile editor in
+      // production. Keep them on mobile so they can no longer alter desktop.
+      const sameDevice = e.device ? e.device === device : device === "mobile";
+      return samePage && sameDevice;
+    });
+  const merged = new Map<string, (typeof entries)[number]>();
+  for (const entry of entries.filter((e) => !e.device)) merged.set(entry.selector, entry);
+  for (const entry of entries.filter((e) => e.device === device)) {
+    const base = merged.get(entry.selector);
+    merged.set(entry.selector, base ? {
+      ...entry,
+      ov: {
+        ...base.ov,
+        ...entry.ov,
+        style: { ...(base.ov.style ?? {}), ...(entry.ov.style ?? {}) },
+        hover: { ...(base.ov.hover ?? {}), ...(entry.ov.hover ?? {}) },
+      },
+    } : entry);
+  }
+  return Array.from(merged.values());
 }
 
 /**
