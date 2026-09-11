@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T07:58:47.228Z",
+  "exportedAt": "2026-09-11T08:00:06.391Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -398,6 +398,19 @@
             },
             "hoverDeep": false
           },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(3) > a": {
+            "text": "همکاران تیم 8452",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hidden": true,
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(4) > a": {
             "block": "",
             "hover": {},
@@ -773,7 +786,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T07:58:43.629+00:00"
+      "updated_at": "2026-09-11T08:00:01.731+00:00"
     }
   ]
 }
