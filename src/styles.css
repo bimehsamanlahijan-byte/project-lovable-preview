@@ -131,6 +131,18 @@
 @utility gradient-hero {
   background-image: var(--gradient-hero);
 }
+/* Rounded page-intro card (desktop / tablet / mobile). */
+@utility page-hero {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  margin-inline: 0.75rem;
+}
+@media (min-width: 768px) {
+  .page-hero {
+    border-radius: 2rem;
+    margin-inline: 1rem;
+  }
+}
 @utility gradient-soft {
   background-image: var(--gradient-soft);
 }
