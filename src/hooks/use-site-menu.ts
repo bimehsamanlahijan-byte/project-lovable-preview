@@ -9,14 +9,20 @@ type Row = {
   label: string;
   href: string | null;
   position: number;
-  device: "desktop" | "mobile" | "both";
+  device: "desktop" | "mobile" | "tablet" | "both";
   is_active: boolean;
 };
 
-function buildTree(rows: Row[], device: "desktop" | "mobile"): NavItem[] {
+function buildTree(rows: Row[], device: "desktop" | "mobile" | "tablet"): NavItem[] {
   const usable = rows.filter((r) => r.is_active && (r.device === "both" || r.device === device));
   const byParent = new Map<string | null, Row[]>();
+  // Dedupe exact duplicates (same parent + label + href) so a row saved twice
+  // by an older buggy version never renders twice in the header.
+  const seenKeys = new Set<string>();
   for (const r of usable) {
+    const key = `${r.parent_id ?? ""}|${r.label}|${r.href ?? ""}`;
+    if (seenKeys.has(key)) continue;
+    seenKeys.add(key);
     const list = byParent.get(r.parent_id) ?? [];
     list.push(r);
     byParent.set(r.parent_id, list);
@@ -39,7 +45,7 @@ function buildTree(rows: Row[], device: "desktop" | "mobile"): NavItem[] {
  * Live navigation. Falls back to the built-in structure whenever the
  * dashboard has not defined any menu item yet, so the site is never empty.
  */
-export function useSiteMenu(device: "desktop" | "mobile" = "desktop"): NavItem[] {
+export function useSiteMenu(device: "desktop" | "mobile" | "tablet" = "desktop"): NavItem[] {
   const [items, setItems] = useState<NavItem[]>(navItems);
 
   useEffect(() => {
@@ -58,4 +64,20 @@ export function useSiteMenu(device: "desktop" | "mobile" = "desktop"): NavItem[]
   }, [device]);
 
   return items;
+}
+
+/** Current viewport bucket: mobile < 768px, tablet 768–1023px, desktop >= 1024px. */
+export function useDeviceKind(): "desktop" | "tablet" | "mobile" {
+  const read = (): "desktop" | "tablet" | "mobile" => {
+    if (typeof window === "undefined") return "desktop";
+    const w = window.innerWidth;
+    return w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+  };
+  const [kind, setKind] = useState<"desktop" | "tablet" | "mobile">(read);
+  useEffect(() => {
+    const onResize = () => setKind(read());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return kind;
 }
