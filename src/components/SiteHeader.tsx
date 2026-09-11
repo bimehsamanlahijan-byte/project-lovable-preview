@@ -2,15 +2,17 @@ import { useRef, useState } from "react";
 import { Search, Phone, Menu, ChevronDown, ChevronLeft } from "lucide-react";
 
 import { SITE_LOGO_HEADER, SITE_CONTACT } from "./site-data";
-import { useSiteMenu } from "@/hooks/use-site-menu";
+import { useSiteMenu, useDeviceKind } from "@/hooks/use-site-menu";
 import { useBranding } from "@/hooks/use-branding";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [mobileSub, setMobileSub] = useState<string | null>(null);
   const branding = useBranding();
-  const desktopMenu = useSiteMenu("desktop");
-  const mobileMenu = useSiteMenu("mobile");
+  const kind = useDeviceKind();
+  // Tablet viewports get their own menu bucket on both nav and drawer.
+  const desktopMenu = useSiteMenu(kind === "tablet" ? "tablet" : "desktop");
+  const mobileMenu = useSiteMenu(kind === "tablet" ? "tablet" : "mobile");
   const taps = useRef(0);
   const tapTimer = useRef<number | null>(null);
   return (
