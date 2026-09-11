@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T05:34:21.355Z",
+  "exportedAt": "2026-09-11T05:34:45.462Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -256,7 +256,7 @@
             "hoverDeep": false
           },
           "/blog::body > div:nth-of-type(1) > section:nth-of-type(1) > div > h1": {
-            "text": "انتقادات و پیشنهادات ",
+            "text": "مجله و خبر",
             "hover": {},
             "style": {
               "color": "#003d900",
@@ -714,7 +714,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T05:34:17.804+00:00"
+      "updated_at": "2026-09-11T05:34:43.111+00:00"
     }
   ]
 }
