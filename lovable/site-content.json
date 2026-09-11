@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T07:56:41.278Z",
+  "exportedAt": "2026-09-11T07:58:47.228Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -403,6 +403,11 @@
             "hover": {},
             "style": {}
           },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(9) > a": {
+            "hover": {},
+            "style": {},
+            "hidden": true
+          },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(1)": {
             "hover": {},
             "style": {
@@ -768,7 +773,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T07:56:39.134+00:00"
+      "updated_at": "2026-09-11T07:58:43.629+00:00"
     }
   ]
 }
