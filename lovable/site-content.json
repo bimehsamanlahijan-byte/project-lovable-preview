@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T08:02:31.900Z",
+  "exportedAt": "2026-09-11T15:33:50.551Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -638,6 +638,42 @@
             },
             "hoverDeep": false
           },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(5) > div > div > div:nth-of-type(1) > a > span": {
+            "text": "1",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(5) > div > div > div:nth-of-type(2) > a > span": {
+            "text": "2",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(5) > div > div > div:nth-of-type(3) > a > span": {
+            "text": "3",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
           "body > div:nth-of-type(1) > section:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a": {
             "hover": {},
             "style": {
@@ -797,7 +833,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T08:02:20.565+00:00"
+      "updated_at": "2026-09-11T15:33:43.518+00:00"
     }
   ]
 }
