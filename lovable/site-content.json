@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-11T17:13:49.055Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (wheel_intro)",
+  "exportedAt": "2026-09-11T18:10:52.544Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
       "key": "wheel_background",
@@ -553,6 +553,18 @@
             },
             "hoverDeep": false
           },
+          "/::body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(4) > div > div > button": {
+            "hover": {},
+            "style": {
+              "color": "#02102b",
+              "font-size": "24px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, sans-serif",
+              "font-weight": "800",
+              "background-color": "rgba(11, 30, 63, 1)"
+            },
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2) > div:nth-of-type(2) > div": {
             "hover": {},
             "style": {
@@ -880,7 +892,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T17:10:14.207+00:00"
+      "updated_at": "2026-09-11T18:10:47.997+00:00"
     }
   ]
 }
