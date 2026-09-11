@@ -6,6 +6,7 @@ import { SITE_CONTACT } from "./site-data";
 import { AnnouncementTicker } from "./AnnouncementTicker";
 import { BrandCartBadge } from "./BrandCartBadge";
 import { useSiteSetting } from "@/hooks/use-site-setting";
+import { useDeviceKind } from "@/hooks/use-device-kind";
 import { DEFAULT_WHEEL_INTRO, type WheelIntroSettings } from "@/lib/site-config";
 import { ShoppingCart, Sparkles, X } from "lucide-react";
 
@@ -62,6 +63,26 @@ const REVEAL_VARIANTS: Record<string, { initial: Record<string, number>; animate
 
 function WheelSection() {
   const intro = useSiteSetting<WheelIntroSettings>("wheel_intro", DEFAULT_WHEEL_INTRO);
+  const kind = useDeviceKind();
+  /* Needle length + center-text offset are tuned per breakpoint from the dashboard. */
+  const needleLen =
+    kind === "mobile"
+      ? (intro.needleLenMobile ?? DEFAULT_WHEEL_INTRO.needleLenMobile)
+      : kind === "tablet"
+        ? (intro.needleLenTablet ?? DEFAULT_WHEEL_INTRO.needleLenTablet)
+        : (intro.needleLenDesktop ?? DEFAULT_WHEEL_INTRO.needleLenDesktop);
+  const centerTextX =
+    kind === "mobile"
+      ? (intro.centerTextXMobile ?? 0)
+      : kind === "tablet"
+        ? (intro.centerTextXTablet ?? 0)
+        : (intro.centerTextXDesktop ?? 0);
+  const centerTextY =
+    kind === "mobile"
+      ? (intro.centerTextYMobile ?? 0)
+      : kind === "tablet"
+        ? (intro.centerTextYTablet ?? 0)
+        : (intro.centerTextYDesktop ?? 0);
   const [revealed, setRevealed] = useState(false);
   const [burst, setBurst] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -323,7 +344,10 @@ function WheelSection() {
             )}
           </div>
           {/* Title + subtitle below the logo */}
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-[14%] w-[85%] text-center">
+          <div
+            className="absolute left-1/2 -translate-x-1/2 bottom-[14%] w-[85%] text-center"
+            style={{ marginInlineStart: `${centerTextX}px`, marginBlockStart: `${centerTextY}px` }}
+          >
             <h3 className="text-sm sm:text-base font-extrabold text-foreground leading-tight">
               {intro.centerTitle}
             </h3>
@@ -345,7 +369,7 @@ function WheelSection() {
             <div className="w-3 h-3 rounded-full bg-red-600 shadow-md -mb-1 z-10" />
             <div
               className="w-1.5 bg-gradient-to-b from-red-500 to-red-600 rounded-full"
-              style={{ height: "150px" }}
+              style={{ height: `${Math.max(30, needleLen)}px` }}
             />
             <div
               className="w-0 h-0 -mt-0.5"
