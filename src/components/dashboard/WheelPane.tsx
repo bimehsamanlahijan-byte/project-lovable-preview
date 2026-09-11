@@ -276,6 +276,54 @@ export function WheelPane() {
         </div>
       </section>
 
+      <section className={cardCls}>
+        <h2 className="font-extrabold text-[#0b1e3f] mb-1">عقربه و نوشته وسط چرخ‌وفلک (دسکتاپ / تبلت / موبایل)</h2>
+        <p className="text-[11px] text-slate-500 leading-6 mb-4">
+          طول عقربه و جای نوشته‌های وسط چرخ را برای هر اندازه صفحه جداگانه تنظیم کنید. این تنظیم‌ها فقط
+          ظاهر را تغییر می‌دهند و روی حرکت عقربه با موس یا لمس هیچ اثری ندارند.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <Row label={`طول عقربه در دسکتاپ: ${cfg.needleLenDesktop ?? 150}px`}>
+            <input type="range" min={40} max={260} value={cfg.needleLenDesktop ?? 150}
+              onChange={(e) => setCfg({ ...cfg, needleLenDesktop: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`طول عقربه در تبلت: ${cfg.needleLenTablet ?? 120}px`}>
+            <input type="range" min={40} max={260} value={cfg.needleLenTablet ?? 120}
+              onChange={(e) => setCfg({ ...cfg, needleLenTablet: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`طول عقربه در موبایل: ${cfg.needleLenMobile ?? 95}px`}>
+            <input type="range" min={30} max={220} value={cfg.needleLenMobile ?? 95}
+              onChange={(e) => setCfg({ ...cfg, needleLenMobile: Number(e.target.value) })} className="w-full" />
+          </Row>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3 mt-4">
+          <Row label={`جابجایی افقی نوشته (دسکتاپ): ${cfg.centerTextXDesktop ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextXDesktop ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextXDesktop: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`جابجایی افقی نوشته (تبلت): ${cfg.centerTextXTablet ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextXTablet ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextXTablet: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`جابجایی افقی نوشته (موبایل): ${cfg.centerTextXMobile ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextXMobile ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextXMobile: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`جابجایی عمودی نوشته (دسکتاپ): ${cfg.centerTextYDesktop ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextYDesktop ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextYDesktop: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`جابجایی عمودی نوشته (تبلت): ${cfg.centerTextYTablet ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextYTablet ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextYTablet: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`جابجایی عمودی نوشته (موبایل): ${cfg.centerTextYMobile ?? 0}px`}>
+            <input type="range" min={-60} max={60} value={cfg.centerTextYMobile ?? 0}
+              onChange={(e) => setCfg({ ...cfg, centerTextYMobile: Number(e.target.value) })} className="w-full" />
+          </Row>
+        </div>
+      </section>
+
       <div className="flex items-center gap-3">
         <button onClick={save} disabled={busy}
           className="bg-[#0b1e3f] hover:bg-[#122b57] text-white text-sm font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-60">
