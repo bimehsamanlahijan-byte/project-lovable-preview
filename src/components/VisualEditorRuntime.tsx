@@ -5,6 +5,7 @@ import {
   applyHoverStyles,
   enableTouchHover,
   getSelector,
+  getVisualDevice,
   readLabel,
   scopeKey,
   loadOverrides,
@@ -30,6 +31,8 @@ export function VisualEditorRuntime() {
     const params = new URLSearchParams(window.location.search);
     const isEditing = params.get(VE_EDIT_PARAM) === "1";
     const isInspecting = params.get("inspect") === "1";
+    const hasForcedDevice = params.has("veDevice");
+    const visualDevice = getVisualDevice();
 
     /* ---------- code / error inspector (dashboard → «ایرادیاب و کدیاب») ---------- */
     let stopInspector: (() => void) | undefined;
@@ -70,6 +73,10 @@ export function VisualEditorRuntime() {
     });
     // Touch devices get the same hover colors while a finger is on the element.
     const stopTouchHover = enableTouchHover();
+    const reloadForDeviceChange = () => {
+      if (!hasForcedDevice && getVisualDevice() !== visualDevice) window.location.reload();
+    };
+    window.addEventListener("resize", reloadForDeviceChange);
     // Some pages keep long-lived requests open, so `load` may never fire —
     // never gate the overrides on it alone.
     if (document.readyState === "complete") startApplying();
@@ -84,6 +91,7 @@ export function VisualEditorRuntime() {
         obs.disconnect();
         stopTouchHover();
         stopInspector?.();
+        window.removeEventListener("resize", reloadForDeviceChange);
         window.removeEventListener("load", startApplying);
         if (startTimer !== undefined) window.clearTimeout(startTimer);
       };
@@ -206,8 +214,9 @@ export function VisualEditorRuntime() {
       }
 
       if (data.type === "ve:update" && data.selector) {
-        const key = scopeKey(window.location.pathname, data.selector);
-        const prev = map[key] ?? map[data.selector] ?? {};
+        const key = scopeKey(window.location.pathname, data.selector, visualDevice);
+        const legacyKey = scopeKey(window.location.pathname, data.selector);
+        const prev = map[key] ?? (visualDevice === "mobile" ? (map[legacyKey] ?? map[data.selector]) : undefined) ?? {};
         const patch = data.patch ?? {};
         map = {
           ...map,
@@ -224,8 +233,11 @@ export function VisualEditorRuntime() {
         publish();
       } else if (data.type === "ve:reset" && data.selector) {
         const next = { ...map };
-        delete next[scopeKey(window.location.pathname, data.selector)];
-        delete next[data.selector];
+        delete next[scopeKey(window.location.pathname, data.selector, visualDevice)];
+        if (visualDevice === "mobile") {
+          delete next[scopeKey(window.location.pathname, data.selector)];
+          delete next[data.selector];
+        }
         map = next;
         saveOverrides(map);
         publish();
@@ -280,6 +292,7 @@ export function VisualEditorRuntime() {
       obs.disconnect();
       stopTouchHover();
       stopInspector?.();
+      window.removeEventListener("resize", reloadForDeviceChange);
       window.removeEventListener("load", startApplying);
       if (startTimer !== undefined) window.clearTimeout(startTimer);
 
