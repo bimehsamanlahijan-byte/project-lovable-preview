@@ -51,7 +51,7 @@ function ContentPage({ path }: { path: string }) {
       <SiteHeader />
       <InsuranceWheel />
 
-      <section className="relative overflow-hidden">
+      <section className="page-hero relative overflow-hidden">
         <img
           src={pageImage(path)}
           alt={content.title}
@@ -168,7 +168,7 @@ function UnderConstruction() {
       <SiteHeader />
       <InsuranceWheel />
 
-      <section className="gradient-hero text-primary-foreground">
+      <section className="page-hero gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 py-12 md:py-16">
           <nav className="flex items-center flex-wrap gap-2 text-xs opacity-85 mb-4">
             <a href="/" className="hover:underline">خانه</a>
