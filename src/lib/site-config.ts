@@ -265,6 +265,17 @@ export type WheelIntroSettings = {
   centerImageSize: number;
   centerTitle: string;
   centerSubtitle: string;
+  /* needle length per breakpoint (px) */
+  needleLenDesktop: number;
+  needleLenTablet: number;
+  needleLenMobile: number;
+  /* center text offset per breakpoint (px) */
+  centerTextXDesktop: number;
+  centerTextYDesktop: number;
+  centerTextXTablet: number;
+  centerTextYTablet: number;
+  centerTextXMobile: number;
+  centerTextYMobile: number;
   /* how the section behaves on inner pages (non-home) */
   innerMode: "full" | "collapse" | "modal" | "bubble";
   innerLabel: string;
@@ -307,6 +318,15 @@ export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   centerImageSize: 56,
   centerTitle: "بیمه‌نامه‌های سامان",
   centerSubtitle: "روی هر بیمه قرار بگیرید",
+  needleLenDesktop: 150,
+  needleLenTablet: 120,
+  needleLenMobile: 95,
+  centerTextXDesktop: 0,
+  centerTextYDesktop: 0,
+  centerTextXTablet: 0,
+  centerTextYTablet: 0,
+  centerTextXMobile: 0,
+  centerTextYMobile: 0,
   innerMode: "collapse",
   innerLabel: "ارائه کلیه خدمات بیمه‌ای در سریع‌ترین زمان ممکن",
   innerAnimMs: 500,
