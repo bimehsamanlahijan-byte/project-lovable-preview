@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T07:07:16.158Z",
+  "exportedAt": "2026-09-11T07:07:48.175Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -747,10 +747,22 @@
               "font-weight": "500"
             },
             "hoverDeep": false
+          },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > a:nth-of-type(4)": {
+            "text": "بیمه آتش سوزی طرح کسب و کار",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
           }
         }
       },
-      "updated_at": "2026-09-11T07:07:09.018+00:00"
+      "updated_at": "2026-09-11T07:07:42.098+00:00"
     }
   ]
 }
