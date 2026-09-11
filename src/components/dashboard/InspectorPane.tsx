@@ -111,7 +111,7 @@ export function InspectorPane() {
     frame.current?.contentWindow?.postMessage({ type: "ve:mode", mode }, "*");
   }, [mode]);
 
-  const srcFor = (p: string) => `${p}${p.includes("?") ? "&" : "?"}ve=1&inspect=1`;
+  const srcFor = (p: string) => `${p}${p.includes("?") ? "&" : "?"}ve=1&inspect=1&veDevice=${device}`;
 
   async function copy() {
     if (!report) return;
@@ -159,15 +159,15 @@ export function InspectorPane() {
         </select>
 
         <div className="flex rounded-xl overflow-hidden border border-slate-300 bg-white">
-          <button onClick={() => setDevice("desktop")}
+          <button onClick={() => { setDevice("desktop"); setReport(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "desktop" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Monitor className="w-3.5 h-3.5" /> دسکتاپ
           </button>
-          <button onClick={() => setDevice("tablet")}
+          <button onClick={() => { setDevice("tablet"); setReport(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "tablet" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Tablet className="w-3.5 h-3.5" /> تبلت
           </button>
-          <button onClick={() => setDevice("mobile")}
+          <button onClick={() => { setDevice("mobile"); setReport(null); }}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "mobile" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Smartphone className="w-3.5 h-3.5" /> موبایل
           </button>
@@ -217,14 +217,14 @@ export function InspectorPane() {
         گرفتن کد یک عنصر در این حالت، در کامپیوتر Alt را نگه دارید و کلیک کنید و در موبایل انگشت را روی عنصر نگه دارید.
       </p>
 
-      <div className={wide ? "grid gap-5" : "grid lg:grid-cols-3 gap-5"}>
-        <div className={`${cardCls} ${wide ? "" : "lg:col-span-2"} overflow-hidden`}>
+      <div className={wide || device === "desktop" ? "grid gap-5" : "grid lg:grid-cols-3 gap-5"}>
+        <div className={`${cardCls} ${wide || device === "desktop" ? "" : "lg:col-span-2"} overflow-hidden`}>
           <div className="mx-auto" style={{ width: device === "mobile" ? 390 : device === "tablet" ? 834 : "100%", maxWidth: "100%" }}>
             <iframe
               ref={frame}
               src={srcFor(page)}
               title="inspector"
-              className={`w-full rounded-xl border border-slate-200 bg-white ${wide ? "h-[85vh]" : "h-[70vh]"}`}
+              className={`w-full rounded-xl border border-slate-200 bg-white ${wide || device === "desktop" ? "h-[85vh]" : "h-[70vh]"}`}
             />
           </div>
         </div>
