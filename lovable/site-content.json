@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T05:35:51.623Z",
+  "exportedAt": "2026-09-11T07:06:28.732Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -24,31 +24,6 @@
       "updated_at": "2026-09-09T08:39:09.126+00:00"
     },
     {
-      "key": "docs_intake",
-      "value": {
-        "title": "ارسال مدارک بیمه",
-        "enabled": true,
-        "maxSizeMb": 10,
-        "acceptedTypes": "image/*,application/pdf"
-      },
-      "updated_at": "2026-09-07T03:43:01.145284+00:00"
-    },
-    {
-      "key": "hero_slider",
-      "value": {
-        "fit": "cover",
-        "loop": true,
-        "ratioH": 360,
-        "ratioW": 1200,
-        "slides": [],
-        "autoplay": true,
-        "heightPx": 420,
-        "autoplayMs": 3750,
-        "heightMode": "ratio"
-      },
-      "updated_at": "2026-09-07T03:43:01.145284+00:00"
-    },
-    {
       "key": "seo_config",
       "value": {
         "pages": [
@@ -64,7 +39,7 @@
           },
           {
             "id": "/insurance",
-            "path": "/insurance",
+            "path": "/insurance/health",
             "title": "انواع بیمه‌ها",
             "priority": "0.8",
             "sitelink": true,
@@ -139,7 +114,32 @@
         "searchUrlTemplate": "",
         "defaultDescription": "خرید آنلاین انواع بیمه شخص ثالث، بدنه، عمر، درمان، مسافرتی، آتش‌سوزی و موبایل از نمایندگی آذرخش بیمه سامان."
       },
-      "updated_at": "2026-09-09T03:32:00.587+00:00"
+      "updated_at": "2026-09-11T06:51:27.668+00:00"
+    },
+    {
+      "key": "docs_intake",
+      "value": {
+        "title": "ارسال مدارک بیمه",
+        "enabled": true,
+        "maxSizeMb": 10,
+        "acceptedTypes": "image/*,application/pdf"
+      },
+      "updated_at": "2026-09-07T03:43:01.145284+00:00"
+    },
+    {
+      "key": "hero_slider",
+      "value": {
+        "fit": "cover",
+        "loop": true,
+        "ratioH": 360,
+        "ratioW": 1200,
+        "slides": [],
+        "autoplay": true,
+        "heightPx": 420,
+        "autoplayMs": 3750,
+        "heightMode": "ratio"
+      },
+      "updated_at": "2026-09-07T03:43:01.145284+00:00"
     },
     {
       "key": "wheel_intro",
@@ -275,7 +275,7 @@
               "text-align": "start",
               "font-family": "Vazirmatn, system-ui, sans-serif",
               "font-weight": "400",
-              "background-color": "rgba(229, 54, 78, 1)"
+              "background-color": "transparent"
             },
             "hoverDeep": false
           },
@@ -723,10 +723,22 @@
               "background-color": "rgba(255, 255, 255, 1)"
             },
             "hoverDeep": false
+          },
+          "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > a:nth-of-type(1)": {
+            "text": "بیمه آتش سوزی منازل مسکونی",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
           }
         }
       },
-      "updated_at": "2026-09-11T05:35:48.371+00:00"
+      "updated_at": "2026-09-11T07:06:23.472+00:00"
     }
   ]
 }
