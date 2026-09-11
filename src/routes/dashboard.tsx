@@ -15,6 +15,10 @@ import {
   RefreshCw,
   Monitor,
   Smartphone,
+  Tablet,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
   Wand2,
   ChevronLeft,
   Share2,
@@ -78,9 +82,10 @@ type Damage = {
   id: string; full_name: string; phone: string; policy_number: string | null;
   accident_date: string | null; status: string; created_at: string;
 };
+type MenuDevice = "desktop" | "mobile" | "tablet" | "both";
 type MenuItem = {
   id: string; label: string; href: string | null; parent_id: string | null;
-  position: number; device: "desktop" | "mobile" | "both"; is_active: boolean;
+  position: number; device: MenuDevice; is_active: boolean;
 };
 type FooterSection = { id: string; title: string; position: number; is_active: boolean };
 type FooterLink = { id: string; section_id: string; label: string; href: string; position: number };
@@ -117,7 +122,7 @@ function Dashboard() {
     { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
     { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
     { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
-    { key: "menu", label: "منوی هدر (دسکتاپ/موبایل)", icon: MenuIcon },
+    { key: "menu", label: "ویرایش برگها (دسکتاپ/موبایل/تبلت)", icon: MenuIcon },
     { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
     { key: "social", label: "شبکه‌های اجتماعی", icon: Share2 },
     { key: "ai", label: "چت هوش مصنوعی", icon: Bot },
@@ -1236,12 +1241,21 @@ function DamagesPane() {
 function MenuPane() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [saving, setSaving] = useState(false);
+  const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
+  const dragId = useRef<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     const { data } = await adminDb("site_menu_items").select("*").order("position", { ascending: true });
-    setItems((data as MenuItem[]) || []);
+    // Defensive dedupe: the same row must never render twice.
+    const seen = new Set<string>();
+    const rows = ((data as MenuItem[]) || []).filter((r) => {
+      if (seen.has(r.id)) return false;
+      seen.add(r.id);
+      return true;
+    });
+    setItems(rows);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -1253,30 +1267,121 @@ function MenuPane() {
   const roots = shown.filter((i) => !i.parent_id);
   const childrenOf = (id: string) => shown.filter((i) => i.parent_id === id);
 
+  const siblingsOf = (parent_id: string | null, excludeId?: string) =>
+    items
+      .filter((i) => i.parent_id === parent_id && i.id !== excludeId)
+      .sort((a, b) => a.position - b.position);
+
+  /** True when `id` sits inside the subtree of `ancestorId`. */
+  const isDescendant = (id: string, ancestorId: string): boolean => {
+    let cur = items.find((i) => i.id === id)?.parent_id ?? null;
+    while (cur) {
+      if (cur === ancestorId) return true;
+      cur = items.find((i) => i.id === cur)?.parent_id ?? null;
+    }
+    return false;
+  };
+
+  /** Rewrites parent_id/position for one sibling list. UPDATE only — never INSERT. */
+  const persistOrder = async (parent_id: string | null, orderedIds: string[]) => {
+    for (let p = 0; p < orderedIds.length; p++) {
+      await adminDb("site_menu_items").update({ parent_id, position: p } as any).eq("id", orderedIds[p]);
+    }
+  };
+
   const add = async (parent_id: string | null) => {
+    if (saving) return;
     const label = prompt("عنوان آیتم منو:");
     if (!label) return;
     const href = prompt("لینک (اختیاری):") || null;
+    setSaving(true);
     const siblings = items.filter((i) => i.parent_id === parent_id);
     await adminDb("site_menu_items").insert({
       label, href, parent_id, position: siblings.length,
       device: parent_id ? "both" : device, is_active: true,
     } as any);
-    load();
+    await load();
+    setSaving(false);
   };
+
+  /**
+   * Edit/Save path. Always an UPDATE on the existing id — the id itself is
+   * stripped from the patch so it can never be overwritten, and the `saving`
+   * guard blocks double-clicks and re-entrant saves (the old duplicate bug).
+   */
   const update = async (id: string, patch: Partial<MenuItem>) => {
-    await adminDb("site_menu_items").update(patch as any).eq("id", id);
-    load();
+    if (!id || saving) return;
+    setSaving(true);
+    const { id: _ignored, ...rest } = patch as Partial<MenuItem> & { id?: string };
+    await adminDb("site_menu_items").update(rest as any).eq("id", id);
+    await load();
+    setSaving(false);
   };
+
   const del = async (id: string) => {
+    if (saving) return;
     if (!confirm("این آیتم و همه زیرآیتم‌هایش حذف شود؟")) return;
+    setSaving(true);
     await adminDb("site_menu_items").delete().eq("id", id);
-    load();
+    await load();
+    setSaving(false);
+  };
+
+  /** Moves an item one step up/down among its siblings. UPDATE on position only. */
+  const move = async (item: MenuItem, dir: -1 | 1) => {
+    if (saving) return;
+    const sibs = siblingsOf(item.parent_id);
+    const idx = sibs.findIndex((s) => s.id === item.id);
+    const swap = sibs[idx + dir];
+    if (!swap) return;
+    setSaving(true);
+    await adminDb("site_menu_items").update({ position: swap.position } as any).eq("id", item.id);
+    await adminDb("site_menu_items").update({ position: item.position } as any).eq("id", swap.id);
+    await load();
+    setSaving(false);
+  };
+
+  /** Drop on the strip above a row: insert dragged item right before that row. */
+  const dropBefore = async (targetId: string) => {
+    const src = dragId.current;
+    dragId.current = null;
+    if (!src || src === targetId || saving) return;
+    if (isDescendant(targetId, src)) return; // never drop into your own subtree
+    const target = items.find((i) => i.id === targetId);
+    const srcItem = items.find((i) => i.id === src);
+    if (!target || !srcItem) return;
+    setSaving(true);
+    await persistOrder(srcItem.parent_id, siblingsOf(srcItem.parent_id, src).map((i) => i.id));
+    const newSibs = siblingsOf(target.parent_id, src);
+    const at = newSibs.findIndex((i) => i.id === targetId);
+    newSibs.splice(at < 0 ? newSibs.length : at, 0, srcItem);
+    await persistOrder(target.parent_id, newSibs.map((i) => i.id));
+    await load();
+    setSaving(false);
+  };
+
+  /** Drop on a row body (or the root zone with null): make it a child of that row. */
+  const dropInto = async (parentId: string | null) => {
+    const src = dragId.current;
+    dragId.current = null;
+    if (!src || src === parentId || saving) return;
+    if (parentId && isDescendant(parentId, src)) return;
+    const srcItem = items.find((i) => i.id === src);
+    if (!srcItem || srcItem.parent_id === parentId) return;
+    setSaving(true);
+    await persistOrder(srcItem.parent_id, siblingsOf(srcItem.parent_id, src).map((i) => i.id));
+    const newSibs = siblingsOf(parentId, src);
+    newSibs.push(srcItem);
+    await persistOrder(parentId, newSibs.map((i) => i.id));
+    await load();
+    setSaving(false);
   };
 
   /** Fills the table with the menu currently shown on the site, so it can be edited. */
   const importCurrent = async () => {
+    if (saving) return;
     if (items.length && !confirm("منوی فعلی سایت به فهرست اضافه شود؟")) return;
+    setSaving(true);
     const rows: Record<string, unknown>[] = [];
     const walk = (list: NavItem[], parent_id: string | null) => {
       list.forEach((n, i) => {
@@ -1295,20 +1400,27 @@ function MenuPane() {
     };
     walk(navItems, null);
     await adminDb("site_menu_items").insert(rows);
-    load();
+    await load();
+    setSaving(false);
+  };
+
+  const dnd = {
+    onDragStart: (id: string) => { dragId.current = id; },
+    dropBefore,
+    dropInto,
   };
 
   return (
-    <PaneShell title="مدیریت آیتم‌های منو" onRefresh={load}
+    <PaneShell title="ویرایش برگها (دسکتاپ/موبایل/تبلت)" onRefresh={load}
       extra={
         <div className="flex items-center gap-2">
           <DeviceToggle value={device} onChange={setDevice} />
-          <button onClick={importCurrent}
-            className="text-xs font-bold px-3 py-2 rounded-xl border border-slate-300 bg-white">
+          <button onClick={importCurrent} disabled={saving}
+            className="text-xs font-bold px-3 py-2 rounded-xl border border-slate-300 bg-white disabled:opacity-50">
             درون‌ریزی منوی فعلی سایت
           </button>
-          <button onClick={() => add(null)}
-            className="flex items-center gap-1.5 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-xs font-bold px-3 py-2 rounded-xl transition">
+          <button onClick={() => add(null)} disabled={saving}
+            className="flex items-center gap-1.5 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-xs font-bold px-3 py-2 rounded-xl transition disabled:opacity-50">
             <Plus className="w-4 h-4" /> افزودن آیتم اصلی
           </button>
         </div>
@@ -1317,63 +1429,106 @@ function MenuPane() {
       {loading ? <Empty text="در حال بارگذاری..." /> : roots.length === 0 ? (
         <Empty text="هنوز آیتمی برای این نما تعریف نشده — با «افزودن آیتم اصلی» شروع کنید." />
       ) : (
-        <ul className="space-y-2">
-          {roots.map((r) => (
-            <MenuRow key={r.id} item={r} depth={0} onUpdate={update} onDelete={del} onAddChild={add} childrenOf={childrenOf} />
-          ))}
-        </ul>
+        <>
+          <p className="text-[11px] text-slate-500 mb-2">
+            برای جابجایی، دستهٔ ⋮⋮ را بکشید: رها روی خط نازک بالای هر آیتم = مرتب‌سازی، رها روی خود آیتم = تبدیل به زیرمجموعه. دکمه‌های ↑ ↓ هم مرتب‌سازی می‌کنند.
+          </p>
+          <ul className="space-y-2">
+            {roots.map((r) => (
+              <MenuRow key={r.id} item={r} depth={0} saving={saving} dnd={dnd}
+                onUpdate={update} onDelete={del} onAddChild={add} onMove={move} childrenOf={childrenOf} />
+            ))}
+          </ul>
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); dropInto(null); }}
+            className="mt-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-center text-[11px] text-slate-400"
+          >
+            برای انتقال یک آیتم به سطح اصلی، آن را اینجا رها کنید
+          </div>
+        </>
       )}
     </PaneShell>
   );
 }
 
+type MenuDnd = {
+  onDragStart: (id: string) => void;
+  dropBefore: (targetId: string) => void;
+  dropInto: (parentId: string | null) => void;
+};
+
 function MenuRow({
-  item, depth, onUpdate, onDelete, onAddChild, childrenOf,
+  item, depth, saving, dnd, onUpdate, onDelete, onAddChild, onMove, childrenOf,
 }: {
-  item: MenuItem; depth: number;
+  item: MenuItem; depth: number; saving: boolean; dnd: MenuDnd;
   onUpdate: (id: string, patch: Partial<MenuItem>) => void;
   onDelete: (id: string) => void;
   onAddChild: (parent_id: string) => void;
+  onMove: (item: MenuItem, dir: -1 | 1) => void;
   childrenOf: (id: string) => MenuItem[];
 }) {
   const [label, setLabel] = useState(item.label);
   const [href, setHref] = useState(item.href || "");
+  const [dragOver, setDragOver] = useState(false);
   const kids = childrenOf(item.id);
   const dirty = label !== item.label || (href || "") !== (item.href || "");
 
   return (
     <li>
+      {/* Reorder drop strip: drop here = insert before this row */}
+      <div
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => { e.preventDefault(); dnd.dropBefore(item.id); }}
+        className="h-1.5 rounded-full bg-transparent hover:bg-[#0b1e3f]/20 transition"
+      />
       <div style={{ paddingRight: depth * 12 }}>
-        <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl border border-slate-200 p-2.5 hover:border-[#0b1e3f]/40 transition">
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => { e.preventDefault(); setDragOver(false); dnd.dropInto(item.id); }}
+          className={`flex flex-wrap items-center gap-2 bg-white rounded-xl border p-2.5 transition ${dragOver ? "border-[#0b1e3f] ring-2 ring-[#0b1e3f]/20" : "border-slate-200 hover:border-[#0b1e3f]/40"}`}
+        >
+          <span
+            draggable
+            onDragStart={() => dnd.onDragStart(item.id)}
+            title="برای جابجایی بکشید"
+            className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#0b1e3f] transition"
+          >
+            <GripVertical className="w-4 h-4" />
+          </span>
           <span className="w-6 h-6 rounded-md bg-slate-100 grid place-items-center text-[10px] font-bold text-slate-500">{item.position + 1}</span>
           <input value={label} onChange={(e) => setLabel(e.target.value)}
             className="flex-1 min-w-[130px] px-2 py-1.5 text-sm rounded-lg border border-slate-200 focus:border-[#0b1e3f] outline-none" />
           <input value={href} onChange={(e) => setHref(e.target.value)} placeholder="/link" dir="ltr"
             className="w-full sm:w-40 px-2 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-[#0b1e3f] outline-none" />
-          <select value={item.device} onChange={(e) => onUpdate(item.id, { device: e.target.value as any })}
-            className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5">
-            <option value="both">هر دو</option>
+          <select value={item.device} disabled={saving} onChange={(e) => onUpdate(item.id, { device: e.target.value as MenuDevice })}
+            className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5 disabled:opacity-50">
+            <option value="both">همه نماها</option>
             <option value="desktop">دسکتاپ</option>
             <option value="mobile">موبایل</option>
+            <option value="tablet">تبلت</option>
           </select>
           <label className="flex items-center gap-1 text-xs text-slate-600">
-            <input type="checkbox" checked={item.is_active} onChange={(e) => onUpdate(item.id, { is_active: e.target.checked })} />
+            <input type="checkbox" disabled={saving} checked={item.is_active} onChange={(e) => onUpdate(item.id, { is_active: e.target.checked })} />
             فعال
           </label>
+          <IconBtn onClick={() => onMove(item, -1)}><ArrowUp className="w-4 h-4" /></IconBtn>
+          <IconBtn onClick={() => onMove(item, 1)}><ArrowDown className="w-4 h-4" /></IconBtn>
           {dirty && (
-            <IconBtn tone="primary" onClick={() => onUpdate(item.id, { label, href: href || null })}>
+            <IconBtn tone="primary" disabled={saving} onClick={() => onUpdate(item.id, { label, href: href || null })}>
               <Save className="w-4 h-4" />
             </IconBtn>
           )}
-          <IconBtn onClick={() => onAddChild(item.id)}><Plus className="w-4 h-4" /></IconBtn>
-          <IconBtn tone="danger" onClick={() => onDelete(item.id)}><Trash2 className="w-4 h-4" /></IconBtn>
+          <IconBtn disabled={saving} onClick={() => onAddChild(item.id)}><Plus className="w-4 h-4" /></IconBtn>
+          <IconBtn tone="danger" disabled={saving} onClick={() => onDelete(item.id)}><Trash2 className="w-4 h-4" /></IconBtn>
         </div>
       </div>
       {kids.length > 0 && (
         <ul className="mt-2 space-y-2">
           {kids.map((k) => (
-            <MenuRow key={k.id} item={k} depth={depth + 1}
-              onUpdate={onUpdate} onDelete={onDelete} onAddChild={onAddChild} childrenOf={childrenOf} />
+            <MenuRow key={k.id} item={k} depth={depth + 1} saving={saving} dnd={dnd}
+              onUpdate={onUpdate} onDelete={onDelete} onAddChild={onAddChild} onMove={onMove} childrenOf={childrenOf} />
           ))}
         </ul>
       )}
@@ -1495,7 +1650,7 @@ function PaneShell({ title, children, onRefresh, extra }: {
   );
 }
 
-function DeviceToggle({ value, onChange }: { value: "desktop" | "mobile"; onChange: (v: "desktop" | "mobile") => void }) {
+function DeviceToggle({ value, onChange }: { value: "desktop" | "mobile" | "tablet"; onChange: (v: "desktop" | "mobile" | "tablet") => void }) {
   return (
     <div className="inline-flex bg-slate-100 rounded-xl p-1 text-xs font-bold">
       <button onClick={() => onChange("desktop")}
@@ -1506,19 +1661,23 @@ function DeviceToggle({ value, onChange }: { value: "desktop" | "mobile"; onChan
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${value === "mobile" ? "bg-white text-[#0b1e3f] shadow" : "text-slate-500"}`}>
         <Smartphone className="w-3.5 h-3.5" /> موبایل
       </button>
+      <button onClick={() => onChange("tablet")}
+        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${value === "tablet" ? "bg-white text-[#0b1e3f] shadow" : "text-slate-500"}`}>
+        <Tablet className="w-3.5 h-3.5" /> تبلت
+      </button>
     </div>
   );
 }
 
-function IconBtn({ children, onClick, tone = "default" }: {
-  children: React.ReactNode; onClick?: () => void; tone?: "default" | "danger" | "primary";
+function IconBtn({ children, onClick, tone = "default", disabled = false }: {
+  children: React.ReactNode; onClick?: () => void; tone?: "default" | "danger" | "primary"; disabled?: boolean;
 }) {
   const toneCls =
     tone === "danger" ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
     : tone === "primary" ? "bg-[#0b1e3f] text-white hover:bg-[#122b57]"
     : "bg-slate-100 text-slate-600 hover:bg-slate-200";
   return (
-    <button type="button" onClick={onClick}
+    <button disabled={disabled} type="button" onClick={onClick}
       className={`w-8 h-8 grid place-items-center rounded-lg transition ${toneCls}`}>
       {children}
     </button>
