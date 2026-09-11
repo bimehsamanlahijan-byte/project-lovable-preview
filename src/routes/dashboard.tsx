@@ -372,7 +372,7 @@ function VisualEditorPane() {
   const [tab, setTab] = useState<"elements" | "media" | "menus" | "wheel">("elements");
 
 
-  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
   const [mode, setMode] = useState<"select" | "interact">("select");
   const [currentPath, setCurrentPath] = useState("/");
   const [customPath, setCustomPath] = useState("");
@@ -549,6 +549,10 @@ function VisualEditorPane() {
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "desktop" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Monitor className="w-3.5 h-3.5" /> دسکتاپ
           </button>
+          <button onClick={() => setDevice("tablet")}
+            className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "tablet" ? "bg-[#0b1e3f] text-white" : ""}`}>
+            <Tablet className="w-3.5 h-3.5" /> تبلت
+          </button>
           <button onClick={() => setDevice("mobile")}
             className={`px-3 py-2 text-xs flex items-center gap-1.5 ${device === "mobile" ? "bg-[#0b1e3f] text-white" : ""}`}>
             <Smartphone className="w-3.5 h-3.5" /> موبایل
@@ -618,7 +622,15 @@ function VisualEditorPane() {
 
       <div className={wide ? "grid gap-4" : "grid lg:grid-cols-[1fr_320px] gap-4"}>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className={device === "mobile" ? "mx-auto w-full max-w-[390px]" : "w-full"}>
+          <div
+            className={
+              device === "mobile"
+                ? "mx-auto w-full max-w-[390px]"
+                : device === "tablet"
+                  ? "mx-auto w-full max-w-[834px]"
+                  : "w-full"
+            }
+          >
             <iframe
               ref={frame}
               src={`${page}?ve=1`}
