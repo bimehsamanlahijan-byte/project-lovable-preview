@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-11T17:10:20.352Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
+  "exportedAt": "2026-09-11T17:13:47.095Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (hero_slider)",
   "settings": [
     {
       "key": "wheel_background",
@@ -136,10 +136,10 @@
         "slides": [],
         "autoplay": true,
         "heightPx": 420,
-        "autoplayMs": 3750,
+        "autoplayMs": 3000,
         "heightMode": "ratio"
       },
-      "updated_at": "2026-09-07T03:43:01.145284+00:00"
+      "updated_at": "2026-09-11T17:13:34.508+00:00"
     },
     {
       "key": "wheel_intro",
@@ -168,7 +168,7 @@
         "tickerBarColorB": "#3b5a86",
         "tickerSchematic": true
       },
-      "updated_at": "2026-09-08T18:31:34.239+00:00"
+      "updated_at": "2026-09-11T17:13:44.019+00:00"
     },
     {
       "key": "ai_assistant",
