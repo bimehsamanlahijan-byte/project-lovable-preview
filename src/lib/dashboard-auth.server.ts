@@ -125,6 +125,9 @@ export async function dashboardPasswordSource(): Promise<"database" | "env" | "n
 /** Tables the dashboard is allowed to manage. */
 export const ADMIN_TABLES = [
   "contact_messages",
+  "suggestions",
+  "partners",
+  "partner_sales",
   "damage_reports",
   "site_menu_items",
   "site_footer_sections",

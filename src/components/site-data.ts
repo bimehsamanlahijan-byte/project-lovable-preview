@@ -109,6 +109,14 @@ export const navItems: NavItem[] = [
     ],
   },
   { label: "گزارشگری و افشای اطلاعات", href: "/reporting" },
+  {
+    label: "همکاران تیم 8452",
+    href: "/partners",
+    children: [
+      { label: "پنل فروش و پورسانت همکاران", href: "/partners/dashboard" },
+      { label: "انتقادات و پیشنهادات", href: "/suggestions" },
+    ],
+  },
   { label: "ارتباط با ما", href: "/contact" },
   { label: "مجله و خبر", href: "/blog" },
 ];

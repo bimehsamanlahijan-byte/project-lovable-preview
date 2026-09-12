@@ -15,9 +15,11 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as ReportingRouteImport } from './routes/reporting'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SuggestionsRouteImport } from './routes/suggestions'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai-chat'
 import { Route as ApiConsultRouteImport } from './routes/api/consult'
 import { Route as ApiReportDamageRouteImport } from './routes/api/report-damage'
@@ -25,11 +27,14 @@ import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
 import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
 import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
 import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
+import { Route as PartnersDashboardRouteImport } from './routes/partners.dashboard'
 import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-providers'
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
 import { Route as ApiPublicEnvCheckRouteImport } from './routes/api/public/env-check'
+import { Route as ApiPublicPartnerStatsRouteImport } from './routes/api/public/partner-stats'
+import { Route as ApiPublicSuggestionsRouteImport } from './routes/api/public/suggestions'
 import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
 import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
 
@@ -63,6 +68,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportingRoute = ReportingRouteImport.update({
   id: '/reporting',
   path: '/reporting',
@@ -76,6 +86,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuggestionsRoute = SuggestionsRouteImport.update({
+  id: '/suggestions',
+  path: '/suggestions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAiChatRoute = ApiAiChatRouteImport.update({
@@ -113,6 +128,11 @@ const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
   path: '/insurance/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartnersDashboardRoute = PartnersDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => PartnersRoute,
+} as any)
 const ApiAdminAiProvidersRoute = ApiAdminAiProvidersRouteImport.update({
   id: '/api/admin/ai-providers',
   path: '/api/admin/ai-providers',
@@ -138,6 +158,16 @@ const ApiPublicEnvCheckRoute = ApiPublicEnvCheckRouteImport.update({
   path: '/api/public/env-check',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPartnerStatsRoute = ApiPublicPartnerStatsRouteImport.update({
+  id: '/api/public/partner-stats',
+  path: '/api/public/partner-stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSuggestionsRoute = ApiPublicSuggestionsRouteImport.update({
+  id: '/api/public/suggestions',
+  path: '/api/public/suggestions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAssetSplatRoute = ApiPublicAssetSplatRouteImport.update({
   id: '/api/public/asset/$',
   path: '/api/public/asset/$',
@@ -157,14 +187,17 @@ export interface FileRoutesByFullPath {
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/partners': typeof PartnersRouteWithChildren
   '/reporting': typeof ReportingRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suggestions': typeof SuggestionsRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/partners/dashboard': typeof PartnersDashboardRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -172,6 +205,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
+  '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
+  '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -182,14 +217,17 @@ export interface FileRoutesByTo {
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/partners': typeof PartnersRouteWithChildren
   '/reporting': typeof ReportingRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suggestions': typeof SuggestionsRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/partners/dashboard': typeof PartnersDashboardRoute
   '/e-services': typeof EServicesIndexRoute
   '/insurance': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -197,6 +235,8 @@ export interface FileRoutesByTo {
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
+  '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
+  '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -208,14 +248,17 @@ export interface FileRoutesById {
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/partners': typeof PartnersRouteWithChildren
   '/reporting': typeof ReportingRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suggestions': typeof SuggestionsRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/partners/dashboard': typeof PartnersDashboardRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -223,6 +266,8 @@ export interface FileRoutesById {
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
+  '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
+  '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -235,14 +280,17 @@ export interface FileRouteTypes {
     | '/branches'
     | '/contact'
     | '/dashboard'
+    | '/partners'
     | '/reporting'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/suggestions'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/partners/dashboard'
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
@@ -250,6 +298,8 @@ export interface FileRouteTypes {
     | '/api/admin/backend'
     | '/api/admin/upload'
     | '/api/public/env-check'
+    | '/api/public/partner-stats'
+    | '/api/public/suggestions'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesByTo: FileRoutesByTo
@@ -260,14 +310,17 @@ export interface FileRouteTypes {
     | '/branches'
     | '/contact'
     | '/dashboard'
+    | '/partners'
     | '/reporting'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/suggestions'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/partners/dashboard'
     | '/e-services'
     | '/insurance'
     | '/api/admin/ai-providers'
@@ -275,6 +328,8 @@ export interface FileRouteTypes {
     | '/api/admin/backend'
     | '/api/admin/upload'
     | '/api/public/env-check'
+    | '/api/public/partner-stats'
+    | '/api/public/suggestions'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   id:
@@ -285,14 +340,17 @@ export interface FileRouteTypes {
     | '/branches'
     | '/contact'
     | '/dashboard'
+    | '/partners'
     | '/reporting'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/suggestions'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/partners/dashboard'
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
@@ -300,6 +358,8 @@ export interface FileRouteTypes {
     | '/api/admin/backend'
     | '/api/admin/upload'
     | '/api/public/env-check'
+    | '/api/public/partner-stats'
+    | '/api/public/suggestions'
     | '/api/public/asset/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesById: FileRoutesById
@@ -311,9 +371,11 @@ export interface RootRouteChildren {
   BranchesRoute: typeof BranchesRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  PartnersRoute: typeof PartnersRouteWithChildren
   ReportingRoute: typeof ReportingRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SuggestionsRoute: typeof SuggestionsRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiConsultRoute: typeof ApiConsultRoute
   ApiReportDamageRoute: typeof ApiReportDamageRoute
@@ -326,6 +388,8 @@ export interface RootRouteChildren {
   ApiAdminBackendRoute: typeof ApiAdminBackendRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiPublicEnvCheckRoute: typeof ApiPublicEnvCheckRoute
+  ApiPublicPartnerStatsRoute: typeof ApiPublicPartnerStatsRoute
+  ApiPublicSuggestionsRoute: typeof ApiPublicSuggestionsRoute
   ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
   ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
 }
@@ -374,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reporting': {
       id: '/reporting'
       path: '/reporting'
@@ -393,6 +464,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suggestions': {
+      id: '/suggestions'
+      path: '/suggestions'
+      fullPath: '/suggestions'
+      preLoaderRoute: typeof SuggestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ai-chat': {
@@ -444,6 +522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsuranceTravelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/partners/dashboard': {
+      id: '/partners/dashboard'
+      path: '/dashboard'
+      fullPath: '/partners/dashboard'
+      preLoaderRoute: typeof PartnersDashboardRouteImport
+      parentRoute: typeof PartnersRoute
+    }
     '/api/admin/ai-providers': {
       id: '/api/admin/ai-providers'
       path: '/api/admin/ai-providers'
@@ -479,6 +564,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicEnvCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/partner-stats': {
+      id: '/api/public/partner-stats'
+      path: '/api/public/partner-stats'
+      fullPath: '/api/public/partner-stats'
+      preLoaderRoute: typeof ApiPublicPartnerStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/suggestions': {
+      id: '/api/public/suggestions'
+      path: '/api/public/suggestions'
+      fullPath: '/api/public/suggestions'
+      preLoaderRoute: typeof ApiPublicSuggestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/asset/$': {
       id: '/api/public/asset/$'
       path: '/api/public/asset/$'
@@ -496,6 +595,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PartnersRouteChildren {
+  PartnersDashboardRoute: typeof PartnersDashboardRoute
+}
+
+const PartnersRouteChildren: PartnersRouteChildren = {
+  PartnersDashboardRoute: PartnersDashboardRoute,
+}
+
+const PartnersRouteWithChildren = PartnersRoute._addFileChildren(
+  PartnersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
@@ -503,9 +614,11 @@ const rootRouteChildren: RootRouteChildren = {
   BranchesRoute: BranchesRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  PartnersRoute: PartnersRouteWithChildren,
   ReportingRoute: ReportingRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SuggestionsRoute: SuggestionsRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiConsultRoute: ApiConsultRoute,
   ApiReportDamageRoute: ApiReportDamageRoute,
@@ -518,6 +631,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminBackendRoute: ApiAdminBackendRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiPublicEnvCheckRoute: ApiPublicEnvCheckRoute,
+  ApiPublicPartnerStatsRoute: ApiPublicPartnerStatsRoute,
+  ApiPublicSuggestionsRoute: ApiPublicSuggestionsRoute,
   ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
   ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
 }

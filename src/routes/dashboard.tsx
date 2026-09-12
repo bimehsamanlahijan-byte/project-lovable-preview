@@ -36,6 +36,7 @@ import {
   EyeOff,
   Bug,
   Database,
+  MessageSquarePlus,
 
 } from "lucide-react";
 import { SocialPane } from "@/components/dashboard/SocialPane";
@@ -82,6 +83,9 @@ type Damage = {
   id: string; full_name: string; phone: string; policy_number: string | null;
   accident_date: string | null; status: string; created_at: string;
 };
+type Suggestion = {
+  id: string; tracking_id: number; category: string; received_at: string;
+};
 type MenuDevice = "desktop" | "mobile" | "tablet" | "both";
 type MenuItem = {
   id: string; label: string; href: string | null; parent_id: string | null;
@@ -95,6 +99,7 @@ type TabKey =
   | "editor"
   | "inspector"
   | "contacts"
+  | "suggestions"
   | "damages"
   | "menu"
   | "footer"
@@ -121,6 +126,7 @@ function Dashboard() {
     { key: "editor", label: "ویرایشگر بصری سایت", icon: Wand2 },
     { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
     { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
+    { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
     { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
     { key: "menu", label: "ویرایش برگها (دسکتاپ/موبایل/تبلت)", icon: MenuIcon },
     { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
@@ -215,6 +221,7 @@ function Dashboard() {
           {tab === "editor" && <VisualEditorPane />}
           {tab === "inspector" && <InspectorPane />}
           {tab === "contacts" && <ContactsPane />}
+          {tab === "suggestions" && <SuggestionsPane />}
           {tab === "damages" && <DamagesPane />}
           {tab === "menu" && <MenuPane />}
           {tab === "footer" && <FooterPane />}
@@ -1190,6 +1197,49 @@ function ContactsPane() {
                   <Td><IconBtn onClick={() => del(r.id)} tone="danger"><Trash2 className="w-4 h-4" /></IconBtn></Td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </PaneShell>
+  );
+}
+
+/* ---------- Suggestions & Criticism ---------- */
+function SuggestionsPane() {
+  const [rows, setRows] = useState<Suggestion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const load = async () => {
+    setLoading(true);
+    const { data } = await adminDb("suggestions")
+      .select("id, tracking_id, category, received_at")
+      .order("received_at", { ascending: false })
+      .limit(200);
+    setRows((data as Suggestion[]) || []); setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+  return (
+    <PaneShell title="انتقادات و پیشنهادات" onRefresh={load}>
+      {loading ? <Empty text="در حال بارگذاری..." /> : rows.length === 0 ? <Empty text="موردی ثبت نشده." /> : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <Th>کد رهگیری</Th><Th>نوع</Th><Th>تاریخ دریافت</Th><Th>ساعت دریافت</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => {
+                const d = new Date(r.received_at);
+                return (
+                  <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/60">
+                    <Td dir="ltr">{r.tracking_id}</Td>
+                    <Td>{r.category === "criticism" ? "انتقاد" : "پیشنهاد"}</Td>
+                    <Td className="text-slate-500">{d.toLocaleDateString("fa-IR")}</Td>
+                    <Td className="text-slate-500">{d.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" })}</Td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
