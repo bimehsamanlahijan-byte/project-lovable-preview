@@ -2,8 +2,9 @@ import headerLogo from "@/assets/logoheder.png";
 import { adminDb, adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { AdminToaster } from "@/lib/notify";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Users,
   LayoutDashboard,
   MessageSquare,
   AlertTriangle,
@@ -86,6 +87,11 @@ type Damage = {
 type Suggestion = {
   id: string; tracking_id: number; category: string; received_at: string;
 };
+type PartnerApplication = {
+  id: string; applicant_id: string; full_name: string; national_id: string; phone: string;
+  province: string | null; city: string | null; education: string | null; experience: string | null;
+  cooperation_type: string | null; branches: string[] | null; status: string; received_at: string;
+};
 type MenuDevice = "desktop" | "mobile" | "tablet" | "both";
 type MenuItem = {
   id: string; label: string; href: string | null; parent_id: string | null;
@@ -100,6 +106,7 @@ type TabKey =
   | "inspector"
   | "contacts"
   | "suggestions"
+  | "applications"
   | "damages"
   | "menu"
   | "footer"
@@ -127,6 +134,7 @@ function Dashboard() {
     { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
     { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
     { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
+    { key: "applications", label: "درخواست همکاری", icon: Users },
     { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
     { key: "menu", label: "ویرایش برگها (دسکتاپ/موبایل/تبلت)", icon: MenuIcon },
     { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
@@ -222,6 +230,7 @@ function Dashboard() {
           {tab === "inspector" && <InspectorPane />}
           {tab === "contacts" && <ContactsPane />}
           {tab === "suggestions" && <SuggestionsPane />}
+          {tab === "applications" && <PartnerApplicationsPane />}
           {tab === "damages" && <DamagesPane />}
           {tab === "menu" && <MenuPane />}
           {tab === "footer" && <FooterPane />}
@@ -1238,6 +1247,92 @@ function SuggestionsPane() {
                     <Td className="text-slate-500">{d.toLocaleDateString("fa-IR")}</Td>
                     <Td className="text-slate-500">{d.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" })}</Td>
                   </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </PaneShell>
+  );
+}
+
+/* ---------- Partner cooperation applications ---------- */
+function PartnerApplicationsPane() {
+  const [rows, setRows] = useState<PartnerApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState<string | null>(null);
+  const load = async () => {
+    setLoading(true);
+    const { data } = await adminDb("partner_applications")
+      .select("*")
+      .order("received_at", { ascending: false })
+      .limit(200);
+    setRows((data as PartnerApplication[]) || []); setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+  const setStatus = async (id: string, status: string) => {
+    await adminDb("partner_applications").update({ status } as any).eq("id", id);
+    load();
+  };
+  const del = async (id: string) => {
+    if (!confirm("حذف شود؟")) return;
+    await adminDb("partner_applications").delete().eq("id", id);
+    load();
+  };
+  return (
+    <PaneShell title="درخواست همکاری در فروش" onRefresh={load}>
+      {loading ? <Empty text="در حال بارگذاری..." /> : rows.length === 0 ? <Empty text="موردی ثبت نشده." /> : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <Th>آیدی متقاضی</Th><Th>کد ملی</Th><Th>تماس</Th><Th>استان/شهر</Th>
+                <Th>سابقه</Th><Th>وضعیت</Th><Th>تاریخ</Th><Th>ساعت</Th><Th>عملیات</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => {
+                const d = new Date(r.received_at);
+                return (
+                  <Fragment key={r.id}>
+                    <tr className="border-t border-slate-100 hover:bg-slate-50/60">
+                      <Td>
+                        <button className="font-bold text-sky-700 hover:underline" onClick={() => setOpen(open === r.id ? null : r.id)}>
+                          {r.applicant_id}
+                        </button>
+                      </Td>
+                      <Td dir="ltr">{r.national_id}</Td>
+                      <Td dir="ltr">{r.phone}</Td>
+                      <Td>{[r.province, r.city].filter(Boolean).join(" / ")}</Td>
+                      <Td>{r.experience}</Td>
+                      <Td>
+                        <select
+                          value={r.status}
+                          onChange={(e) => setStatus(r.id, e.target.value)}
+                          className="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+                        >
+                          <option value="new">جدید</option>
+                          <option value="reviewing">در حال بررسی</option>
+                          <option value="accepted">تایید شده</option>
+                          <option value="rejected">رد شده</option>
+                        </select>
+                      </Td>
+                      <Td className="text-slate-500">{d.toLocaleDateString("fa-IR")}</Td>
+                      <Td className="text-slate-500">{d.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" })}</Td>
+                      <Td>
+                        <button onClick={() => del(r.id)} className="text-rose-600 hover:underline text-xs">حذف</button>
+                      </Td>
+                    </tr>
+                    {open === r.id && (
+                      <tr className="bg-slate-50/70 border-t border-slate-100">
+                        <td colSpan={9} className="p-4 text-xs leading-6 text-slate-600">
+                          <div>تحصیلات: {r.education} — نوع همکاری: {r.cooperation_type}</div>
+                          <div>شاخه‌های مورد علاقه: {(r.branches || []).join("، ") || "—"}</div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

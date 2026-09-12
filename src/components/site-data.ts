@@ -98,7 +98,6 @@ export const navItems: NavItem[] = [
       { label: "انواع بیمه‌های سامان", href: "/insurance" },
     ],
   },
-  { label: "شعب و نمایندگان", href: "/branches" },
   {
     label: "خدمات الکترونیک",
     href: "/e-services",
@@ -108,15 +107,15 @@ export const navItems: NavItem[] = [
       { label: "پرداخت آنلاین حق بیمه", href: "/e-services/insurance-payment" },
     ],
   },
-  { label: "گزارشگری و افشای اطلاعات", href: "/reporting" },
   {
     label: "همکاران تیم 8452",
     href: "/partners",
     children: [
       { label: "پنل فروش و پورسانت همکاران", href: "/partners/dashboard" },
-      { label: "انتقادات و پیشنهادات", href: "/suggestions" },
+      { label: "درخواست همکاری در فروش", href: "/partners/apply" },
     ],
   },
+  { label: "انتقادات و پیشنهادات", href: "/suggestions" },
   { label: "ارتباط با ما", href: "/contact" },
   { label: "مجله و خبر", href: "/blog" },
 ];

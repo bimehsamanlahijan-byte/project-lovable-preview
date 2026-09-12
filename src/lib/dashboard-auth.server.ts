@@ -128,6 +128,7 @@ export const ADMIN_TABLES = [
   "suggestions",
   "partners",
   "partner_sales",
+  "partner_applications",
   "damage_reports",
   "site_menu_items",
   "site_footer_sections",
