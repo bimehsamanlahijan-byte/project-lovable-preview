@@ -1,0 +1,100 @@
+
+/* Partner application form: visual match to the reference form. */
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "AnjomanMaxFN";
+  src: url("/fonts/AnjomanMaxFN-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.partner-input {
+  width: 100%;
+  min-height: 3.25rem;
+  border: 1px solid var(--input);
+  border-radius: 1rem;
+  background: var(--card);
+  color: var(--foreground);
+  padding: .75rem 1rem;
+  outline: none;
+  font-family: "AnjomanMaxFN", var(--font-sans), Tahoma, sans-serif;
+  font-size: 1rem;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.partner-input::placeholder {
+  color: var(--muted-foreground);
+  opacity: .8;
+}
+
+.partner-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+.partner-input:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.partner-field.required::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 2;
+  width: 7px;
+  height: 7px;
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 999px;
+  background: #ef4444;
+}
+
+.partner-field {
+  position: relative;
+}
+
+.partner-field.required .partner-input {
+  padding-right: 1.6rem;
+}
+
+@media (min-width: 768px) {
+  .partner-input {
+    min-height: 3.4rem;
+  }
+}

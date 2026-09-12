@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, BarChart3, MessageSquarePlus } from "lucide-react";
+import { Users, BarChart3, MessageSquarePlus, ArrowLeft } from "lucide-react";
 
 import { ItemPage } from "@/components/ItemPage";
 
@@ -47,13 +47,22 @@ function PartnersPage() {
       </div>
 
       <div className="mt-10 grid md:grid-cols-3 gap-4">
-        <div className="bg-card rounded-3xl p-6 shadow-elegant border border-border">
+        <a
+          href="/partners/apply"
+          className="group bg-card rounded-3xl p-6 shadow-elegant border border-border hover:border-primary hover:-translate-y-1 transition block"
+          aria-label="عضویت در تیم ۸۴۵۲ و ثبت درخواست همکاری"
+        >
           <Users className="w-8 h-8 text-primary mb-3" />
           <h2 className="font-extrabold mb-2">عضویت در تیم</h2>
           <p className="text-sm text-muted-foreground leading-7">
-            برای پیوستن به تیم ۸۴۵۲ و دریافت کد همکاری، با مدیریت نمایندگی در تماس باشید.
+            فرم درخواست همکاری را تکمیل کنید تا اطلاعات شما برای بررسی عضویت در تیم ۸۴۵۲ ثبت شود.
           </p>
-        </div>
+          <span className="mt-4 inline-flex items-center gap-1 text-primary text-sm font-bold">
+            تکمیل فرم درخواست
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          </span>
+        </a>
+
         <a
           href="/partners/dashboard"
           className="bg-card rounded-3xl p-6 shadow-elegant border border-border hover:border-primary transition block"
@@ -64,6 +73,7 @@ function PartnersPage() {
             با کد همکاری خود وارد شوید و گزارش فروش و پورسانت‌تان را ببینید.
           </p>
         </a>
+
         <a
           href="/suggestions"
           className="bg-card rounded-3xl p-6 shadow-elegant border border-border hover:border-primary transition block"
