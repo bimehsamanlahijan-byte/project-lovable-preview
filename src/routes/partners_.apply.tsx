@@ -23,7 +23,7 @@ type FormState = {
   hp_field: string;
 };
 
-export const Route = createFileRoute("/partners/apply")({
+export const Route = createFileRoute("/partners_/apply")({
   head: () => ({
     meta: [
       { title: "درخواست همکاری در فروش | بیمه سامان ۸۴۵۲" },

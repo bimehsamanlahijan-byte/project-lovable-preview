@@ -27,8 +27,8 @@ import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
 import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
 import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
 import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
-import { Route as PartnersApplyRouteImport } from './routes/partners.apply'
 import { Route as PartnersDashboardRouteImport } from './routes/partners.dashboard'
+import { Route as PartnersApplyRouteImport } from './routes/partners_.apply'
 import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-providers'
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
@@ -130,15 +130,15 @@ const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
   path: '/insurance/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PartnersApplyRoute = PartnersApplyRouteImport.update({
-  id: '/apply',
-  path: '/apply',
-  getParentRoute: () => PartnersRoute,
-} as any)
 const PartnersDashboardRoute = PartnersDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => PartnersRoute,
+} as any)
+const PartnersApplyRoute = PartnersApplyRouteImport.update({
+  id: '/partners_/apply',
+  path: '/partners/apply',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminAiProvidersRoute = ApiAdminAiProvidersRouteImport.update({
   id: '/api/admin/ai-providers',
@@ -210,8 +210,8 @@ export interface FileRoutesByFullPath {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
-  '/partners/apply': typeof PartnersApplyRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
+  '/partners/apply': typeof PartnersApplyRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -242,8 +242,8 @@ export interface FileRoutesByTo {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
-  '/partners/apply': typeof PartnersApplyRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
+  '/partners/apply': typeof PartnersApplyRoute
   '/e-services': typeof EServicesIndexRoute
   '/insurance': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -275,8 +275,8 @@ export interface FileRoutesById {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
-  '/partners/apply': typeof PartnersApplyRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
+  '/partners_/apply': typeof PartnersApplyRoute
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
@@ -309,8 +309,8 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
-    | '/partners/apply'
     | '/partners/dashboard'
+    | '/partners/apply'
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
@@ -341,8 +341,8 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
-    | '/partners/apply'
     | '/partners/dashboard'
+    | '/partners/apply'
     | '/e-services'
     | '/insurance'
     | '/api/admin/ai-providers'
@@ -373,8 +373,8 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
-    | '/partners/apply'
     | '/partners/dashboard'
+    | '/partners_/apply'
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
@@ -406,6 +406,7 @@ export interface RootRouteChildren {
   ApiReportDamageRoute: typeof ApiReportDamageRoute
   ApiTravelOrderRoute: typeof ApiTravelOrderRoute
   InsuranceTravelRoute: typeof InsuranceTravelRoute
+  PartnersApplyRoute: typeof PartnersApplyRoute
   EServicesIndexRoute: typeof EServicesIndexRoute
   InsuranceIndexRoute: typeof InsuranceIndexRoute
   ApiAdminAiProvidersRoute: typeof ApiAdminAiProvidersRoute
@@ -548,19 +549,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsuranceTravelRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/partners/apply': {
-      id: '/partners/apply'
-      path: '/apply'
-      fullPath: '/partners/apply'
-      preLoaderRoute: typeof PartnersApplyRouteImport
-      parentRoute: typeof PartnersRoute
-    }
     '/partners/dashboard': {
       id: '/partners/dashboard'
       path: '/dashboard'
       fullPath: '/partners/dashboard'
       preLoaderRoute: typeof PartnersDashboardRouteImport
       parentRoute: typeof PartnersRoute
+    }
+    '/partners_/apply': {
+      id: '/partners_/apply'
+      path: '/partners/apply'
+      fullPath: '/partners/apply'
+      preLoaderRoute: typeof PartnersApplyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/ai-providers': {
       id: '/api/admin/ai-providers'
@@ -636,12 +637,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface PartnersRouteChildren {
-  PartnersApplyRoute: typeof PartnersApplyRoute
   PartnersDashboardRoute: typeof PartnersDashboardRoute
 }
 
 const PartnersRouteChildren: PartnersRouteChildren = {
-  PartnersApplyRoute: PartnersApplyRoute,
   PartnersDashboardRoute: PartnersDashboardRoute,
 }
 
@@ -666,6 +665,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReportDamageRoute: ApiReportDamageRoute,
   ApiTravelOrderRoute: ApiTravelOrderRoute,
   InsuranceTravelRoute: InsuranceTravelRoute,
+  PartnersApplyRoute: PartnersApplyRoute,
   EServicesIndexRoute: EServicesIndexRoute,
   InsuranceIndexRoute: InsuranceIndexRoute,
   ApiAdminAiProvidersRoute: ApiAdminAiProvidersRoute,
