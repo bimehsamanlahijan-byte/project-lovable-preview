@@ -1444,31 +1444,81 @@ function MenuPane() {
     setSaving(false);
   };
 
-  /** Fills the table with the menu currently shown on the site, so it can be edited. */
+  /**
+   * Syncs the built-in site menu into the table WITHOUT creating duplicates:
+   * only entries that are not already stored (same parent + label + link) are
+   * inserted. Running it twice is a no-op.
+   */
   const importCurrent = async () => {
     if (saving) return;
-    if (items.length && !confirm("منوی فعلی سایت به فهرست اضافه شود؟")) return;
     setSaving(true);
+    const { data } = await adminDb("site_menu_items").select("*");
+    const existing = (data as MenuItem[]) || [];
+    const keyOf = (parent_id: string | null, label: string, href: string | null) =>
+      `${parent_id ?? ""}|${label.trim()}|${(href ?? "").trim()}`;
+    const byKey = new Map<string, MenuItem>();
+    for (const r of existing) byKey.set(keyOf(r.parent_id, r.label, r.href), r);
+
     const rows: Record<string, unknown>[] = [];
     const walk = (list: NavItem[], parent_id: string | null) => {
       list.forEach((n, i) => {
-        const id = crypto.randomUUID();
-        rows.push({
-          id,
-          parent_id,
-          label: n.label,
-          href: n.href ?? null,
-          position: i,
-          device: "both",
-          is_active: true,
-        });
+        const key = keyOf(parent_id, n.label, n.href ?? null);
+        let id = byKey.get(key)?.id;
+        if (!id) {
+          id = crypto.randomUUID();
+          rows.push({
+            id,
+            parent_id,
+            label: n.label,
+            href: n.href ?? null,
+            position: i,
+            device: "both",
+            is_active: true,
+          });
+          byKey.set(key, { id, parent_id, label: n.label, href: n.href ?? null } as MenuItem);
+        }
         if (n.children?.length) walk(n.children, id);
       });
     };
     walk(navItems, null);
-    await adminDb("site_menu_items").insert(rows);
+    if (rows.length) await adminDb("site_menu_items").insert(rows);
     await load();
     setSaving(false);
+    alert(rows.length ? `${rows.length} آیتم تازه اضافه شد.` : "همه آیتم‌ها از قبل موجود بودند.");
+  };
+
+  /** Removes rows that repeat the same parent + label + link, keeping the first. */
+  const cleanupDuplicates = async () => {
+    if (saving) return;
+    if (!confirm("آیتم‌های تکراری منو حذف شوند؟")) return;
+    setSaving(true);
+    const { data } = await adminDb("site_menu_items").select("*").order("position", { ascending: true });
+    const rows = (data as MenuItem[]) || [];
+    const seen = new Map<string, string>();
+    const remap = new Map<string, string>(); // duplicate id -> kept id
+    const doomed: string[] = [];
+    for (const r of rows) {
+      const key = `${r.parent_id ?? ""}|${r.label.trim()}|${(r.href ?? "").trim()}`;
+      const kept = seen.get(key);
+      if (kept) {
+        remap.set(r.id, kept);
+        doomed.push(r.id);
+      } else {
+        seen.set(key, r.id);
+      }
+    }
+    // Re-parent children of removed rows onto the surviving twin, then delete.
+    for (const r of rows) {
+      if (r.parent_id && remap.has(r.parent_id) && !remap.has(r.id)) {
+        await adminDb("site_menu_items").update({ parent_id: remap.get(r.parent_id) } as any).eq("id", r.id);
+      }
+    }
+    for (const id of doomed) {
+      await adminDb("site_menu_items").delete().eq("id", id);
+    }
+    await load();
+    setSaving(false);
+    alert(doomed.length ? `${doomed.length} آیتم تکراری حذف شد.` : "آیتم تکراری پیدا نشد.");
   };
 
   const dnd = {
@@ -1484,7 +1534,11 @@ function MenuPane() {
           <DeviceToggle value={device} onChange={setDevice} />
           <button onClick={importCurrent} disabled={saving}
             className="text-xs font-bold px-3 py-2 rounded-xl border border-slate-300 bg-white disabled:opacity-50">
-            درون‌ریزی منوی فعلی سایت
+            همگام‌سازی با منوی سایت
+          </button>
+          <button onClick={cleanupDuplicates} disabled={saving}
+            className="text-xs font-bold px-3 py-2 rounded-xl border border-rose-300 text-rose-600 bg-white disabled:opacity-50">
+            حذف آیتم‌های تکراری
           </button>
           <button onClick={() => add(null)} disabled={saving}
             className="flex items-center gap-1.5 bg-[#0b1e3f] hover:bg-[#122b57] text-white text-xs font-bold px-3 py-2 rounded-xl transition disabled:opacity-50">

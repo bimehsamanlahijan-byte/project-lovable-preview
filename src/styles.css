@@ -270,3 +270,28 @@
 .tick-bar-slide { animation: tick-bar-slide 3.2s ease-in-out infinite; }
 .tick-bar-pulse { animation: tick-bar-pulse 2.4s ease-in-out infinite; }
 .tick-bar-wave { animation: tick-bar-wave 2.2s ease-in-out infinite; transform-origin: center; }
+
+/*
+ * Full-bleed layout: Tailwind v4's default `container` caps at the current
+ * breakpoint (1536px), which left white gutters on wide desktops at 100% zoom.
+ * The site is designed edge-to-edge, so the container spans the viewport and
+ * only grows its side padding on large screens.
+ */
+@utility container {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 1280px) {
+  .container {
+    padding-inline: 2.5rem;
+  }
+}
+
+@media (min-width: 1700px) {
+  .container {
+    padding-inline: 4rem;
+  }
+}

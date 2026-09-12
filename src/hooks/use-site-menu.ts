@@ -41,6 +41,41 @@ function buildTree(rows: Row[], device: "desktop" | "mobile" | "tablet"): NavIte
   return walk(null);
 }
 
+/** Identity of a nav item: its link when it has one, otherwise its label. */
+function keyOf(n: NavItem): string {
+  return (n.href ?? "").trim() || `label:${n.label.trim()}`;
+}
+
+/**
+ * Merges the dashboard-managed menu with the built-in one.
+ *
+ * The saved menu is authoritative for order, labels and nesting, but any
+ * built-in entry that was never imported into the database (e.g. pages added
+ * after the last import) is appended instead of silently disappearing from the
+ * header. Merging is recursive so new sub-items show up too.
+ */
+function mergeWithDefaults(saved: NavItem[], defaults: NavItem[]): NavItem[] {
+  const savedKeys = new Set<string>();
+  const collect = (list: NavItem[]) => {
+    for (const n of list) {
+      savedKeys.add(keyOf(n));
+      if (n.children) collect(n.children);
+    }
+  };
+  collect(saved);
+
+  const out = saved.map((n) => {
+    const match = defaults.find((d) => keyOf(d) === keyOf(n) || d.label.trim() === n.label.trim());
+    if (!match?.children?.length) return n;
+    const missingKids = match.children.filter((c) => !savedKeys.has(keyOf(c)));
+    if (!missingKids.length) return n;
+    return { ...n, children: [...(n.children ?? []), ...missingKids] };
+  });
+
+  const missingRoots = defaults.filter((d) => !savedKeys.has(keyOf(d)) && !out.some((n) => n.label.trim() === d.label.trim()));
+  return [...out, ...missingRoots];
+}
+
 /**
  * Live navigation. Falls back to the built-in structure whenever the
  * dashboard has not defined any menu item yet, so the site is never empty.
@@ -56,7 +91,7 @@ export function useSiteMenu(device: "desktop" | "mobile" | "tablet" = "desktop")
       .then(({ data, error }) => {
         if (!alive || error || !data?.length) return;
         const tree = buildTree(data as Row[], device);
-        if (tree.length) setItems(tree);
+        if (tree.length) setItems(mergeWithDefaults(tree, navItems));
       });
     return () => {
       alive = false;
