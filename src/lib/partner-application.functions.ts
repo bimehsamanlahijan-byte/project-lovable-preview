@@ -195,6 +195,15 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
         delete body[unknownColumn];
         continue;
       }
+      const missingColumn = lastDetail.match(
+        /null value in column \\?"([^"\\]+)\\?"/,
+      )?.[1];
+      if (missingColumn && !body[missingColumn]) {
+        body[missingColumn] = /(key|nonce|uuid)$/.test(missingColumn)
+          ? crypto.randomUUID()
+          : "-";
+        continue;
+      }
       break;
     }
 
