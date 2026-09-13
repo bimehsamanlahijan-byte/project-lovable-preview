@@ -74,17 +74,17 @@ export const Route = createFileRoute("/api/public/partner-applications")({
           };
 
           // Older deployed databases may lack some columns: drop unknown ones and retry.
-          let data: { applicant_id: string; received_at: string } | null = null;
+          let data: Record<string, unknown> | null = null;
           let lastError = "";
           for (let attempt = 0; attempt < 30; attempt += 1) {
             const result = await supabase
               .from("partner_applications")
               .insert(row)
-              .select("applicant_id, received_at")
+              .select("*")
               .single();
 
             if (!result.error) {
-              data = result.data as { applicant_id: string; received_at: string };
+              data = result.data as Record<string, unknown>;
               break;
             }
 
@@ -103,8 +103,9 @@ export const Route = createFileRoute("/api/public/partner-applications")({
 
           return Response.json({
             ok: true,
-            applicantId: data.applicant_id,
-            receivedAt: data.received_at,
+            applicantId: (data["applicant_id"] ?? data["id"]) as string,
+            receivedAt: (data["received_at"] ?? data["created_at"]) as string,
+            columns: Object.keys(data),
           });
         } catch {
           return Response.json({ ok: false, error: "server_error" }, { status: 500 });
