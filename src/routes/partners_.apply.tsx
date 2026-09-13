@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, Loader2, Send, ShieldCheck } from "lucide-react";
 
 import { SiteHeader } from "@/components/SiteHeader";
@@ -44,6 +44,7 @@ export const Route = createFileRoute("/partners_/apply")({
 });
 
 function PartnerApplyPage() {
+  const birthDateRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState<FormState>({
     fullname: "",
     birth_date: "",
@@ -79,37 +80,53 @@ function PartnerApplyPage() {
   }, []);
 
   useEffect(() => {
-    const scriptId = "local-jalali-datepicker";
-    if (document.getElementById(scriptId)) {
+    const input = birthDateRef.current;
+    if (!input) return;
+
+    const syncBirthDate = () => {
+      const value = input.value.trim();
+      setForm((previous) =>
+        previous.birth_date === value ? previous : { ...previous, birth_date: value },
+      );
+      setMessage("");
+      setStatus((previous) => (previous === "idle" ? previous : "idle"));
+    };
+    input.addEventListener("jdp:change", syncBirthDate);
+    input.addEventListener("input", syncBirthDate);
+    input.addEventListener("change", syncBirthDate);
+
+    const start = () => {
       try {
         (window as any).jalaliDatepicker?.startWatch({
           selector: "[data-jdp]",
-          autoShow: false,
+          autoShow: true,
           showTodayBtn: true,
           showEmptyBtn: true,
+          persianDigits: false,
         });
       } catch {
-        // Datepicker is an enhancement; text input remains usable.
+        // Datepicker is an enhancement; the text input stays usable.
       }
-      return;
+    };
+
+    const cleanup = () => {
+      input.removeEventListener("jdp:change", syncBirthDate);
+      input.removeEventListener("input", syncBirthDate);
+      input.removeEventListener("change", syncBirthDate);
+    };
+
+    const scriptId = "local-jalali-datepicker";
+    if (document.getElementById(scriptId)) {
+      start();
+      return cleanup;
     }
 
     const script = document.createElement("script");
     script.id = scriptId;
     script.src = "/js/jalalidatepicker.min.js";
-    script.onload = () => {
-      try {
-        (window as any).jalaliDatepicker?.startWatch({
-          selector: "[data-jdp]",
-          autoShow: false,
-          showTodayBtn: true,
-          showEmptyBtn: true,
-        });
-      } catch {
-        // no-op
-      }
-    };
+    script.onload = start;
     document.body.appendChild(script);
+    return cleanup;
   }, []);
 
   const provinceOptions = useMemo(
@@ -138,7 +155,14 @@ function PartnerApplyPage() {
     if (!/^[\u0600-\u06FF\s]+$/.test(form.fullname.trim())) return "نام و نام خانوادگی باید فارسی باشد.";
     if (!/^\d{10}$/.test(form.national_id.trim())) return "کد ملی باید ۱۰ رقم باشد.";
     if (!/^09\d{9}$/.test(form.mobile.trim())) return "شماره همراه معتبر نیست.";
-    if (!form.birth_date.trim()) return "تاریخ تولد را وارد کنید.";
+    const birth = form.birth_date
+      .trim()
+      .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+      .replace(/-/g, "/");
+    if (!birth) return "تاریخ تولد را وارد کنید.";
+    if (!/^1[34]\d{2}\/(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])$/.test(birth)) {
+      return "تاریخ تولد را به صورت سال/ماه/روز وارد یا از تقویم انتخاب کنید.";
+    }
     if (!form.province) return "استان را انتخاب کنید.";
     if (!form.city) return "شهر را انتخاب کنید.";
     if (!form.insurance_experience) return "سابقه همکاری در صنعت بیمه را مشخص کنید.";
@@ -251,13 +275,17 @@ function PartnerApplyPage() {
 
                   <Field required>
                     <input
+                      ref={birthDateRef}
+                      id="partner-birth-date"
+                      name="birth_date"
                       className="partner-input"
                       value={form.birth_date}
                       onChange={update("birth_date")}
-                      placeholder="تاریخ تولد *"
+                      placeholder="تاریخ تولد * (۱۳۷۰/۰۵/۱۲)"
                       data-jdp
-                      readOnly
+                      data-jdp-only-date
                       inputMode="numeric"
+                      autoComplete="off"
                     />
                   </Field>
                 </div>
