@@ -71,6 +71,15 @@ export const Route = createFileRoute("/api/public/partner-applications")({
             branches: d.branches,
             monthly_target: d.monthlyTarget,
             description: d.description,
+            // legacy schema columns
+            request_key: crypto.randomUUID(),
+            form_nonce: crypto.randomUUID(),
+            fullname: d.fullName,
+            birth_date: d.birthYear,
+            mobile: d.phone,
+            insurance_experience: d.experience,
+            type_cooperation: d.cooperationType || null,
+            status: "new",
           };
 
           // Older deployed databases may lack some columns: drop unknown ones and retry.
@@ -92,6 +101,13 @@ export const Route = createFileRoute("/api/public/partner-applications")({
             const unknownColumn = lastError.match(/Could not find the '([^']+)' column/)?.[1];
             if (unknownColumn && unknownColumn in row) {
               delete row[unknownColumn];
+              continue;
+            }
+            const missingColumn = lastError.match(/null value in column "([^"]+)"/)?.[1];
+            if (missingColumn && !row[missingColumn]) {
+              row[missingColumn] = /(key|nonce|uuid)$/.test(missingColumn)
+                ? crypto.randomUUID()
+                : "-";
               continue;
             }
             break;
