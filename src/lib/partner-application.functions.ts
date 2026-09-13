@@ -160,26 +160,46 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
       status: "new",
     };
 
-    const response = await fetch(
-      `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/partner_applications`,
-      {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_SERVICE_KEY,
-          // New-format opaque keys (sb_secret_...) must not be sent as bearer JWTs.
-          ...(SUPABASE_SERVICE_KEY.startsWith("sb_")
-            ? {}
-            : { Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` }),
-          "Content-Type": "application/json",
-          Prefer: "return=minimal",
-        },
-        body: JSON.stringify(payload),
-      },
-    );
+    const headers = {
+      apikey: SUPABASE_SERVICE_KEY,
+      // New-format opaque keys (sb_secret_...) must not be sent as bearer JWTs.
+      ...(SUPABASE_SERVICE_KEY.startsWith("sb_")
+        ? {}
+        : { Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` }),
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    };
 
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      console.error("Partner application insert failed:", response.status, detail);
+    // The deployed database may be an older revision that lacks some columns.
+    // Drop unknown columns reported by PostgREST and retry instead of failing.
+    const body: Record<string, unknown> = { ...payload };
+    let lastDetail = "";
+    let inserted = false;
+
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const response = await fetch(
+        `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/partner_applications`,
+        { method: "POST", headers, body: JSON.stringify(body) },
+      );
+
+      if (response.ok) {
+        inserted = true;
+        break;
+      }
+
+      lastDetail = await response.text().catch(() => "");
+      const unknownColumn = lastDetail.match(
+        /Could not find the '([^']+)' column/,
+      )?.[1];
+      if (unknownColumn && unknownColumn in body) {
+        delete body[unknownColumn];
+        continue;
+      }
+      break;
+    }
+
+    if (!inserted) {
+      console.error("Partner application insert failed:", lastDetail);
       return {
         ok: false as const,
         message: "ثبت درخواست انجام نشد. لطفاً دوباره تلاش کنید.",
