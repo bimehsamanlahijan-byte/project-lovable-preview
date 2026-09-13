@@ -97,6 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "stylesheet", href: "/css/jalalidatepicker.min.css" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
     ],
   }),
