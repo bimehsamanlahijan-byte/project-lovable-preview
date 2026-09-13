@@ -51,33 +51,54 @@ export const Route = createFileRoute("/api/public/partner-applications")({
             auth: { autoRefreshToken: false, persistSession: false },
           });
 
-          const { data, error } = await supabase
-            .from("partner_applications")
-            .insert({
-              applicant_id: d.fullName,
-              full_name: d.fullName,
-              national_id: d.nationalId,
-              birth_year: d.birthYear,
-              gender: d.gender,
-              phone: d.phone,
-              email: d.email,
-              province: d.province,
-              city: d.city,
-              address: d.address,
-              education: d.education,
-              field_of_study: d.fieldOfStudy,
-              experience: d.experience,
-              insurance_license: d.insuranceLicense,
-              cooperation_type: d.cooperationType,
-              branches: d.branches,
-              monthly_target: d.monthlyTarget,
-              description: d.description,
-            })
-            .select("applicant_id, received_at")
-            .single();
+          const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+          const row: Record<string, unknown> = {
+            applicant_id: `PA-${stamp}-${Math.floor(1000 + Math.random() * 9000)}`,
+            full_name: d.fullName,
+            national_id: d.nationalId,
+            birth_year: d.birthYear,
+            gender: d.gender,
+            phone: d.phone,
+            email: d.email,
+            province: d.province,
+            city: d.city,
+            address: d.address,
+            education: d.education,
+            field_of_study: d.fieldOfStudy,
+            experience: d.experience,
+            insurance_license: d.insuranceLicense,
+            cooperation_type: d.cooperationType,
+            branches: d.branches,
+            monthly_target: d.monthlyTarget,
+            description: d.description,
+          };
 
-          if (error) {
-            return Response.json({ ok: false, error: "db_error", details: error.message }, { status: 500 });
+          // Older deployed databases may lack some columns: drop unknown ones and retry.
+          let data: { applicant_id: string; received_at: string } | null = null;
+          let lastError = "";
+          for (let attempt = 0; attempt < 30; attempt += 1) {
+            const result = await supabase
+              .from("partner_applications")
+              .insert(row)
+              .select("applicant_id, received_at")
+              .single();
+
+            if (!result.error) {
+              data = result.data as { applicant_id: string; received_at: string };
+              break;
+            }
+
+            lastError = result.error.message;
+            const unknownColumn = lastError.match(/Could not find the '([^']+)' column/)?.[1];
+            if (unknownColumn && unknownColumn in row) {
+              delete row[unknownColumn];
+              continue;
+            }
+            break;
+          }
+
+          if (!data) {
+            return Response.json({ ok: false, error: "db_error", details: lastError }, { status: 500 });
           }
 
           return Response.json({
