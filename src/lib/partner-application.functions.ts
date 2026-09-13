@@ -116,20 +116,43 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
     const requestKey = crypto.randomUUID();
     const origin = originFromRequest(request);
 
+    const now = new Date();
+    const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(
+      now.getDate(),
+    ).padStart(2, "0")}`;
+    const applicantId = `PA-${stamp}-${Math.floor(1000 + Math.random() * 9000)}`;
+
     const payload = {
+      // tracking
+      applicant_id: applicantId,
       request_key: requestKey,
       form_nonce: crypto.randomUUID(),
       current_post_id: null,
-      fullname: input.fullname,
-      birth_date: input.birth_date,
+      // canonical columns used by the dashboard
+      full_name: input.fullname,
       national_id: input.national_id,
+      birth_year: input.birth_date.slice(0, 4),
+      gender: "male",
+      phone: input.mobile,
+      email: "",
       province: input.province,
       city: input.city,
+      address: "",
+      education: "",
+      field_of_study: "",
+      experience: input.insurance_experience,
+      insurance_license: "no",
+      cooperation_type: input.type_cooperation || "",
+      branches: [],
+      monthly_target: "",
+      description: input.description || "",
+      // legacy/extra columns kept for the public form
+      fullname: input.fullname,
+      birth_date: input.birth_date,
       mobile: input.mobile,
       insurance_experience: input.insurance_experience,
       type_cooperation: input.type_cooperation || null,
       company_name: input.company_name || null,
-      description: input.description || null,
       page_url: input.page_url || `${origin}/partners/apply`,
       referrer: input.referrer || null,
       user_agent: request.headers.get("user-agent"),
@@ -143,7 +166,10 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
         method: "POST",
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+          // New-format opaque keys (sb_secret_...) must not be sent as bearer JWTs.
+          ...(SUPABASE_SERVICE_KEY.startsWith("sb_")
+            ? {}
+            : { Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` }),
           "Content-Type": "application/json",
           Prefer: "return=minimal",
         },
@@ -162,6 +188,7 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
 
     return {
       ok: true as const,
-      requestKey,
+      requestKey: applicantId,
+      applicantId,
     };
   });
