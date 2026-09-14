@@ -120,7 +120,9 @@ export const submitPartnerApplication = createServerFn({ method: "POST" })
     const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(
       now.getDate(),
     ).padStart(2, "0")}`;
-    const applicantId = `PA-${stamp}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const { partnerApplicantCode } = await import("./partner-code");
+    const applicantId = partnerApplicantCode(requestKey, now);
+    void stamp;
 
     const payload = {
       // tracking

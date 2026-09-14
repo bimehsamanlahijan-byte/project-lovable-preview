@@ -399,6 +399,16 @@ function VisualEditorPane() {
   const [published, setPublished] = useState(false);
   const frame = useRef<HTMLIFrameElement | null>(null);
   const panel = useRef<HTMLElement | null>(null);
+  const previewBox = useRef<HTMLDivElement | null>(null);
+  const [boxW, setBoxW] = useState(0);
+  useEffect(() => {
+    const el = previewBox.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setBoxW(el.clientWidth));
+    ro.observe(el);
+    setBoxW(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
 
 
   useEffect(() => {
@@ -641,28 +651,52 @@ function VisualEditorPane() {
         برای انتخاب یک عنصر در این حالت، در کامپیوتر کلید Alt را نگه دارید و کلیک کنید و در موبایل انگشت خود را روی عنصر نگه دارید (لمس طولانی).
       </p>
 
-      <div className={wide || device === "desktop" ? "grid gap-4" : "grid lg:grid-cols-[1fr_320px] gap-4"}>
+      <div className={`grid gap-4 ${wide ? "lg:grid-cols-[1fr_320px]" : "lg:grid-cols-[1fr_380px]"}`}>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div
-            className={
-              device === "mobile"
-                ? "mx-auto w-full max-w-[390px]"
-                : device === "tablet"
-                  ? "mx-auto w-full max-w-[834px]"
-                  : "w-full"
-            }
-          >
-            <iframe
-              ref={frame}
-              src={previewSrc(page)}
-              title="preview"
-              className={`w-full border-0 bg-white ${wide || device === "desktop" ? "h-[85vh]" : "h-[70vh]"}`}
-            />
-
-          </div>
+          {device === "desktop" ? (
+            // Desktop preview keeps the real 1440px viewport and is only scaled
+            // down visually, so the live site's own layout is never affected.
+            <div
+              ref={previewBox}
+              className="w-full overflow-hidden"
+              style={{ height: Math.round((wide ? 1000 : 860) * (boxW ? Math.min(1, boxW / 1440) : 1)) }}
+            >
+              <iframe
+                ref={frame}
+                src={previewSrc(page)}
+                title="preview"
+                className="border-0 bg-white"
+                style={{
+                  width: 1440,
+                  height: wide ? 1000 : 860,
+                  transform: `scale(${boxW ? Math.min(1, boxW / 1440) : 1})`,
+                  transformOrigin: "top right",
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              ref={previewBox}
+              className={
+                device === "mobile"
+                  ? "mx-auto w-full max-w-[390px]"
+                  : "mx-auto w-full max-w-[834px]"
+              }
+            >
+              <iframe
+                ref={frame}
+                src={previewSrc(page)}
+                title="preview"
+                className={`w-full border-0 bg-white ${wide ? "h-[85vh]" : "h-[75vh]"}`}
+              />
+            </div>
+          )}
         </div>
 
-        <aside ref={panel} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 h-fit lg:sticky lg:top-24">
+        <aside
+          ref={panel}
+          className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
+        >
           {!sel ? (
             <p className="text-xs text-slate-500 leading-6">
               برای شروع، داخل پیش‌نمایش روی عنصر مورد نظر کلیک کنید.
@@ -1264,11 +1298,44 @@ function PartnerApplicationsPane() {
   const [open, setOpen] = useState<string | null>(null);
   const load = async () => {
     setLoading(true);
-    const { data } = await adminDb("partner_applications")
+    // Older databases order by created_at and use the legacy column names.
+    let res = await adminDb("partner_applications")
       .select("*")
       .order("received_at", { ascending: false })
       .limit(200);
-    setRows((data as PartnerApplication[]) || []); setLoading(false);
+    if (res.error || !res.data) {
+      res = await adminDb("partner_applications")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(200);
+    }
+    if (res.error || !res.data) {
+      res = await adminDb("partner_applications").select("*").limit(200);
+    }
+
+    const { partnerApplicantCode } = await import("@/lib/partner-code");
+    const raw = (res.data as Record<string, any>[]) || [];
+    const mapped: PartnerApplication[] = raw.map((r) => {
+      const receivedAt = (r["received_at"] ?? r["created_at"] ?? new Date().toISOString()) as string;
+      return {
+        id: r["id"],
+        applicant_id:
+          (r["applicant_id"] as string) || partnerApplicantCode(r["request_key"], receivedAt),
+        full_name: (r["full_name"] ?? r["fullname"] ?? "") as string,
+        national_id: (r["national_id"] ?? "") as string,
+        phone: (r["phone"] ?? r["mobile"] ?? "") as string,
+        province: r["province"] ?? null,
+        city: r["city"] ?? null,
+        education: r["education"] ?? null,
+        experience: (r["experience"] ?? r["insurance_experience"] ?? null) as string | null,
+        cooperation_type: (r["cooperation_type"] ?? r["type_cooperation"] ?? null) as string | null,
+        branches: (r["branches"] ?? null) as string[] | null,
+        status: (r["status"] ?? "new") as string,
+        received_at: receivedAt,
+      };
+    });
+    setRows(mapped);
+    setLoading(false);
   };
   useEffect(() => { load(); }, []);
   const setStatus = async (id: string, status: string) => {
@@ -1327,6 +1394,7 @@ function PartnerApplicationsPane() {
                     {open === r.id && (
                       <tr className="bg-slate-50/70 border-t border-slate-100">
                         <td colSpan={9} className="p-4 text-xs leading-6 text-slate-600">
+                          <div>نام و نام خانوادگی: {r.full_name || "—"}</div>
                           <div>تحصیلات: {r.education} — نوع همکاری: {r.cooperation_type}</div>
                           <div>شاخه‌های مورد علاقه: {(r.branches || []).join("، ") || "—"}</div>
                         </td>

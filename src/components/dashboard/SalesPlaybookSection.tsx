@@ -41,8 +41,9 @@ export function SalesPlaybookSection() {
 
   useEffect(() => {
     void (async () => {
-      const { data } = await adminDb("ai_knowledge").select("*").like("tags", "sales:%");
-      setRows((data ?? []) as Row[]);
+      const { data } = await adminDb("ai_knowledge").select("*");
+      const all = (data ?? []) as Row[];
+      setRows(all.filter((r) => typeof r.tags === "string" && r.tags.startsWith("sales:")));
     })();
   }, []);
 

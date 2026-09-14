@@ -25,9 +25,12 @@ export function readPublicEnv(): PublicEnv {
   const env = ((globalThis as unknown as { process?: { env?: Record<string, string | undefined> } })
     .process?.env ?? {}) as Record<string, string | undefined>;
   return {
-    SUPABASE_URL: env["SUPABASE_URL"] || env["VITE_SUPABASE_URL"],
+    SUPABASE_URL:
+      env["EXTERNAL_SUPABASE_URL"] || env["SUPABASE_URL"] || env["VITE_SUPABASE_URL"],
     SUPABASE_PUBLISHABLE_KEY:
-      env["SUPABASE_PUBLISHABLE_KEY"] || env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+      env["EXTERNAL_SUPABASE_PUBLISHABLE_KEY"] ||
+      env["SUPABASE_PUBLISHABLE_KEY"] ||
+      env["VITE_SUPABASE_PUBLISHABLE_KEY"],
   };
 }
 
