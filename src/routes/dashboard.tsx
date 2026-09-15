@@ -139,7 +139,7 @@ function Dashboard() {
     { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
     { key: "applications", label: "درخواست همکاری", icon: Users },
     { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
-    { key: "thirdparty", label: "فروش آنلاین بیمه‌نامه — بیمه شخص ثالث", icon: Car },
+    { key: "thirdparty", label: "فروش آنلاین بیمه‌نامه", icon: Car },
     { key: "menu", label: "ویرایش برگها (دسکتاپ/موبایل/تبلت)", icon: MenuIcon },
     { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
     { key: "social", label: "شبکه‌های اجتماعی", icon: Share2 },
@@ -203,7 +203,7 @@ function Dashboard() {
             ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
           `}
         >
-          <nav className="p-3 flex flex-col gap-1">
+          <nav className="p-3 flex flex-col gap-1 h-full overflow-y-auto no-scrollbar">
             {nav.map((n) => {
               const active = tab === n.key;
               const Icon = n.icon;
