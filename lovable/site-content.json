@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-15T05:38:58.696Z",
+  "exportedAt": "2026-09-15T05:39:50.510Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -406,6 +406,19 @@
               "text-align": "center",
               "font-family": "Vazirmatn, system-ui, sans-serif",
               "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(1)": {
+            "html": "فرم درخواست دعوت به همکاری",
+            "text": "فرم درخواست دعوت به همکاری",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700"
             },
             "hoverDeep": false
           },
@@ -905,7 +918,7 @@
           }
         }
       },
-      "updated_at": "2026-09-15T05:38:55.83+00:00"
+      "updated_at": "2026-09-15T05:39:46.307+00:00"
     }
   ]
 }
