@@ -37,6 +37,7 @@ import {
   EyeOff,
   Bug,
   Database,
+  Car,
   MessageSquarePlus,
 
 } from "lucide-react";
@@ -61,6 +62,7 @@ import { SeoPane } from "@/components/dashboard/SeoPane";
 import { WheelPane } from "@/components/dashboard/WheelPane";
 import { MediaPane } from "@/components/dashboard/MediaPane";
 import { BackendPane } from "@/components/dashboard/BackendPane";
+import { ThirdPartyPane } from "@/components/dashboard/ThirdPartyPane";
 
 
 
@@ -108,6 +110,7 @@ type TabKey =
   | "suggestions"
   | "applications"
   | "damages"
+  | "thirdparty"
   | "menu"
   | "footer"
   | "social"
@@ -136,6 +139,7 @@ function Dashboard() {
     { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
     { key: "applications", label: "درخواست همکاری", icon: Users },
     { key: "damages", label: "گزارش‌های خسارت", icon: AlertTriangle },
+    { key: "thirdparty", label: "فروش آنلاین بیمه‌نامه — بیمه شخص ثالث", icon: Car },
     { key: "menu", label: "ویرایش برگها (دسکتاپ/موبایل/تبلت)", icon: MenuIcon },
     { key: "footer", label: "فوتر و ستون‌ها", icon: PanelBottom },
     { key: "social", label: "شبکه‌های اجتماعی", icon: Share2 },
@@ -241,6 +245,7 @@ function Dashboard() {
           {tab === "branding" && <BrandingPane />}
           {tab === "medialib" && <MediaPane />}
           {tab === "backend" && <BackendPane />}
+          {tab === "thirdparty" && <ThirdPartyPane />}
           {tab === "telegram" && <TelegramPane />}
           {tab === "seo" && <SeoPane />}
           {tab === "deploy" && <DeployPane />}

@@ -20,6 +20,7 @@ import { Route as ReportingRouteImport } from './routes/reporting'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SuggestionsRouteImport } from './routes/suggestions'
+import { Route as ThirdPartyRouteImport } from './routes/third-party'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai-chat'
 import { Route as ApiConsultRouteImport } from './routes/api/consult'
 import { Route as ApiReportDamageRouteImport } from './routes/api/report-damage'
@@ -37,7 +38,11 @@ import { Route as ApiPublicEnvCheckRouteImport } from './routes/api/public/env-c
 import { Route as ApiPublicPartnerApplicationsRouteImport } from './routes/api/public/partner-applications'
 import { Route as ApiPublicPartnerStatsRouteImport } from './routes/api/public/partner-stats'
 import { Route as ApiPublicSuggestionsRouteImport } from './routes/api/public/suggestions'
+import { Route as ApiThirdPartyStartRouteImport } from './routes/api/third-party/start'
 import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
+import { Route as ApiThirdPartyTrackingCodeCalculatePriceRouteImport } from './routes/api/third-party/$trackingCode/calculate-price'
+import { Route as ApiThirdPartyTrackingCodeSummaryRouteImport } from './routes/api/third-party/$trackingCode/summary'
+import { Route as ApiThirdPartyLookupsSplatRouteImport } from './routes/api/third-party/lookups/$'
 import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -93,6 +98,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SuggestionsRoute = SuggestionsRouteImport.update({
   id: '/suggestions',
   path: '/suggestions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThirdPartyRoute = ThirdPartyRouteImport.update({
+  id: '/third-party',
+  path: '/third-party',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAiChatRoute = ApiAiChatRouteImport.update({
@@ -181,11 +191,34 @@ const ApiPublicSuggestionsRoute = ApiPublicSuggestionsRouteImport.update({
   path: '/api/public/suggestions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiThirdPartyStartRoute = ApiThirdPartyStartRouteImport.update({
+  id: '/api/third-party/start',
+  path: '/api/third-party/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAssetSplatRoute = ApiPublicAssetSplatRouteImport.update({
   id: '/api/public/asset/$',
   path: '/api/public/asset/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiThirdPartyTrackingCodeCalculatePriceRoute =
+  ApiThirdPartyTrackingCodeCalculatePriceRouteImport.update({
+    id: '/api/third-party/$trackingCode/calculate-price',
+    path: '/api/third-party/$trackingCode/calculate-price',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiThirdPartyTrackingCodeSummaryRoute =
+  ApiThirdPartyTrackingCodeSummaryRouteImport.update({
+    id: '/api/third-party/$trackingCode/summary',
+    path: '/api/third-party/$trackingCode/summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiThirdPartyLookupsSplatRoute =
+  ApiThirdPartyLookupsSplatRouteImport.update({
+    id: '/api/third-party/lookups/$',
+    path: '/api/third-party/lookups/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTelegramWebhookBotIdRoute =
   ApiPublicTelegramWebhookBotIdRouteImport.update({
     id: '/api/public/telegram/webhook/$botId',
@@ -205,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suggestions': typeof SuggestionsRoute
+  '/third-party': typeof ThirdPartyRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
@@ -222,7 +256,11 @@ export interface FileRoutesByFullPath {
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
+  '/api/third-party/start': typeof ApiThirdPartyStartRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
+  '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
+  '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRoutesByTo {
@@ -237,6 +275,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suggestions': typeof SuggestionsRoute
+  '/third-party': typeof ThirdPartyRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
@@ -254,7 +293,11 @@ export interface FileRoutesByTo {
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
+  '/api/third-party/start': typeof ApiThirdPartyStartRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
+  '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
+  '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRoutesById {
@@ -270,6 +313,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suggestions': typeof SuggestionsRoute
+  '/third-party': typeof ThirdPartyRoute
   '/api/ai-chat': typeof ApiAiChatRoute
   '/api/consult': typeof ApiConsultRoute
   '/api/report-damage': typeof ApiReportDamageRoute
@@ -287,7 +331,11 @@ export interface FileRoutesById {
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
+  '/api/third-party/start': typeof ApiThirdPartyStartRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
+  '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
+  '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
+  '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
 }
 export interface FileRouteTypes {
@@ -304,6 +352,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/suggestions'
+    | '/third-party'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
@@ -321,7 +370,11 @@ export interface FileRouteTypes {
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
+    | '/api/third-party/start'
     | '/api/public/asset/$'
+    | '/api/third-party/$trackingCode/calculate-price'
+    | '/api/third-party/$trackingCode/summary'
+    | '/api/third-party/lookups/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -336,6 +389,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/suggestions'
+    | '/third-party'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
@@ -353,7 +407,11 @@ export interface FileRouteTypes {
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
+    | '/api/third-party/start'
     | '/api/public/asset/$'
+    | '/api/third-party/$trackingCode/calculate-price'
+    | '/api/third-party/$trackingCode/summary'
+    | '/api/third-party/lookups/$'
     | '/api/public/telegram/webhook/$botId'
   id:
     | '__root__'
@@ -368,6 +426,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/suggestions'
+    | '/third-party'
     | '/api/ai-chat'
     | '/api/consult'
     | '/api/report-damage'
@@ -385,7 +444,11 @@ export interface FileRouteTypes {
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
+    | '/api/third-party/start'
     | '/api/public/asset/$'
+    | '/api/third-party/$trackingCode/calculate-price'
+    | '/api/third-party/$trackingCode/summary'
+    | '/api/third-party/lookups/$'
     | '/api/public/telegram/webhook/$botId'
   fileRoutesById: FileRoutesById
 }
@@ -401,6 +464,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuggestionsRoute: typeof SuggestionsRoute
+  ThirdPartyRoute: typeof ThirdPartyRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiConsultRoute: typeof ApiConsultRoute
   ApiReportDamageRoute: typeof ApiReportDamageRoute
@@ -417,7 +481,11 @@ export interface RootRouteChildren {
   ApiPublicPartnerApplicationsRoute: typeof ApiPublicPartnerApplicationsRoute
   ApiPublicPartnerStatsRoute: typeof ApiPublicPartnerStatsRoute
   ApiPublicSuggestionsRoute: typeof ApiPublicSuggestionsRoute
+  ApiThirdPartyStartRoute: typeof ApiThirdPartyStartRoute
   ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
+  ApiThirdPartyTrackingCodeCalculatePriceRoute: typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
+  ApiThirdPartyTrackingCodeSummaryRoute: typeof ApiThirdPartyTrackingCodeSummaryRoute
+  ApiThirdPartyLookupsSplatRoute: typeof ApiThirdPartyLookupsSplatRoute
   ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
 }
 
@@ -498,6 +566,13 @@ declare module '@tanstack/react-router' {
       path: '/suggestions'
       fullPath: '/suggestions'
       preLoaderRoute: typeof SuggestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/third-party': {
+      id: '/third-party'
+      path: '/third-party'
+      fullPath: '/third-party'
+      preLoaderRoute: typeof ThirdPartyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ai-chat': {
@@ -619,11 +694,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSuggestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/third-party/start': {
+      id: '/api/third-party/start'
+      path: '/api/third-party/start'
+      fullPath: '/api/third-party/start'
+      preLoaderRoute: typeof ApiThirdPartyStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/asset/$': {
       id: '/api/public/asset/$'
       path: '/api/public/asset/$'
       fullPath: '/api/public/asset/$'
       preLoaderRoute: typeof ApiPublicAssetSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/third-party/$trackingCode/calculate-price': {
+      id: '/api/third-party/$trackingCode/calculate-price'
+      path: '/api/third-party/$trackingCode/calculate-price'
+      fullPath: '/api/third-party/$trackingCode/calculate-price'
+      preLoaderRoute: typeof ApiThirdPartyTrackingCodeCalculatePriceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/third-party/$trackingCode/summary': {
+      id: '/api/third-party/$trackingCode/summary'
+      path: '/api/third-party/$trackingCode/summary'
+      fullPath: '/api/third-party/$trackingCode/summary'
+      preLoaderRoute: typeof ApiThirdPartyTrackingCodeSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/third-party/lookups/$': {
+      id: '/api/third-party/lookups/$'
+      path: '/api/third-party/lookups/$'
+      fullPath: '/api/third-party/lookups/$'
+      preLoaderRoute: typeof ApiThirdPartyLookupsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/telegram/webhook/$botId': {
@@ -660,6 +763,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuggestionsRoute: SuggestionsRoute,
+  ThirdPartyRoute: ThirdPartyRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiConsultRoute: ApiConsultRoute,
   ApiReportDamageRoute: ApiReportDamageRoute,
@@ -676,7 +780,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPartnerApplicationsRoute: ApiPublicPartnerApplicationsRoute,
   ApiPublicPartnerStatsRoute: ApiPublicPartnerStatsRoute,
   ApiPublicSuggestionsRoute: ApiPublicSuggestionsRoute,
+  ApiThirdPartyStartRoute: ApiThirdPartyStartRoute,
   ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
+  ApiThirdPartyTrackingCodeCalculatePriceRoute:
+    ApiThirdPartyTrackingCodeCalculatePriceRoute,
+  ApiThirdPartyTrackingCodeSummaryRoute: ApiThirdPartyTrackingCodeSummaryRoute,
+  ApiThirdPartyLookupsSplatRoute: ApiThirdPartyLookupsSplatRoute,
   ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
 }
 export const routeTree = rootRouteImport

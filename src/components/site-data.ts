@@ -99,6 +99,11 @@ export const navItems: NavItem[] = [
     ],
   },
   {
+    label: "فروشگاه آنلاین",
+    href: "/third-party",
+    children: [{ label: "بیمه شخص ثالث", href: "/third-party" }],
+  },
+  {
     label: "خدمات الکترونیک",
     href: "/e-services",
     children: [
