@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-15T05:40:25.491Z",
+  "exportedAt": "2026-09-15T05:42:53.406Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -699,6 +699,18 @@
             },
             "hoverDeep": false
           },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(2) > form > div:nth-of-type(6)": {
+            "text": "لطفا کد پیگیری بعد از ارسال موفق را یاداشت نمایید",
+            "hover": {},
+            "style": {
+              "color": "#003000",
+              "font-size": "12px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
           "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(2) > div > span:nth-of-type(1)": {
             "hover": {},
             "style": {
@@ -930,7 +942,7 @@
           }
         }
       },
-      "updated_at": "2026-09-15T05:40:21.001+00:00"
+      "updated_at": "2026-09-15T05:42:49.947+00:00"
     }
   ]
 }
