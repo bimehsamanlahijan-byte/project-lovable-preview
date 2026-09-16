@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-11T18:11:16.353Z",
+  "exportedAt": "2026-09-16T03:30:14.255Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -278,6 +278,19 @@
             },
             "hoverDeep": false
           },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > h1": {
+            "html": "درخواست دعوت به همکاری بیمه سامان",
+            "text": "درخواست دعوت به همکاری بیمه سامان",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "36px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "800"
+            },
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2)": {
             "hover": {},
             "style": {
@@ -393,6 +406,19 @@
               "text-align": "center",
               "font-family": "Vazirmatn, system-ui, sans-serif",
               "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(1)": {
+            "html": "فرم درخواست دعوت به همکاری",
+            "text": "فرم درخواست دعوت به همکاری",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700"
             },
             "hoverDeep": false
           },
@@ -613,6 +639,18 @@
             },
             "hoverDeep": false
           },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(2) > form > button": {
+            "text": "ارسال درخواست",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "16px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "700"
+            },
+            "hoverDeep": false
+          },
           "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(1) > div": {
             "hover": {},
             "style": {
@@ -655,6 +693,31 @@
             "style": {
               "color": "#001200",
               "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/::@desktop::body > div:nth-of-type(1) > header > div > div:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(3)": {
+            "html": "پرتال اعلانات و تخفیفات",
+            "text": "پرتال اعلانات وتخفیفات",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "12px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(2) > form > div:nth-of-type(6)": {
+            "text": "لطفا کد پیگیری بعد از ارسال موفق را یاداشت نمایید",
+            "hover": {},
+            "style": {
+              "color": "#003000",
+              "font-size": "12px",
               "text-align": "start",
               "font-family": "Vazirmatn, system-ui, sans-serif",
               "font-weight": "400"
@@ -892,7 +955,7 @@
           }
         }
       },
-      "updated_at": "2026-09-11T18:11:07.81+00:00"
+      "updated_at": "2026-09-16T03:29:57.878+00:00"
     }
   ]
 }
