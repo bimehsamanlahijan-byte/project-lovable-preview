@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ThirdPartyWidget } from "@/components/third-party/ThirdPartyWidget";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const Route = createFileRoute("/third-party")({
   head: () => ({
@@ -23,5 +25,13 @@ export const Route = createFileRoute("/third-party")({
 });
 
 function ThirdPartyPage() {
-  return <ThirdPartyWidget />;
+  return (
+    <div className="min-h-screen bg-background text-foreground" dir="rtl">
+      <SiteHeader />
+      <main>
+        <ThirdPartyWidget />
+      </main>
+      <SiteFooter />
+    </div>
+  );
 }
