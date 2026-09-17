@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-17T14:08:37.095Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
+  "exportedAt": "2026-09-17T14:09:43.369Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
       "key": "wheel_background",
@@ -651,6 +651,18 @@
             },
             "hoverDeep": false
           },
+          "/insurance/car/third-party::@desktop::body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)": {
+            "href": "https://sales.si24.ir/?agent=8452",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "16px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
           "body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(5) > div > div:nth-of-type(1) > div": {
             "hover": {},
             "style": {
@@ -955,7 +967,7 @@
           }
         }
       },
-      "updated_at": "2026-09-16T07:24:28.207+00:00"
+      "updated_at": "2026-09-17T14:09:41.489+00:00"
     },
     {
       "key": "visual_overlays",
