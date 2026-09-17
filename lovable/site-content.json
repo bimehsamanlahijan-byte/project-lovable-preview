@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:13:18.218Z",
+  "exportedAt": "2026-09-17T14:13:45.131Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1035,7 +1035,7 @@
               "justify": "center",
               "opacity": 1,
               "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
+              "background": "#f9fafc"
             },
             "attach": "attached",
             "locked": false,
@@ -1063,7 +1063,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T14:13:17.166+00:00"
+      "updated_at": "2026-09-17T14:13:43.575+00:00"
     }
   ]
 }
