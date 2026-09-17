@@ -54,6 +54,9 @@ import { InspectorPane } from "@/components/dashboard/InspectorPane";
 import { dashboardStatus, lockDashboard, unlockDashboard } from "@/lib/admin.functions";
 import { VE_SETTING_KEY, type OverrideMap } from "@/lib/visual-editor";
 import { EDITOR_PAGES } from "@/lib/editor-pages";
+import { OVERLAY_SETTING_KEY, type OverlayItem } from "@/lib/overlays";
+import { OVERLAY_TARGETS } from "@/lib/overlay-targets";
+import { OverlayPanel } from "@/components/dashboard/OverlayEditor";
 
 import { VE_ANIMATIONS, DASHBOARD_LOGO } from "@/lib/site-config";
 import { useBranding } from "@/hooks/use-branding";
@@ -402,6 +405,10 @@ function VisualEditorPane() {
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [published, setPublished] = useState(false);
+  const [overlays, setOverlays] = useState<OverlayItem[]>([]);
+  const [selOv, setSelOv] = useState<OverlayItem | null>(null);
+  const [ovDraw, setOvDraw] = useState(false);
+  const ovSaveTimer = useRef<number | undefined>(undefined);
   const frame = useRef<HTMLIFrameElement | null>(null);
   const panel = useRef<HTMLElement | null>(null);
   const previewBox = useRef<HTMLDivElement | null>(null);
@@ -452,6 +459,23 @@ function VisualEditorPane() {
       }
       if (n?.type === "ve:ready") {
         frame.current?.contentWindow?.postMessage({ type: "ve:mode", mode: modeRef.current }, "*");
+        frame.current?.contentWindow?.postMessage({ type: "ve:ov-request" }, "*");
+      }
+
+      /* ---------- overlay layers ---------- */
+      const ovMsg = e.data as { type?: string; list?: OverlayItem[]; item?: OverlayItem | null };
+      if (ovMsg?.type === "ve:ov-list" && Array.isArray(ovMsg.list)) {
+        const list = ovMsg.list;
+        setOverlays(list);
+        setSelOv((prev) => (prev ? (list.find((x) => x.id === prev.id) ?? null) : prev));
+        if (ovSaveTimer.current) window.clearTimeout(ovSaveTimer.current);
+        ovSaveTimer.current = window.setTimeout(() => {
+          void adminWriteSetting(OVERLAY_SETTING_KEY, { list });
+        }, 800);
+      }
+      if (ovMsg?.type === "ve:ov-selected") {
+        setSelOv(ovMsg.item ?? null);
+        if (ovMsg.item) setOvDraw(false);
       }
     };
     window.addEventListener("message", onMsg);
@@ -466,6 +490,23 @@ function VisualEditorPane() {
 
   const send = (msg: Record<string, unknown>) =>
     frame.current?.contentWindow?.postMessage(msg, "*");
+
+  const patchOverlay = (id: string, patch: Partial<OverlayItem>) => {
+    setOverlays((prev) => prev.map((o) => (o.id === id ? ({ ...o, ...patch } as OverlayItem) : o)));
+    setSelOv((prev) => (prev && prev.id === id ? ({ ...prev, ...patch } as OverlayItem) : prev));
+    send({ type: "ve:ov-patch", id, patch });
+  };
+  const deleteOverlay = (id: string) => {
+    setOverlays((prev) => prev.filter((o) => o.id !== id));
+    setSelOv(null);
+    send({ type: "ve:ov-delete", id });
+  };
+  const toggleOvDraw = () => {
+    const next = !ovDraw;
+    setOvDraw(next);
+    if (next) setMode("interact"); // drawing needs the page calm, not select mode
+    send({ type: "ve:ov-tool", on: next });
+  };
 
   const previewSrc = (path: string, bust?: number) => {
     const separator = path.includes("?") ? "&" : "?";
@@ -605,6 +646,28 @@ function VisualEditorPane() {
           </button>
         </div>
         <button
+          onClick={toggleOvDraw}
+          className={`px-3 py-2 rounded-xl border text-xs flex items-center gap-1.5 font-bold ${ovDraw ? "bg-blue-600 text-white border-blue-600" : "border-slate-300 bg-white"}`}
+          title="با کشیدن موس روی پیش‌نمایش یک لایه پوشاننده بسازید"
+        >
+          <Plus className="w-3.5 h-3.5" /> {ovDraw ? "در حال کشیدن لایه…" : "لایه پوشاننده"}
+        </button>
+        <select
+          value=""
+          onChange={(e) => {
+            const t = OVERLAY_TARGETS.find((x) => x.key === e.target.value);
+            if (t) send({ type: "ve:ov-target", selector: t.selector });
+            e.target.value = "";
+          }}
+          className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs"
+          title="ساخت لایه روی یک قسمت مشخص سایت"
+        >
+          <option value="">پوشاندن قسمتی از سایت…</option>
+          {OVERLAY_TARGETS.map((t) => (
+            <option key={t.key} value={t.key}>{t.label}</option>
+          ))}
+        </select>
+        <button
           onClick={() => { if (frame.current) frame.current.src = previewSrc(page, Date.now()); }}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs flex items-center gap-1.5"
         >
@@ -702,11 +765,19 @@ function VisualEditorPane() {
           ref={panel}
           className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
         >
-          {!sel ? (
+          {selOv && (
+            <OverlayPanel
+              item={selOv}
+              onPatch={patchOverlay}
+              onDelete={deleteOverlay}
+              onClose={() => { setSelOv(null); send({ type: "ve:ov-select", id: null }); }}
+            />
+          )}
+          {!sel ? (!selOv ? (
             <p className="text-xs text-slate-500 leading-6">
               برای شروع، داخل پیش‌نمایش روی عنصر مورد نظر کلیک کنید.
             </p>
-          ) : (
+          ) : null) : (
             <div className="space-y-3">
               <div className="text-[11px] text-slate-500 break-all bg-slate-50 rounded-lg p-2 font-mono" dir="ltr">
                 &lt;{sel.tag}&gt;

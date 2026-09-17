@@ -15,6 +15,26 @@ import {
   type Override,
   type OverrideMap,
 } from "@/lib/visual-editor";
+import { mountOverlays } from "@/lib/overlay-runtime";
+import {
+  loadLocalOverlays,
+  loadRemoteOverlays,
+  saveLocalOverlays,
+  type OverlayItem,
+} from "@/lib/overlays";
+
+/** Deep-enough merge for overlay patches coming from the dashboard panel. */
+function mergeOverlay(item: OverlayItem, patch: Partial<OverlayItem>): OverlayItem {
+  return {
+    ...item,
+    ...patch,
+    box: { ...item.box, ...(patch.box ?? {}) },
+    responsive: { ...item.responsive, ...(patch.responsive ?? {}) },
+    style: { ...item.style, ...(patch.style ?? {}) },
+    content: { ...item.content, ...(patch.content ?? {}) },
+    interaction: { ...item.interaction, ...(patch.interaction ?? {}) },
+  };
+}
 
 
 /**
@@ -37,6 +57,41 @@ export function VisualEditorRuntime() {
     /* ---------- code / error inspector (dashboard → «ایرادیاب و کدیاب») ---------- */
     let stopInspector: (() => void) | undefined;
     if (isInspecting) stopInspector = startInspector();
+
+    /* ---------- overlay layers ---------- */
+    let overlayList: OverlayItem[] = loadLocalOverlays();
+    const publishOverlays = () => {
+      if (isEditing) window.parent?.postMessage({ type: "ve:ov-list", list: overlayList }, "*");
+    };
+    const persistOverlays = () => {
+      saveLocalOverlays(overlayList);
+      publishOverlays();
+    };
+    const ovCtl = mountOverlays({
+      device: visualDevice,
+      editing: isEditing,
+      getList: () => overlayList,
+      onChange: (item) => {
+        overlayList = overlayList.map((o) => (o.id === item.id ? item : o));
+        persistOverlays();
+      },
+      onCreate: (item) => {
+        overlayList = [...overlayList, item];
+        persistOverlays();
+      },
+      onSelect: (item) => {
+        if (isEditing) window.parent?.postMessage({ type: "ve:ov-selected", item }, "*");
+      },
+    });
+    publishOverlays();
+    void loadRemoteOverlays().then((remote) => {
+      if (remote) {
+        overlayList = remote;
+        saveLocalOverlays(remote);
+        ovCtl.refresh();
+        publishOverlays();
+      }
+    });
 
     const reapply = () => {
       // Hover / touch CSS is a stylesheet, never touches the hydrated DOM,
@@ -68,8 +123,31 @@ export function VisualEditorRuntime() {
       }
     });
 
-    const obs = new MutationObserver(() => {
-      window.requestAnimationFrame(reapply);
+    const obs = new MutationObserver((muts) => {
+      // Overlay layers repaint on a timer; their DOM churn must not feed the
+      // overrides observer, otherwise re-apply → mutation → re-apply loops
+      // forever and freezes the page.
+      const OVERLAY_OWN = ["ve-overlay-root", "ve-ov-catcher", "ve-ov-draft"];
+      for (const m of muts) {
+        let n: Node | null = m.target;
+        let own = false;
+        while (n) {
+          if (
+            n instanceof HTMLElement &&
+            (OVERLAY_OWN.includes(n.id) ||
+              n.classList.contains("ve-ov-catcher") ||
+              n.classList.contains("ve-ov-draft"))
+          ) {
+            own = true;
+            break;
+          }
+          n = n.parentNode;
+        }
+        if (!own) {
+          window.requestAnimationFrame(reapply);
+          return;
+        }
+      }
     });
     // Touch devices get the same hover colors while a finger is on the element.
     const stopTouchHover = enableTouchHover();
@@ -89,6 +167,7 @@ export function VisualEditorRuntime() {
     if (!isEditing) {
       return () => {
         obs.disconnect();
+        ovCtl.destroy();
         stopTouchHover();
         stopInspector?.();
         window.removeEventListener("resize", reloadForDeviceChange);
@@ -213,6 +292,38 @@ export function VisualEditorRuntime() {
         return;
       }
 
+      /* ---------- overlay commands from the dashboard ---------- */
+      const ov = data as { id?: string; patch?: Partial<OverlayItem>; on?: boolean };
+      if (data.type === "ve:ov-tool") {
+        ovCtl.setTool(!!ov.on);
+        return;
+      }
+      if (data.type === "ve:ov-target" && data.selector) {
+        ovCtl.createFromSelector(data.selector);
+        return;
+      }
+      if (data.type === "ve:ov-select") {
+        ovCtl.select(ov.id ?? null);
+        return;
+      }
+      if (data.type === "ve:ov-patch" && ov.id) {
+        overlayList = overlayList.map((o) => (o.id === ov.id ? mergeOverlay(o, ov.patch ?? {}) : o));
+        persistOverlays();
+        ovCtl.refresh();
+        return;
+      }
+      if (data.type === "ve:ov-delete" && ov.id) {
+        overlayList = overlayList.filter((o) => o.id !== ov.id);
+        persistOverlays();
+        ovCtl.select(null);
+        ovCtl.refresh();
+        return;
+      }
+      if (data.type === "ve:ov-request") {
+        publishOverlays();
+        return;
+      }
+
       if (data.type === "ve:update" && data.selector) {
         const key = scopeKey(window.location.pathname, data.selector, visualDevice);
         const legacyKey = scopeKey(window.location.pathname, data.selector);
@@ -287,9 +398,11 @@ export function VisualEditorRuntime() {
 
     window.addEventListener("message", onMessage);
     post({ type: "ve:ready", path: window.location.pathname + window.location.search });
+    publishOverlays();
 
     return () => {
       obs.disconnect();
+      ovCtl.destroy();
       stopTouchHover();
       stopInspector?.();
       window.removeEventListener("resize", reloadForDeviceChange);

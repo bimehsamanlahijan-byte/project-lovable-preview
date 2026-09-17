@@ -1,7 +1,7 @@
 /** Browser-side API client — talks only to our own backend, never to SI24 directly. */
 import type { LookupItem, QuoteData } from "./types";
 
-export type ApiError = { ok: false; message: string; status: number };
+export type ApiError = { ok: false; message: string; status: number; referenceCode?: string | null };
 
 async function call<T>(url: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -24,6 +24,7 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
       ok: false,
       status: res.status,
       message: body?.message ?? "خطایی رخ داد. لطفاً دوباره تلاش کنید.",
+      referenceCode: body?.referenceCode ?? null,
     } as ApiError;
   }
   return body as T;
@@ -51,7 +52,13 @@ export function fetchVehicleKinds(brandId: string | number) {
 }
 
 export async function startInquiry(payload: unknown) {
-  return call<{ ok: true; trackingCode: string; customerId: string | null; inquiryId: string | null }>(
+  return call<{
+    ok: true;
+    trackingCode: string;
+    referenceCode: string | null;
+    customerId: string | null;
+    inquiryId: string | null;
+  }>(
     "/api/third-party/start",
     { method: "POST", body: JSON.stringify(payload) },
   );

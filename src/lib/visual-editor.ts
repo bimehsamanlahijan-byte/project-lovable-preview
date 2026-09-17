@@ -202,15 +202,24 @@ export function readLabel(el: HTMLElement): string {
 }
 
 export function applyOverride(el: HTMLElement, ov: Override, selector?: string) {
-  if (ov.html !== undefined) el.innerHTML = sanitizeHtml(ov.html);
-  else if (ov.text !== undefined) setLabel(el, ov.text);
+  // Every write is guarded by a value comparison: the MutationObserver in the
+  // editor runtime re-applies overrides on any DOM change, so an unconditional
+  // write (especially innerHTML) would create an apply → mutate → apply loop
+  // that freezes the page.
+  if (ov.html !== undefined) {
+    const clean = sanitizeHtml(ov.html);
+    if (el.innerHTML !== clean) el.innerHTML = clean;
+  } else if (ov.text !== undefined && readLabel(el) !== ov.text) {
+    setLabel(el, ov.text);
+  }
   if (ov.href !== undefined && ov.href !== "") {
-    el.setAttribute("href", ov.href);
+    if (el.getAttribute("href") !== ov.href) el.setAttribute("href", ov.href);
     makeNavigable(el, ov.href, ov.target);
   }
-  if (ov.target) el.setAttribute("target", ov.target);
-  if (ov.rel) el.setAttribute("rel", ov.rel);
-  if (ov.hidden) el.style.setProperty("display", "none", "important");
+  if (ov.target && el.getAttribute("target") !== ov.target) el.setAttribute("target", ov.target);
+  if (ov.rel && el.getAttribute("rel") !== ov.rel) el.setAttribute("rel", ov.rel);
+  if (ov.hidden && el.style.getPropertyValue("display") !== "none")
+    el.style.setProperty("display", "none", "important");
   if (ov.style) {
     // Don't fight the hover runtime while this element is hovered/pressed.
     let held: Record<string, string> = {};
@@ -228,9 +237,10 @@ export function applyOverride(el: HTMLElement, ov: Override, selector?: string) 
         held[k] = v;
         continue;
       }
-      el.style.setProperty(k, v, "important");
+      if (el.style.getPropertyValue(k) !== v) el.style.setProperty(k, v, "important");
     }
-    if (raw) el.setAttribute("data-ve-hover-prev", JSON.stringify(held));
+    const nextHeld = JSON.stringify(held);
+    if (raw && raw !== nextHeld) el.setAttribute("data-ve-hover-prev", nextHeld);
   }
 
   if (selector) applyBlock(el, selector, ov.block);

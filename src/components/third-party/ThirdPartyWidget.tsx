@@ -33,6 +33,7 @@ import {
 import type { LookupItem, ThirdPartyForm, QuoteData } from "@/lib/third-party/types";
 
 const TRACKING_KEY = "tp_tracking_code";
+const REFERENCE_KEY = "tp_reference_code";
 
 const EMPTY_FORM: ThirdPartyForm = {
   plaque: { region: "", letter: "", segment1: "", segment2: "" },
@@ -68,7 +69,12 @@ function useToasts() {
 
 function errText(e: unknown): string {
   const err = e as ApiError;
-  return err?.message || "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+  const base = err?.message || "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+  return err?.referenceCode ? `${base} (کد پیگیری درخواست: ${err.referenceCode})` : base;
+}
+
+function errReference(e: unknown): string | null {
+  return (e as ApiError)?.referenceCode ?? null;
 }
 
 /** Select ساده با استایل مرجع */
@@ -148,6 +154,7 @@ export function ThirdPartyWidget() {
   const [errors, setErrors] = React.useState<Errors>({});
   const [loading, setLoading] = React.useState(false);
   const [trackingCode, setTrackingCode] = React.useState<string | null>(null);
+  const [referenceCode, setReferenceCode] = React.useState<string | null>(null);
   const [quote, setQuote] = React.useState<QuoteData | null>(null);
   const [summaryRaw, setSummaryRaw] = React.useState<any>(null);
   const { toasts, push } = useToasts();
@@ -182,6 +189,7 @@ export function ThirdPartyWidget() {
   // بازیابی استعلام قبلی پس از رفرش
   React.useEffect(() => {
     const saved = localStorage.getItem(TRACKING_KEY);
+    setReferenceCode(localStorage.getItem(REFERENCE_KEY));
     if (!saved) return;
     setTrackingCode(saved);
     fetchSummary(saved)
@@ -247,9 +255,18 @@ export function ThirdPartyWidget() {
         const res = await startInquiry(normalizedStartPayload(form));
         setTrackingCode(res.trackingCode);
         localStorage.setItem(TRACKING_KEY, res.trackingCode);
+        if (res.referenceCode) {
+          setReferenceCode(res.referenceCode);
+          localStorage.setItem(REFERENCE_KEY, res.referenceCode);
+        }
         setStepIdx(1);
         window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (e) {
+        const ref = errReference(e);
+        if (ref) {
+          setReferenceCode(ref);
+          localStorage.setItem(REFERENCE_KEY, ref);
+        }
         push("error", errText(e));
       } finally {
         setLoading(false);
@@ -288,6 +305,8 @@ export function ThirdPartyWidget() {
 
   const startOver = () => {
     localStorage.removeItem(TRACKING_KEY);
+    localStorage.removeItem(REFERENCE_KEY);
+    setReferenceCode(null);
     setForm(EMPTY_FORM);
     setQuote(null);
     setSummaryRaw(null);
@@ -681,6 +700,11 @@ export function ThirdPartyWidget() {
             <p className="tp-card-hint">
               {trackingCode ? <>کد رهگیری استعلام: <b>{trackingCode}</b></> : "خلاصه قیمت"}
             </p>
+            {referenceCode && (
+              <p className="tp-card-hint">
+                کد پیگیری درخواست در دفتر ما: <b>{referenceCode}</b>
+              </p>
+            )}
             {!quote ? (
               <div>
                 <div className="tp-skeleton" style={{ marginBottom: 12 }} />

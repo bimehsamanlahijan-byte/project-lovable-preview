@@ -12,7 +12,12 @@ export type GithubAccount = {
 };
 
 function token(secretName: string) {
-  const value = process.env[secretName] || process.env["GITHUB_API_KEY"];
+  const value =
+    process.env[secretName] ||
+    process.env["GITHUB_API_KEY"] ||
+    process.env["GITHUB_ACCESS_TOKEN"] ||
+    process.env["GITHUB_PAT"] ||
+    process.env["GITHUB_TOKEN"];
   if (!value) throw new Error(`GITHUB_TOKEN_MISSING:${secretName}`);
   return value;
 }
