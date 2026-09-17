@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:07:34.025Z",
+  "exportedAt": "2026-09-17T14:07:56.173Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -960,9 +960,54 @@
     {
       "key": "visual_overlays",
       "value": {
-        "list": []
+        "list": [
+          {
+            "id": "ov-mu5ltt5y-z595m",
+            "box": {
+              "top": 238,
+              "left": 16,
+              "width": 1408,
+              "height": 482
+            },
+            "mode": "cover-content",
+            "page": "/insurance/car/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789654073830,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          }
+        ]
       },
-      "updated_at": "2026-09-17T14:07:33.267+00:00"
+      "updated_at": "2026-09-17T14:07:54.652+00:00"
     }
   ]
 }
