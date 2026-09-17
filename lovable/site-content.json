@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:45:23.054Z",
+  "exportedAt": "2026-09-17T14:46:02.249Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -388,7 +388,7 @@
             "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
             "zIndex": 60,
             "content": {
-              "kind": "text",
+              "kind": "iframe",
               "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
               "textStyle": {
                 "color": "#ffffff",
@@ -409,7 +409,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T14:45:21.418+00:00"
+      "updated_at": "2026-09-17T14:46:00.353+00:00"
     },
     {
       "key": "github_sync",
