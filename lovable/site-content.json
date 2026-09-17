@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-17T14:09:43.369Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
+  "exportedAt": "2026-09-17T14:11:38.646Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
       "key": "wheel_background",
@@ -1007,7 +1007,7 @@
                 "font-weight": "700"
               }
             },
-            "visible": true,
+            "visible": false,
             "createdAt": 1789654073830,
             "responsive": {
               "sameForAll": true
@@ -1019,7 +1019,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T14:08:36.022+00:00"
+      "updated_at": "2026-09-17T14:11:37.398+00:00"
     }
   ]
 }
