@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-17T14:11:38.646Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
+  "exportedAt": "2026-09-17T14:11:48.029Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
       "key": "wheel_background",
@@ -238,6 +238,58 @@
         "autoSync": true
       },
       "updated_at": "2026-09-10T06:12:04.863+00:00"
+    },
+    {
+      "key": "visual_overlays",
+      "value": {
+        "list": [
+          {
+            "id": "ov-mu5ltt5y-z595m",
+            "box": {
+              "top": 238,
+              "left": 16,
+              "width": 1408,
+              "height": 482
+            },
+            "mode": "cover-content",
+            "page": "/insurance/car/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#071d48"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789654073830,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          }
+        ]
+      },
+      "updated_at": "2026-09-17T14:11:37.398+00:00"
     },
     {
       "key": "visual_overrides",
@@ -967,59 +1019,7 @@
           }
         }
       },
-      "updated_at": "2026-09-17T14:09:41.489+00:00"
-    },
-    {
-      "key": "visual_overlays",
-      "value": {
-        "list": [
-          {
-            "id": "ov-mu5ltt5y-z595m",
-            "box": {
-              "top": 238,
-              "left": 16,
-              "width": 1408,
-              "height": 482
-            },
-            "mode": "cover-content",
-            "page": "/insurance/car/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#071d48"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789654073830,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          }
-        ]
-      },
-      "updated_at": "2026-09-17T14:11:37.398+00:00"
+      "updated_at": "2026-09-17T14:11:46.277+00:00"
     }
   ]
 }
