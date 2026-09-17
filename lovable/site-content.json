@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:18:53.924Z",
+  "exportedAt": "2026-09-17T14:18:57.907Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -288,7 +288,7 @@
               "padding": "16px",
               "background": "#f9fafc"
             },
-            "attach": "attached",
+            "attach": "fixed",
             "locked": false,
             "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
             "zIndex": 60,
@@ -321,7 +321,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T14:18:53.066+00:00"
+      "updated_at": "2026-09-17T14:18:56.172+00:00"
     },
     {
       "key": "github_sync",
