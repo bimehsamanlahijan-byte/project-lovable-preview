@@ -58,13 +58,17 @@ export async function assertAdminAccess(): Promise<void> {
 
 export function githubTokenAvailable() {
   return Boolean(
-    process.env["GITHUB_PAT"] || process.env["GITHUB_TOKEN"] || process.env["GITHUB_API_KEY"],
+    process.env["GITHUB_PAT"] ||
+      process.env["GITHUB_TOKEN"] ||
+      process.env["GITHUB_API_KEY"] ||
+      process.env["GITHUB_ACCESS_TOKEN"],
   );
 }
 
 /** Calls the GitHub REST API with a server-side PAT, or GITHUB_API_KEY as a fallback. */
 export async function ghApi<T = Record<string, unknown>>(path: string): Promise<T> {
-  const pat = process.env["GITHUB_PAT"] || process.env["GITHUB_TOKEN"];
+  const pat =
+    process.env["GITHUB_PAT"] || process.env["GITHUB_TOKEN"] || process.env["GITHUB_ACCESS_TOKEN"];
   if (pat) {
     const res = await fetch(`https://api.github.com/${path.replace(/^\//, "")}`, {
       headers: {
