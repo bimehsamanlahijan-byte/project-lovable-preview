@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:17:05.932Z",
+  "exportedAt": "2026-09-17T14:17:49.946Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -313,13 +313,13 @@
             },
             "interaction": {
               "block": true,
-              "action": "popup",
+              "action": "url",
               "popupHtml": "https://sales.si24.ir/?agent=8452"
             }
           }
         ]
       },
-      "updated_at": "2026-09-17T14:17:05.006+00:00"
+      "updated_at": "2026-09-17T14:17:47.643+00:00"
     },
     {
       "key": "github_sync",
