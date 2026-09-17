@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:14:54.601Z",
+  "exportedAt": "2026-09-17T14:14:56.416Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -127,105 +127,6 @@
       "updated_at": "2026-09-07T03:43:01.145284+00:00"
     },
     {
-      "key": "visual_overlays",
-      "value": {
-        "list": [
-          {
-            "id": "ov-mu5ltt5y-z595m",
-            "box": {
-              "top": 238,
-              "left": 16,
-              "width": 1408,
-              "height": 482
-            },
-            "mode": "cover-content",
-            "page": "/insurance/car/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#071d48"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789654073830,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu5m0q13-a49yu",
-            "box": {
-              "top": 126,
-              "left": 112,
-              "width": 1216,
-              "height": 853
-            },
-            "mode": "cover-content",
-            "page": "/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#f9fafc"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "button": {
-                "label": "ورود به صفحه خرید آنلا"
-              },
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789654396359,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          }
-        ]
-      },
-      "updated_at": "2026-09-17T14:14:53.849+00:00"
-    },
-    {
       "key": "hero_slider",
       "value": {
         "fit": "cover",
@@ -318,6 +219,105 @@
         "showUsernames": true
       },
       "updated_at": "2026-09-10T15:20:44.837+00:00"
+    },
+    {
+      "key": "visual_overlays",
+      "value": {
+        "list": [
+          {
+            "id": "ov-mu5ltt5y-z595m",
+            "box": {
+              "top": 238,
+              "left": 16,
+              "width": 1408,
+              "height": 482
+            },
+            "mode": "cover-content",
+            "page": "/insurance/car/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#071d48"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789654073830,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu5m0q13-a49yu",
+            "box": {
+              "top": 126,
+              "left": 112,
+              "width": 1216,
+              "height": 853
+            },
+            "mode": "cover-content",
+            "page": "/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#f9fafc"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "button": {
+                "label": "ورود به صفحه خرید آنلاین"
+              },
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789654396359,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          }
+        ]
+      },
+      "updated_at": "2026-09-17T14:14:55.616+00:00"
     },
     {
       "key": "github_sync",
