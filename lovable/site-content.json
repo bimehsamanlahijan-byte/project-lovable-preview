@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:15:13.495Z",
+  "exportedAt": "2026-09-17T14:17:04.236Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -313,12 +313,12 @@
             },
             "interaction": {
               "block": true,
-              "action": "none"
+              "action": "popup"
             }
           }
         ]
       },
-      "updated_at": "2026-09-17T14:15:12.537+00:00"
+      "updated_at": "2026-09-17T14:17:00.942+00:00"
     },
     {
       "key": "github_sync",
