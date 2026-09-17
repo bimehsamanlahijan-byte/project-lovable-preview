@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T15:05:05.877Z",
+  "exportedAt": "2026-09-17T19:31:24.121Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -221,6 +221,25 @@
       "updated_at": "2026-09-10T15:20:44.837+00:00"
     },
     {
+      "key": "github_sync",
+      "value": {
+        "accounts": [
+          {
+            "id": "acc_1789017905772_0",
+            "path": "lovable/site-content.json",
+            "repo": "project-lovable-preview",
+            "label": "اکانت 1«پروژهproject-lovable-preview-GitHub سایت»",
+            "owner": "bimehsamanlahijan-byte",
+            "branch": "main",
+            "isDefault": true,
+            "secretName": "GITHUB_API_KEY"
+          }
+        ],
+        "autoSync": true
+      },
+      "updated_at": "2026-09-10T06:12:04.863+00:00"
+    },
+    {
       "key": "visual_overlays",
       "value": {
         "list": [
@@ -411,26 +430,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T15:05:04.94+00:00"
-    },
-    {
-      "key": "github_sync",
-      "value": {
-        "accounts": [
-          {
-            "id": "acc_1789017905772_0",
-            "path": "lovable/site-content.json",
-            "repo": "project-lovable-preview",
-            "label": "اکانت 1«پروژهproject-lovable-preview-GitHub سایت»",
-            "owner": "bimehsamanlahijan-byte",
-            "branch": "main",
-            "isDefault": true,
-            "secretName": "GITHUB_API_KEY"
-          }
-        ],
-        "autoSync": true
-      },
-      "updated_at": "2026-09-10T06:12:04.863+00:00"
+      "updated_at": "2026-09-17T19:31:23.635+00:00"
     },
     {
       "key": "visual_overrides",
