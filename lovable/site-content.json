@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T14:46:27.984Z",
+  "exportedAt": "2026-09-17T14:58:06.114Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -388,7 +388,7 @@
             "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
             "zIndex": 60,
             "content": {
-              "kind": "iframe",
+              "kind": "html",
               "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
               "iframeSrc": "https://sales.si24.ir/?agent=8452",
               "textStyle": {
@@ -410,7 +410,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-17T14:46:26.327+00:00"
+      "updated_at": "2026-09-17T14:58:04.084+00:00"
     },
     {
       "key": "github_sync",
