@@ -262,7 +262,15 @@ export function VisualEditorRuntime() {
       } catch {
         return;
       }
-      if (url.origin !== window.location.origin) return;
+      if (url.origin !== window.location.origin) {
+        // Never let a protected external page replace the editable document.
+        // Once that happens its security policy prevents the editor runtime
+        // from reporting selections and the settings panel appears to vanish.
+        e.preventDefault();
+        e.stopPropagation();
+        post({ type: "ve:external-link", url: url.toString(), payload: describe(a) });
+        return;
+      }
       if (url.searchParams.get(VE_EDIT_PARAM) === "1") return;
       url.searchParams.set(VE_EDIT_PARAM, "1");
       if (hasForcedDevice) {

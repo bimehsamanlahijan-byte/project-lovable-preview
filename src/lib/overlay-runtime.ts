@@ -156,12 +156,11 @@ export function mountOverlays(h: Handlers): OverlayController {
     if (target?.closest("a[href], button, input, select, textarea, iframe")) return;
     const it = item.interaction ?? { block: true, action: "none" };
     if (it.action === "url" && it.url) {
-      const proxied =
-        (item.content?.iframeProxy && /^https?:\/\//i.test(it.url))
-          ? `/api/public/embed?url=${encodeURIComponent(it.url)}`
-          : it.url;
-      if (it.target === "_blank") window.open(proxied, "_blank", "noopener");
-      else window.location.assign(proxied);
+      // Compatibility only affects content embedded inside the overlay. A
+      // click-through must use the real destination in a top-level tab so
+      // the destination's own security/anti-bot checks can run normally.
+      if (it.target === "_blank") window.open(it.url, "_blank", "noopener");
+      else window.location.assign(it.url);
 
     } else if ((it.action === "popup" || it.action === "modal") && it.popupHtml) {
       openPopup(it.popupHtml, it.action === "modal");

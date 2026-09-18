@@ -28,6 +28,7 @@ import {
   FolderOpen,
   Github,
   Cloud,
+  ExternalLink,
   Search as SearchIcon,
   Image as ImageIcon,
   Send,
@@ -444,6 +445,12 @@ type Selection = {
   computed: Record<string, string>;
 };
 
+type ExternalLinkNotice = {
+  url: string;
+  payload: Selection;
+  compatible: boolean;
+};
+
 function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
   const [page, setPage] = useState(initialPage);
   const [tab, setTab] = useState<"elements" | "media" | "wheel">("elements");
@@ -472,6 +479,8 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
   const [selOv, setSelOv] = useState<OverlayItem | null>(null);
   const [ovDraw, setOvDraw] = useState(false);
   const [msTool, setMsTool] = useState(false);
+  const [externalLink, setExternalLink] = useState<ExternalLinkNotice | null>(null);
+  const pendingExternalOverlay = useRef<string | null>(null);
   const deviceRef = useRef<"desktop" | "mobile" | "tablet">("desktop");
   const pageRef = useRef("/");
   useEffect(() => { deviceRef.current = device; }, [device]);
@@ -523,6 +532,7 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
 
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
+      if (e.source !== frame.current?.contentWindow) return;
       const d = e.data as { type?: string; payload?: Selection };
       const m = e.data as { type?: string; map?: OverrideMap };
       if (m?.type === "ve:map" && m.map) {
@@ -549,6 +559,25 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
           "anim-iteration": "1",
         });
 
+        setSaved(false);
+      }
+      const external = e.data as { type?: string; url?: string; payload?: Selection };
+      if (external?.type === "ve:external-link" && external.url && external.payload) {
+        setSel(external.payload);
+        setDraft({
+          text: external.payload.text,
+          html: external.payload.html,
+          href: external.payload.href,
+          ...external.payload.computed,
+          "bg-mode": "keep",
+          "bg-alpha": "100",
+          "anim-name": "",
+          "anim-duration": "700",
+          "anim-delay": "0",
+          "anim-iteration": "1",
+        });
+        setExternalLink({ url: external.url, payload: external.payload, compatible: false });
+        setSelOv(null);
         setSaved(false);
       }
       const n = e.data as { type?: string; path?: string };
@@ -581,7 +610,30 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
         }, 800);
       }
       if (ovMsg?.type === "ve:ov-selected") {
-        setSelOv(ovMsg.item ?? null);
+        const externalUrl = pendingExternalOverlay.current;
+        if (ovMsg.item && externalUrl) {
+          pendingExternalOverlay.current = null;
+          const patched: OverlayItem = {
+            ...ovMsg.item,
+            label: "لینک خارجی سازگار",
+            mode: "interactive",
+            content: { ...ovMsg.item.content, iframeProxy: true },
+            interaction: {
+              ...ovMsg.item.interaction,
+              block: true,
+              action: "url",
+              url: externalUrl,
+              target: "_blank",
+            },
+          };
+          setSelOv(patched);
+          frame.current?.contentWindow?.postMessage(
+            { type: "ve:ov-patch", id: patched.id, patch: patched },
+            "*",
+          );
+        } else {
+          setSelOv(ovMsg.item ?? null);
+        }
         if (ovMsg.item) setOvDraw(false);
       }
 
@@ -661,6 +713,24 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
     }
     setMode(next);
     send({ type: "ve:mode", mode: next });
+  };
+
+  const enableExternalCompatibility = () => {
+    if (!externalLink) return;
+    send({
+      type: "ve:update",
+      selector: externalLink.payload.selector,
+      patch: { target: "_blank", rel: "noopener noreferrer" },
+    });
+    setDraft((prev) => ({ ...prev, target: "_blank", rel: "noopener noreferrer" }));
+    setExternalLink((prev) => (prev ? { ...prev, compatible: true } : prev));
+    setSaved(true);
+  };
+
+  const openExternalOverlaySettings = () => {
+    if (!externalLink) return;
+    pendingExternalOverlay.current = externalLink.url;
+    send({ type: "ve:ov-target", selector: externalLink.payload.selector });
   };
 
   const previewSrc = (path: string, bust?: number) => {
@@ -878,6 +948,15 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
         برای انتخاب یک عنصر در این حالت، در کامپیوتر کلید Alt را نگه دارید و کلیک کنید و در موبایل انگشت خود را روی عنصر نگه دارید (لمس طولانی).
       </p>
 
+      {externalLink && (
+        <button
+          type="button"
+          aria-label="بستن راهنمای لینک خارجی"
+          onClick={() => setExternalLink(null)}
+          className="fixed inset-0 z-[60] cursor-default bg-slate-950/35"
+        />
+      )}
+
       <div className={`grid gap-4 ${wide ? "lg:grid-cols-[1fr_320px]" : "lg:grid-cols-[1fr_380px]"}`}>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           {device === "desktop" ? (
@@ -922,8 +1001,70 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
 
         <aside
           ref={panel}
-          className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
+          className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-4 ${
+            externalLink
+              ? "fixed inset-x-3 top-16 z-[70] max-h-[calc(100vh-5rem)] overflow-y-auto lg:inset-x-auto lg:left-6 lg:w-[380px]"
+              : "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
+          }`}
         >
+          {externalLink && (
+            <div className="mb-4 space-y-3 rounded-xl border border-amber-300 bg-amber-50 p-3">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-extrabold text-[#0b1e3f]">لینک خارجی محافظت‌شده</h3>
+                  <p className="mt-1 text-[11px] leading-5 text-slate-600">
+                    برای اینکه ویرایشگر از دسترس خارج نشود، صفحهٔ خارجی داخل پیش‌نمایش باز نشد.
+                  </p>
+                  <p className="mt-1 truncate font-mono text-[10px] text-slate-500" dir="ltr" title={externalLink.url}>
+                    {externalLink.url}
+                  </p>
+                </div>
+              </div>
+              <label className="flex items-start gap-2 rounded-lg border border-slate-200 bg-white p-2 text-xs">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={externalLink.compatible}
+                  onChange={(e) => {
+                    if (e.target.checked) enableExternalCompatibility();
+                  }}
+                />
+                <span>
+                  <span className="font-bold">حالت سازگاری برای لینک خارجی / بک‌لینک</span>
+                  <span className="mt-1 block text-[10px] leading-5 text-slate-500">
+                    لینک در تب جدا باز می‌شود و صفحهٔ قابل ویرایش در پیش‌نمایش باقی می‌ماند.
+                  </span>
+                </span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={openExternalOverlaySettings}
+                  className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white"
+                >
+                  تنظیمات لایه پوشاننده
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(externalLink.url, "_blank", "noopener,noreferrer")}
+                  className="flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> باز کردن مقصد
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExternalLink(null)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs"
+                >
+                  بستن
+                </button>
+              </div>
+              <p className="text-[10px] leading-5 text-slate-500">
+                این حالت خطای قاب را حذف می‌کند؛ تأیید امنیتی خود سایت مقصد قابل دور زدن نیست.
+              </p>
+            </div>
+          )}
           {selOv && (
             <OverlayPanel
               item={selOv}
