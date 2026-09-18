@@ -71,27 +71,49 @@ export async function githubCommitFile(args: {
   const { secretName, owner, repo, branch, path } = args;
   const target = `repos/${owner}/${repo}/contents/${encodeURI(path)}`;
 
-  let sha: string | undefined;
-  try {
-    const existing = await githubFetch(secretName, `${target}?ref=${encodeURIComponent(branch)}`);
-    const found = existing["sha"];
-    if (typeof found === "string") sha = found;
-  } catch {
-    sha = undefined; // first publish: the file does not exist yet
-  }
-
-  const res = await githubFetch(secretName, target, {
-    method: "PUT",
-    body: {
-      message: args.message,
-      content: toBase64(args.content),
-      branch,
-      ...(sha ? { sha } : {}),
-    },
-  });
-  const commit = (res["commit"] ?? {}) as Record<string, unknown>;
-  return {
-    sha: String(commit["sha"] ?? ""),
-    url: String(commit["html_url"] ?? ""),
+  /** Current blob sha of the file, or undefined when it does not exist yet. */
+  const readSha = async (): Promise<string | undefined> => {
+    try {
+      const existing = await githubFetch(secretName, `${target}?ref=${encodeURIComponent(branch)}`);
+      const found = existing["sha"];
+      return typeof found === "string" ? found : undefined;
+    } catch {
+      return undefined; // first publish: the file does not exist yet
+    }
   };
+
+  let sha = await readSha();
+  let lastError: unknown;
+
+  // GitHub answers 409 (and sometimes 422) when the file changed between the
+  // read and the write — another save raced us. Re-read the fresh sha and try
+  // again instead of failing the save.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await githubFetch(secretName, target, {
+        method: "PUT",
+        body: {
+          message: args.message,
+          content: toBase64(args.content),
+          branch,
+          ...(sha ? { sha } : {}),
+        },
+      });
+      const commit = (res["commit"] ?? {}) as Record<string, unknown>;
+      return {
+        sha: String(commit["sha"] ?? ""),
+        url: String(commit["html_url"] ?? ""),
+      };
+    } catch (err) {
+      lastError = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      const conflict = msg.includes("GITHUB_409") || msg.includes("GITHUB_422");
+      if (!conflict) throw err;
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      sha = await readSha();
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("GITHUB_CONFLICT: ذخیره در گیت‌هاب به دلیل تداخل نسخه‌ها انجام نشد.");
 }

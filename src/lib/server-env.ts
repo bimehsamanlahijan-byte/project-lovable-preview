@@ -60,13 +60,19 @@ export async function envValueAsync(...names: string[]): Promise<string | undefi
   return envValue(...names);
 }
 
-export const SUPABASE_URL_NAMES = ["EXTERNAL_SUPABASE_URL", "SUPABASE_URL", "VITE_SUPABASE_URL"];
+export const SUPABASE_URL_NAMES = [
+  "EXTERNAL_SUPABASE_URL",
+  "SUPABASE_URL",
+  "VITE_SUPABASE_URL",
+  "APP_DB_URL",
+];
 
 export const SUPABASE_PUBLISHABLE_NAMES = [
   "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
   "SUPABASE_PUBLISHABLE_KEY",
   "VITE_SUPABASE_PUBLISHABLE_KEY",
   "SUPABASE_ANON_KEY",
+  "APP_DB_PUBLISHABLE_KEY",
 ];
 
 /** Every name a Supabase service/secret key is commonly stored under. */
@@ -77,6 +83,7 @@ export const SUPABASE_SERVICE_KEY_NAMES = [
   "SUPABASE_SECRET_KEY",
   "SUPABASE_SERVICE_ROLE",
   "SERVICE_ROLE_KEY",
+  "APP_DB_SERVICE_ROLE_KEY",
 ];
 
 export const SESSION_SECRET_NAMES = ["SESSION_SECRET", "DASHBOARD_SESSION_SECRET"];

@@ -128,7 +128,9 @@ export function mountOverlays(h: Handlers): OverlayController {
       return `<div class="ve-ov-body">${wrapped}${btn}</div>`;
     }
     if (c.kind === "iframe") {
-      return `<iframe src="${c.iframeSrc ?? ""}" sandbox="allow-scripts allow-forms allow-popups allow-same-origin" referrerpolicy="no-referrer"></iframe>`;
+      const raw = c.iframeSrc ?? "";
+      const src = c.iframeProxy && raw ? `/api/public/embed?url=${encodeURIComponent(raw)}` : raw;
+      return `<iframe src="${escapeAttr(src)}" sandbox="allow-scripts allow-forms allow-popups allow-same-origin" referrerpolicy="no-referrer" loading="lazy"></iframe>`;
     }
     if (c.kind === "widget") {
       const doc = c.widget?.html ?? "";
@@ -154,8 +156,13 @@ export function mountOverlays(h: Handlers): OverlayController {
     if (target?.closest("a[href], button, input, select, textarea, iframe")) return;
     const it = item.interaction ?? { block: true, action: "none" };
     if (it.action === "url" && it.url) {
-      if (it.target === "_blank") window.open(it.url, "_blank", "noopener");
-      else window.location.assign(it.url);
+      const proxied =
+        (item.content?.iframeProxy && /^https?:\/\//i.test(it.url))
+          ? `/api/public/embed?url=${encodeURIComponent(it.url)}`
+          : it.url;
+      if (it.target === "_blank") window.open(proxied, "_blank", "noopener");
+      else window.location.assign(proxied);
+
     } else if ((it.action === "popup" || it.action === "modal") && it.popupHtml) {
       openPopup(it.popupHtml, it.action === "modal");
     } else if (it.action === "js" && it.js) {

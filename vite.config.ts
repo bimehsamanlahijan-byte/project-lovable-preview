@@ -15,6 +15,20 @@ for (const [key, value] of Object.entries(fileEnv)) {
   if (process.env[key] === undefined || process.env[key] === "") process.env[key] = value;
 }
 
+// The personal Supabase credentials are stored as APP_DB_* secrets (SUPABASE_*/VITE_*
+// names are reserved by the platform). Map them onto the names the app expects.
+const credentialAliases: Record<string, string> = {
+  SUPABASE_URL: "APP_DB_URL",
+  VITE_SUPABASE_URL: "APP_DB_URL",
+  SUPABASE_PUBLISHABLE_KEY: "APP_DB_PUBLISHABLE_KEY",
+  VITE_SUPABASE_PUBLISHABLE_KEY: "APP_DB_PUBLISHABLE_KEY",
+  SUPABASE_SERVICE_ROLE_KEY: "APP_DB_SERVICE_ROLE_KEY",
+};
+for (const [target, source] of Object.entries(credentialAliases)) {
+  const value = process.env[source];
+  if (value && !process.env[target]) process.env[target] = value;
+}
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).

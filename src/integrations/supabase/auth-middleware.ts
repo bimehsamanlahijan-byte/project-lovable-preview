@@ -6,6 +6,7 @@ import type { Database } from './types'
 
 
 
+
 function isNewSupabaseApiKey(value: string): boolean {
   return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
 }
@@ -33,10 +34,9 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
     
-    const { getSupabasePublishableKey, getSupabaseUrl, loadRuntimeEnv } = await import('@/lib/server-env');
-    await loadRuntimeEnv();
-    const SUPABASE_URL = getSupabaseUrl();
-    const SUPABASE_PUBLISHABLE_KEY = getSupabasePublishableKey();
+    const SUPABASE_URL = process.env['SUPABASE_URL'] || process.env['APP_DB_URL'];
+    const SUPABASE_PUBLISHABLE_KEY =
+      process.env['SUPABASE_PUBLISHABLE_KEY'] || process.env['APP_DB_PUBLISHABLE_KEY'];
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [
@@ -53,6 +53,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     if (!request?.headers) {
       throw new Error('Unauthorized: No request headers available');
     }
+
 
     const authHeader = request.headers.get('authorization');
 

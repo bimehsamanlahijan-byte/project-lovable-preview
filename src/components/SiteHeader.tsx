@@ -44,9 +44,9 @@ export function SiteHeader() {
               loading="eager"
             />
           </a>
-          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+          <nav data-ve-nav="desktop" className="hidden lg:flex items-center gap-1 text-sm font-medium">
             {desktopMenu.map((n) => (
-              <div key={n.label} className="relative group">
+              <div key={n.label} data-ve-nav-item={n.label} className="relative group">
                 <a
                   href={n.href ?? "#"}
                   className="px-3 py-2 rounded-lg hover:bg-muted hover:text-primary transition flex items-center gap-1"

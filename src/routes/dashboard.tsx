@@ -57,6 +57,34 @@ import { EDITOR_PAGES } from "@/lib/editor-pages";
 import { OVERLAY_SETTING_KEY, type OverlayItem } from "@/lib/overlays";
 import { OVERLAY_TARGETS } from "@/lib/overlay-targets";
 import { OverlayPanel } from "@/components/dashboard/OverlayEditor";
+import { applyRootMenuOrder } from "@/lib/menu-order";
+
+/**
+ * Turns any menu link into an internal site path when it points at this site,
+ * so pages the user adds by hand (no leading slash, or a full URL of our own
+ * domain) can still be opened in the visual editor. Returns null for links
+ * that really live on another website.
+ */
+function internalPath(href?: string | null): string | null {
+  const raw = (href ?? "").trim();
+  if (!raw) return null;
+  if (raw.startsWith("/")) return raw;
+  if (/^(mailto:|tel:|#|javascript:)/i.test(raw)) return null;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const u = new URL(raw);
+      if (typeof window !== "undefined" && u.host === window.location.host) {
+        return u.pathname + u.search;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+  return "/" + raw.replace(/^\/+/, "");
+}
+import { notifyFailed, notifySaved } from "@/lib/notify";
+import { MoveHorizontal } from "lucide-react";
 
 import { VE_ANIMATIONS, DASHBOARD_LOGO } from "@/lib/site-config";
 import { useBranding } from "@/hooks/use-branding";
@@ -133,6 +161,13 @@ function Dashboard() {
   const branding = useBranding();
   const [tab, setTab] = useState<TabKey>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [editorPage, setEditorPage] = useState("/");
+
+  const openPageInVisualEditor = (path: string) => {
+    setEditorPage(path);
+    setTab("editor");
+    setSidebarOpen(false);
+  };
 
   const nav: { key: TabKey; label: string; icon: any }[] = [
     { key: "overview", label: "پیشخوان", icon: LayoutDashboard },
@@ -159,10 +194,10 @@ function Dashboard() {
   ];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#eef2f8] text-slate-900 font-sans">
+    <div dir="rtl" className="h-screen flex flex-col overflow-hidden bg-[#eef2f8] text-slate-900 font-sans">
       <AdminToaster />
       {/* Topbar */}
-      <header className="sticky top-0 z-40 bg-[#0b1e3f] text-white shadow-md">
+      <header className="shrink-0 z-40 bg-[#0b1e3f] text-white shadow-md">
         <div className="flex items-center justify-between px-4 md:px-6 h-16">
           <div className="flex items-center gap-3">
             <button
@@ -197,11 +232,11 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex flex-1 min-h-0">
         {/* Sidebar (RTL: sits on right) */}
         <aside
           className={`
-            fixed lg:sticky top-16 right-0 h-[calc(100vh-4rem)] w-64 bg-[#0b1e3f] text-white
+            fixed lg:static top-16 right-0 h-[calc(100vh-4rem)] lg:h-auto w-64 shrink-0 bg-[#0b1e3f] text-white
             transition-transform lg:translate-x-0 z-30
             ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
           `}
@@ -231,15 +266,15 @@ function Dashboard() {
         </aside>
 
         {/* Content */}
-        <main className="flex-1 min-h-[calc(100vh-4rem)] p-4 md:p-8 lg:mr-0">
+        <main className="flex-1 min-w-0 min-h-0 overflow-y-auto overscroll-contain p-4 md:p-8 lg:mr-0">
           {tab === "overview" && <OverviewPane />}
-          {tab === "editor" && <VisualEditorPane />}
+          {tab === "editor" && <VisualEditorPane initialPage={editorPage} />}
           {tab === "inspector" && <InspectorPane />}
           {tab === "contacts" && <ContactsPane />}
           {tab === "suggestions" && <SuggestionsPane />}
           {tab === "applications" && <PartnerApplicationsPane />}
           {tab === "damages" && <DamagesPane />}
-          {tab === "menu" && <MenuPane />}
+          {tab === "menu" && <MenuPane onOpenPage={openPageInVisualEditor} />}
           {tab === "footer" && <FooterPane />}
           {tab === "social" && <SocialPane />}
           {tab === "ai" && <AiPane />}
@@ -391,9 +426,10 @@ type Selection = {
   computed: Record<string, string>;
 };
 
-function VisualEditorPane() {
-  const [page, setPage] = useState("/");
-  const [tab, setTab] = useState<"elements" | "media" | "menus" | "wheel">("elements");
+function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
+  const [page, setPage] = useState(initialPage);
+  const [tab, setTab] = useState<"elements" | "media" | "wheel">("elements");
+  const [pageOptions, setPageOptions] = useState(EDITOR_PAGES);
 
 
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
@@ -408,11 +444,46 @@ function VisualEditorPane() {
   const [overlays, setOverlays] = useState<OverlayItem[]>([]);
   const [selOv, setSelOv] = useState<OverlayItem | null>(null);
   const [ovDraw, setOvDraw] = useState(false);
+  const [msTool, setMsTool] = useState(false);
+  const deviceRef = useRef<"desktop" | "mobile" | "tablet">("desktop");
+  const pageRef = useRef("/");
+  useEffect(() => { deviceRef.current = device; }, [device]);
+  useEffect(() => { pageRef.current = page; }, [page]);
   const ovSaveTimer = useRef<number | undefined>(undefined);
+  /** Last overlay list actually persisted, to avoid no-op saves. */
+  const ovSavedJson = useRef<string | null>(null);
   const frame = useRef<HTMLIFrameElement | null>(null);
   const panel = useRef<HTMLElement | null>(null);
   const previewBox = useRef<HTMLDivElement | null>(null);
   const [boxW, setBoxW] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    void adminDb("site_menu_items")
+      .select("label, href, position, is_active")
+      .order("position", { ascending: true })
+      .then(({ data }) => {
+        if (!alive || !data) return;
+        const merged = [...EDITOR_PAGES];
+        const seen = new Set(merged.map((item) => item.path));
+        for (const item of data as Pick<MenuItem, "label" | "href" | "position" | "is_active">[]) {
+          const path = internalPath(item.href);
+          if (!path || seen.has(path)) continue;
+          seen.add(path);
+          merged.push({ path, label: item.label });
+        }
+        // The page that is open right now must always be selectable, even if it
+        // was just added and is not part of the menu yet.
+        if (!seen.has(pageRef.current)) merged.push({ path: pageRef.current, label: pageRef.current });
+        setPageOptions(merged);
+      });
+    return () => { alive = false; };
+  }, []);
+  // Keep the currently opened page in the dropdown list (new hand-made pages).
+  useEffect(() => {
+    setPageOptions((prev) =>
+      prev.some((p) => p.path === page) ? prev : [...prev, { path: page, label: page }],
+    );
+  }, [page]);
   useEffect(() => {
     const el = previewBox.current;
     if (!el || typeof ResizeObserver === "undefined") return;
@@ -468,6 +539,15 @@ function VisualEditorPane() {
         const list = ovMsg.list;
         setOverlays(list);
         setSelOv((prev) => (prev ? (list.find((x) => x.id === prev.id) ?? null) : prev));
+        // The preview broadcasts the stored list right after it loads; writing
+        // that identical value back would fire a bogus "save" (and GitHub
+        // auto-push) even though the user changed nothing.
+        const json = JSON.stringify(list);
+        if (ovSavedJson.current === null || ovSavedJson.current === json) {
+          ovSavedJson.current = json;
+          return;
+        }
+        ovSavedJson.current = json;
         if (ovSaveTimer.current) window.clearTimeout(ovSaveTimer.current);
         ovSaveTimer.current = window.setTimeout(() => {
           void adminWriteSetting(OVERLAY_SETTING_KEY, { list });
@@ -476,6 +556,28 @@ function VisualEditorPane() {
       if (ovMsg?.type === "ve:ov-selected") {
         setSelOv(ovMsg.item ?? null);
         if (ovMsg.item) setOvDraw(false);
+      }
+
+      /* ---------- main-menu reorder reported from the header ---------- */
+      const ms = e.data as { type?: string; order?: string[]; moved?: string; index?: number };
+      if (ms?.type === "ve:ms-order" && Array.isArray(ms.order)) {
+        const order = ms.order;
+        const moved = ms.moved ?? "";
+        const place = (ms.index ?? 0) + 1;
+        void (async () => {
+          const ok = window.confirm(
+            `«${moved}» به جایگاه ${place} فهرست اصلی منتقل شود؟\n\nترتیب جدید:\n${order.join(" ← ")}`,
+          );
+          if (!ok) {
+            // Refresh the preview so the header snaps back to the saved order.
+            if (frame.current) frame.current.src = previewSrc(pageRef.current, Date.now());
+            return;
+          }
+          const res = await applyRootMenuOrder(order, deviceRef.current);
+          if (res.ok) notifySaved("ترتیب فهرست اصلی");
+          else notifyFailed("ترتیب فهرست اصلی", res.error);
+          if (frame.current) frame.current.src = previewSrc(pageRef.current, Date.now());
+        })();
       }
     };
     window.addEventListener("message", onMsg);
@@ -501,6 +603,13 @@ function VisualEditorPane() {
     setSelOv(null);
     send({ type: "ve:ov-delete", id });
   };
+  const toggleMenuSort = () => {
+    const next = !msTool;
+    setMsTool(next);
+    if (next) setMode("interact"); // dragging needs the page calm, not select mode
+    send({ type: "ve:ms-tool", on: next });
+  };
+
   const toggleOvDraw = () => {
     const next = !ovDraw;
     setOvDraw(next);
@@ -601,13 +710,10 @@ function VisualEditorPane() {
           className={`px-4 py-2 text-xs font-bold ${tab === "wheel" ? "bg-[#0b1e3f] text-white" : ""}`}>
           چرخ‌وفلک و دکمه خرید
         </button>
-        <button onClick={() => setTab("menus")}
-          className={`px-4 py-2 text-xs font-bold ${tab === "menus" ? "bg-[#0b1e3f] text-white" : ""}`}>
-          منوها (افزودن/حذف)
-        </button>
       </div>
 
-      {tab === "media" ? <SliderPane /> : tab === "wheel" ? <WheelPane /> : tab === "menus" ? <MenuPane /> : (
+      {tab === "media" ? <SliderPane /> : tab === "wheel" ? <WheelPane /> : (
+
 
       <>
       <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -617,7 +723,7 @@ function VisualEditorPane() {
           onChange={(e) => { setPage(e.target.value); setSel(null); }}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm"
         >
-          {EDITOR_PAGES.map((p) => (
+          {pageOptions.map((p) => (
             <option key={p.path} value={p.path}>{p.label}</option>
           ))}
         </select>
@@ -645,6 +751,13 @@ function VisualEditorPane() {
             حالت تعامل
           </button>
         </div>
+        <button
+          onClick={toggleMenuSort}
+          className={`px-3 py-2 rounded-xl border text-xs flex items-center gap-1.5 font-bold ${msTool ? "bg-emerald-600 text-white border-emerald-600" : "border-slate-300 bg-white"}`}
+          title="آیتم‌های فهرست اصلی هدر را با موس یا انگشت بکشید و جابه‌جا کنید؛ پیش از ثبت، پیام تأیید نشان داده می‌شود."
+        >
+          <MoveHorizontal className="w-3.5 h-3.5" /> {msTool ? "در حال جابجایی فهرست…" : "جابجایی فهرست اصلی"}
+        </button>
         <button
           onClick={toggleOvDraw}
           className={`px-3 py-2 rounded-xl border text-xs flex items-center gap-1.5 font-bold ${ovDraw ? "bg-blue-600 text-white border-blue-600" : "border-slate-300 bg-white"}`}
@@ -1544,7 +1657,7 @@ function DamagesPane() {
 }
 
 /* ---------- Menu Editor ---------- */
-function MenuPane() {
+function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1640,6 +1753,7 @@ function MenuPane() {
     const idx = sibs.findIndex((s) => s.id === item.id);
     const swap = sibs[idx + dir];
     if (!swap) return;
+    if (!confirm(`«${item.label}» با «${swap.label}» جابه‌جا شود؟`)) return;
     setSaving(true);
     await adminDb("site_menu_items").update({ position: swap.position } as any).eq("id", item.id);
     await adminDb("site_menu_items").update({ position: item.position } as any).eq("id", swap.id);
@@ -1656,6 +1770,7 @@ function MenuPane() {
     const target = items.find((i) => i.id === targetId);
     const srcItem = items.find((i) => i.id === src);
     if (!target || !srcItem) return;
+    if (!confirm(`«${srcItem.label}» درست پیش از «${target.label}» قرار بگیرد؟`)) return;
     setSaving(true);
     await persistOrder(srcItem.parent_id, siblingsOf(srcItem.parent_id, src).map((i) => i.id));
     const newSibs = siblingsOf(target.parent_id, src);
@@ -1674,6 +1789,11 @@ function MenuPane() {
     if (parentId && isDescendant(parentId, src)) return;
     const srcItem = items.find((i) => i.id === src);
     if (!srcItem || srcItem.parent_id === parentId) return;
+    const parentLabel = parentId ? (items.find((i) => i.id === parentId)?.label ?? "") : "";
+    const question = parentId
+      ? `«${srcItem.label}» زیرمجموعهٔ «${parentLabel}» شود؟`
+      : `«${srcItem.label}» به فهرست اصلی منتقل شود؟`;
+    if (!confirm(question)) return;
     setSaving(true);
     await persistOrder(srcItem.parent_id, siblingsOf(srcItem.parent_id, src).map((i) => i.id));
     const newSibs = siblingsOf(parentId, src);
@@ -1790,13 +1910,29 @@ function MenuPane() {
         <Empty text="هنوز آیتمی برای این نما تعریف نشده — با «افزودن آیتم اصلی» شروع کنید." />
       ) : (
         <>
-          <p className="text-[11px] text-slate-500 mb-2">
-            برای جابجایی، دستهٔ ⋮⋮ را بکشید: رها روی خط نازک بالای هر آیتم = مرتب‌سازی، رها روی خود آیتم = تبدیل به زیرمجموعه. دکمه‌های ↑ ↓ هم مرتب‌سازی می‌کنند.
-          </p>
+          <div className="mb-3 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-3 space-y-2">
+            <p className="text-[11px] text-emerald-900 leading-6">
+              برای جابجایی، دستهٔ ⋮⋮ را بکشید: رها روی خط نازک بالای هر آیتم = مرتب‌سازی، رها روی خود آیتم = تبدیل به زیرمجموعه. دکمه‌های ↑ ↓ هم مرتب‌سازی می‌کنند.
+              پیش از هر جابجایی، یک پیام تأیید نشان داده می‌شود.
+            </p>
+            <p className="text-[11px] text-emerald-900 leading-6">
+              عددی که داخل مربع کنار هر آیتم می‌بینید، <b>شمارهٔ ترتیب همان آیتم بین هم‌گروه‌هایش</b> است
+              (۱ یعنی اولین آیتم آن گروه، از راست در فهرست اصلی و از بالا در زیرمجموعه‌ها).
+            </p>
+            <div className="flex flex-wrap items-center gap-3 text-[11px] text-emerald-900">
+              <span className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded bg-emerald-600 inline-block" /> فهرست اصلی
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded bg-emerald-200 inline-block" /> زیرمجموعه‌ها
+              </span>
+              <span>هر گروه یک رنگ نوار کناری جداگانه دارد تا زیرمجموعه‌های هر آیتم اصلی سریع دیده شوند.</span>
+            </div>
+          </div>
           <ul className="space-y-2">
-            {roots.map((r) => (
-              <MenuRow key={r.id} item={r} depth={0} saving={saving} dnd={dnd}
-                onUpdate={update} onDelete={del} onAddChild={add} onMove={move} childrenOf={childrenOf} />
+            {roots.map((r, gi) => (
+              <MenuRow key={r.id} item={r} depth={0} saving={saving} dnd={dnd} groupColor={GROUP_COLORS[gi % GROUP_COLORS.length]!}
+                onUpdate={update} onDelete={del} onAddChild={add} onMove={move} childrenOf={childrenOf} onOpenPage={onOpenPage} />
             ))}
           </ul>
           <div
@@ -1818,15 +1954,19 @@ type MenuDnd = {
   dropInto: (parentId: string | null) => void;
 };
 
+/** One distinct side-stripe color per top-level group. */
+const GROUP_COLORS = ["#0ea5e9", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#ef4444", "#6366f1", "#84cc16"];
+
 function MenuRow({
-  item, depth, saving, dnd, onUpdate, onDelete, onAddChild, onMove, childrenOf,
+  item, depth, saving, dnd, groupColor, onUpdate, onDelete, onAddChild, onMove, childrenOf, onOpenPage,
 }: {
-  item: MenuItem; depth: number; saving: boolean; dnd: MenuDnd;
+  item: MenuItem; depth: number; saving: boolean; dnd: MenuDnd; groupColor: string;
   onUpdate: (id: string, patch: Partial<MenuItem>) => void;
   onDelete: (id: string) => void;
   onAddChild: (parent_id: string) => void;
   onMove: (item: MenuItem, dir: -1 | 1) => void;
   childrenOf: (id: string) => MenuItem[];
+  onOpenPage?: (path: string) => void;
 }) {
   const [label, setLabel] = useState(item.label);
   const [href, setHref] = useState(item.href || "");
@@ -1847,7 +1987,10 @@ function MenuRow({
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={(e) => { e.preventDefault(); setDragOver(false); dnd.dropInto(item.id); }}
-          className={`flex flex-wrap items-center gap-2 bg-white rounded-xl border p-2.5 transition ${dragOver ? "border-[#0b1e3f] ring-2 ring-[#0b1e3f]/20" : "border-slate-200 hover:border-[#0b1e3f]/40"}`}
+          style={{ borderRightWidth: 6, borderRightColor: groupColor }}
+          className={`flex flex-wrap items-center gap-2 rounded-xl border p-2.5 transition ${
+            depth === 0 ? "bg-emerald-600/10 border-emerald-600/60" : "bg-emerald-50 border-emerald-200"
+          } ${dragOver ? "ring-2 ring-emerald-600/40 border-emerald-700" : "hover:border-emerald-700/60"}`}
         >
           <span
             draggable
@@ -1857,7 +2000,14 @@ function MenuRow({
           >
             <GripVertical className="w-4 h-4" />
           </span>
-          <span className="w-6 h-6 rounded-md bg-slate-100 grid place-items-center text-[10px] font-bold text-slate-500">{item.position + 1}</span>
+          <span
+            title={`شمارهٔ ترتیب این آیتم بین هم‌گروه‌هایش: ${item.position + 1}`}
+            className={`w-6 h-6 rounded-md grid place-items-center text-[10px] font-bold ${
+              depth === 0 ? "bg-emerald-600 text-white" : "bg-emerald-200 text-emerald-900"
+            }`}
+          >
+            {item.position + 1}
+          </span>
           <input value={label} onChange={(e) => setLabel(e.target.value)}
             className="flex-1 min-w-[130px] px-2 py-1.5 text-sm rounded-lg border border-slate-200 focus:border-[#0b1e3f] outline-none" />
           <input value={href} onChange={(e) => setHref(e.target.value)} placeholder="/link" dir="ltr"
@@ -1880,6 +2030,19 @@ function MenuRow({
               <Save className="w-4 h-4" />
             </IconBtn>
           )}
+          {onOpenPage && internalPath(href || item.href) && (
+            <button
+              type="button"
+              onClick={() => {
+                const p = internalPath(href || item.href);
+                if (p) onOpenPage(p);
+              }}
+              className="text-[11px] font-bold px-2 py-1.5 rounded-lg bg-[#0b1e3f] text-white"
+              title="این برگ را در ویرایشگر بصری باز کن"
+            >
+              ویرایش بصری
+            </button>
+          )}
           <IconBtn disabled={saving} onClick={() => onAddChild(item.id)}><Plus className="w-4 h-4" /></IconBtn>
           <IconBtn tone="danger" disabled={saving} onClick={() => onDelete(item.id)}><Trash2 className="w-4 h-4" /></IconBtn>
         </div>
@@ -1887,8 +2050,8 @@ function MenuRow({
       {kids.length > 0 && (
         <ul className="mt-2 space-y-2">
           {kids.map((k) => (
-            <MenuRow key={k.id} item={k} depth={depth + 1} saving={saving} dnd={dnd}
-              onUpdate={onUpdate} onDelete={onDelete} onAddChild={onAddChild} onMove={onMove} childrenOf={childrenOf} />
+            <MenuRow key={k.id} item={k} depth={depth + 1} saving={saving} dnd={dnd} groupColor={groupColor}
+              onUpdate={onUpdate} onDelete={onDelete} onAddChild={onAddChild} onMove={onMove} childrenOf={childrenOf} onOpenPage={onOpenPage} />
           ))}
         </ul>
       )}

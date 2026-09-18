@@ -207,6 +207,18 @@ export function OverlayPanel({
         </Row>
       )}
 
+      <label className="flex items-start gap-2 text-xs rounded-xl border border-blue-200 bg-blue-50/60 p-2">
+        <input type="checkbox" className="mt-0.5" checked={c.iframeProxy === true}
+          onChange={(e) => patchContent({ iframeProxy: e.target.checked })} />
+        <span>
+          <span className="font-bold">حالت سازگاری برای لینک خارجی / بک‌لینک</span>
+          <span className="block text-[10px] text-slate-500 leading-5">
+            اگر سایت مقصد اجازه نمایش داخل قاب را ندهد یا افزونه امنیتی/ضدربات داشته باشد، صفحه از طریق سرور خودمان باز می‌شود و خطای iframe نمی‌گیرید. روی محتوای iframe و لینک کلیک لایه اعمال می‌شود.
+          </span>
+        </span>
+      </label>
+
+
       {c.kind === "widget" && (
         <Row label={c.widget?.name ? `ویجت فعلی: ${c.widget.name}` : "فایل ZIP ویجت (دارای index.html)"}>
           <input type="file" accept=".zip" disabled={busy}

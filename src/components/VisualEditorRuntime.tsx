@@ -16,6 +16,7 @@ import {
   type OverrideMap,
 } from "@/lib/visual-editor";
 import { mountOverlays } from "@/lib/overlay-runtime";
+import { createMenuSorter } from "@/lib/menu-sort";
 import {
   loadLocalOverlays,
   loadRemoteOverlays,
@@ -194,6 +195,12 @@ export function VisualEditorRuntime() {
     };
     applyModeClass();
 
+    /* ---------- drag-to-reorder for the header's main menu ---------- */
+    const menuSorter = createMenuSorter((payload) => {
+      window.parent?.postMessage({ type: "ve:ms-order", ...payload }, "*");
+    });
+
+
     let selected: HTMLElement | null = null;
     let hovered: HTMLElement | null = null;
 
@@ -289,6 +296,12 @@ export function VisualEditorRuntime() {
       if (data.type === "ve:mode") {
         mode = data.mode === "interact" ? "interact" : "select";
         applyModeClass();
+        return;
+      }
+
+      /* ---------- menu drag tool ---------- */
+      if (data.type === "ve:ms-tool") {
+        menuSorter.setOn(!!(data as { on?: boolean }).on);
         return;
       }
 
@@ -402,6 +415,7 @@ export function VisualEditorRuntime() {
 
     return () => {
       obs.disconnect();
+      menuSorter.destroy();
       ovCtl.destroy();
       stopTouchHover();
       stopInspector?.();

@@ -72,8 +72,33 @@ function mergeWithDefaults(saved: NavItem[], defaults: NavItem[]): NavItem[] {
     return { ...n, children: [...(n.children ?? []), ...missingKids] };
   });
 
-  const missingRoots = defaults.filter((d) => !savedKeys.has(keyOf(d)) && !out.some((n) => n.label.trim() === d.label.trim()));
-  return [...out, ...missingRoots];
+  // Built-in roots that were never imported are re-inserted next to the
+  // neighbour they have in the built-in menu, instead of being dumped at the
+  // end of the header where they would break the intended reading order.
+  const result = [...out];
+  const sameItem = (a: NavItem, b: NavItem) => keyOf(a) === keyOf(b) || a.label.trim() === b.label.trim();
+  defaults.forEach((d, di) => {
+    if (savedKeys.has(keyOf(d)) || result.some((n) => sameItem(n, d))) return;
+    let at = result.length;
+    for (let i = di - 1; i >= 0; i--) {
+      const idx = result.findIndex((n) => sameItem(n, defaults[i]!));
+      if (idx !== -1) {
+        at = idx + 1;
+        break;
+      }
+    }
+    if (at === result.length) {
+      for (let i = di + 1; i < defaults.length; i++) {
+        const idx = result.findIndex((n) => sameItem(n, defaults[i]!));
+        if (idx !== -1) {
+          at = idx;
+          break;
+        }
+      }
+    }
+    result.splice(at, 0, d);
+  });
+  return result;
 }
 
 /**

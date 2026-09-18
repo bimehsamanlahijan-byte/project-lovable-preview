@@ -415,6 +415,87 @@ export const DEFAULT_WHEEL_BACKGROUND: WheelBackgroundSettings = {
   images: [],
 };
 
+export type WheelWidgetSettings = {
+  enabled: boolean;
+  name: string;
+  html: string;
+};
+
+export const DEFAULT_WHEEL_WIDGET: WheelWidgetSettings = {
+  enabled: false,
+  name: "",
+  html: "",
+};
+
+export type HomeArticle = {
+  id: string;
+  title: string;
+  excerpt: string;
+  mediaUrl: string;
+  mediaType: "image" | "video";
+  href: string;
+};
+
+export type HomePartner = {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  buttonLabel: string;
+  buttonHref: string;
+};
+
+export type HomeContentSettings = {
+  appImageUrl: string;
+  appTitle: string;
+  appDescription: string;
+  appButtonLabel: string;
+  appButtonHref: string;
+  articles: HomeArticle[];
+  partners: HomePartner[];
+};
+
+export const DEFAULT_HOME_CONTENT: HomeContentSettings = {
+  appImageUrl: "",
+  appTitle: "اپلیکیشن بیمه سامان",
+  appDescription:
+    "با اپلیکیشن بیمه سامان، تجربه‌ای جدید از مدیریت بیمه‌های خود را در دستانتان خواهید داشت. این اپلیکیشن به شما امکان می‌دهد به راحتی و در هر زمان و مکانی به تمامی خدمات بیمه‌ای خود دسترسی پیدا کنید.",
+  appButtonLabel: "دانلود اپلیکیشن",
+  appButtonHref: "#",
+  articles: [
+    { id: "article-1", title: "ذخایر فنی مؤسسات بیمه - مصوب ۸۷/۱۰/۲۵", excerpt: "شورای عالی بیمه در راستای اجرای ماده ۶۱ قانون تأسیس بیمه مرکزی ایران و بیمه‌گری...", mediaUrl: "", mediaType: "image", href: "#" },
+    { id: "article-2", title: "شرایط عمومی بیمه نامه تجهیزات و ماشین‌آلات پیمانکاری", excerpt: "نظر به پیشنهاد کتبی بیمه‌گزار مذکور مشخصات، شرکت سهامی بیمه سامان...", mediaUrl: "", mediaType: "image", href: "#" },
+    { id: "article-3", title: "شرایط ثبت‌نام بیمه تامین اجتماعی", excerpt: "داشتن بیمه تامین اجتماعی، اولین قدم برای پشتیبانی مالی و سرمایه‌گذاری روی آینده است...", mediaUrl: "", mediaType: "image", href: "#" },
+    { id: "article-4", title: "پرداخت دیه به نرخ روز", excerpt: "آیا می‌دانید اگر بین زمان حادثه و پرداخت خسارت چند ماه یا حتی چند سال فاصله بیفتد...", mediaUrl: "", mediaType: "image", href: "#" },
+  ],
+  partners: ["بانک سامان", "سامان‌بوم", "تامین سرمایه سامان", "کارگزاری سامان", "لیزینگ سامان", "صرافی سامان"].map((title, index) => ({
+    id: `partner-${index + 1}`,
+    title,
+    description: "",
+    imageUrl: "",
+    buttonLabel: "",
+    buttonHref: "#",
+  })),
+};
+
+export type WeeklyEventAnimation = "fade" | "slide" | "zoom" | "float" | "pulse";
+export type WeeklyEventBanner = {
+  id: string;
+  title: string;
+  text: string;
+  imageUrl: string;
+  href: string;
+  side: "left" | "right";
+  slot: number;
+  animation: WeeklyEventAnimation;
+  widgetHtml: string;
+  widgetName: string;
+  enabled: boolean;
+};
+
+export type WeeklyEventsSettings = { banners: WeeklyEventBanner[] };
+export const DEFAULT_WEEKLY_EVENTS: WeeklyEventsSettings = { banners: [] };
+
 export const WHEEL_BG_MODES = [
   { v: "static", label: "ثابت (فقط تصویر اول)" },
   { v: "interval", label: "اسلاید زمان‌دار (لحظه‌ای)" },

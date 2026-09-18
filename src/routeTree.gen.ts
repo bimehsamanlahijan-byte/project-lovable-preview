@@ -34,6 +34,7 @@ import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-p
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiPublicEmbedRouteImport } from './routes/api/public/embed'
 import { Route as ApiPublicEnvCheckRouteImport } from './routes/api/public/env-check'
 import { Route as ApiPublicPartnerApplicationsRouteImport } from './routes/api/public/partner-applications'
 import { Route as ApiPublicPartnerStatsRouteImport } from './routes/api/public/partner-stats'
@@ -170,6 +171,11 @@ const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   path: '/api/admin/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEmbedRoute = ApiPublicEmbedRouteImport.update({
+  id: '/api/public/embed',
+  path: '/api/public/embed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicEnvCheckRoute = ApiPublicEnvCheckRouteImport.update({
   id: '/api/public/env-check',
   path: '/api/public/env-check',
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/embed': typeof ApiPublicEmbedRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/embed': typeof ApiPublicEmbedRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
+  '/api/public/embed': typeof ApiPublicEmbedRoute
   '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/api/public/partner-applications': typeof ApiPublicPartnerApplicationsRoute
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/embed'
     | '/api/public/env-check'
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/embed'
     | '/api/public/env-check'
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
+    | '/api/public/embed'
     | '/api/public/env-check'
     | '/api/public/partner-applications'
     | '/api/public/partner-stats'
@@ -477,6 +489,7 @@ export interface RootRouteChildren {
   ApiAdminAssetsRoute: typeof ApiAdminAssetsRoute
   ApiAdminBackendRoute: typeof ApiAdminBackendRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
+  ApiPublicEmbedRoute: typeof ApiPublicEmbedRoute
   ApiPublicEnvCheckRoute: typeof ApiPublicEnvCheckRoute
   ApiPublicPartnerApplicationsRoute: typeof ApiPublicPartnerApplicationsRoute
   ApiPublicPartnerStatsRoute: typeof ApiPublicPartnerStatsRoute
@@ -666,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/embed': {
+      id: '/api/public/embed'
+      path: '/api/public/embed'
+      fullPath: '/api/public/embed'
+      preLoaderRoute: typeof ApiPublicEmbedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/env-check': {
       id: '/api/public/env-check'
       path: '/api/public/env-check'
@@ -776,6 +796,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAssetsRoute: ApiAdminAssetsRoute,
   ApiAdminBackendRoute: ApiAdminBackendRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
+  ApiPublicEmbedRoute: ApiPublicEmbedRoute,
   ApiPublicEnvCheckRoute: ApiPublicEnvCheckRoute,
   ApiPublicPartnerApplicationsRoute: ApiPublicPartnerApplicationsRoute,
   ApiPublicPartnerStatsRoute: ApiPublicPartnerStatsRoute,

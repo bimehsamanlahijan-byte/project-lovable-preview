@@ -37,6 +37,12 @@ export type OverlayContent = {
   css?: string;
   js?: string;
   iframeSrc?: string;
+  /**
+   * Compatibility mode for external links: route the iframe through
+   * /api/public/embed so sites that refuse framing (X-Frame-Options /
+   * CSP frame-ancestors) or block bots still render inside the overlay.
+   */
+  iframeProxy?: boolean;
   /** Self-contained widget document (e.g. extracted from a ZIP package). */
   widget?: { name?: string; html?: string };
 };

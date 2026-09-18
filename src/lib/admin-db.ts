@@ -150,7 +150,10 @@ async function autoPushToGithub(changedKey: string) {
     });
     const { notifySaved, notifyFailed } = await import("./notify");
     if (res.ok) notifySaved("ارسال خودکار به گیت‌هاب");
-    else notifyFailed("ارسال خودکار به گیت‌هاب", res.error);
+    // A missing GitHub token just means auto-sync isn't configured yet; that is
+    // not an error the user needs to see on every save.
+    else if (!String(res.error ?? "").includes("GITHUB_TOKEN_MISSING"))
+      notifyFailed("ارسال خودکار به گیت‌هاب", res.error);
   } catch {
     /* auto-sync must never break a dashboard save */
   }
