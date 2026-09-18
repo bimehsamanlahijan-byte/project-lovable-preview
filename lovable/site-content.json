@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-17T19:34:48.143Z",
+  "exportedAt": "2026-09-18T07:05:10.786Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -639,6 +639,18 @@
             },
             "hoverDeep": false
           },
+          "/::@desktop::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a": {
+            "html": "<a href=\"https://sales.si24.ir/?agent=8452\" rel=\"noopener\" style=\"text-decoration:underline\">خرید آنلاین بیمه شخص ثالث</a>",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
           "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(2) > form > button": {
             "text": "ارسال درخواست",
             "hover": {},
@@ -967,7 +979,7 @@
           }
         }
       },
-      "updated_at": "2026-09-17T14:11:46.277+00:00"
+      "updated_at": "2026-09-18T04:37:35.53+00:00"
     },
     {
       "key": "visual_overlays",
@@ -1157,10 +1169,98 @@
               "block": true,
               "action": "none"
             }
+          },
+          {
+            "id": "ov-mu6g6ddx-c083z",
+            "box": {
+              "top": 246,
+              "left": 16,
+              "width": 1408,
+              "height": 518
+            },
+            "mode": "cover-content",
+            "page": "/insurance/fire",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789705048389,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu6m5z4x-iynt8",
+            "box": {
+              "top": 61,
+              "left": 344,
+              "width": 128,
+              "height": 56
+            },
+            "mode": "cover-content",
+            "page": "/",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(9) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789715107617,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
           }
         ]
       },
-      "updated_at": "2026-09-17T19:34:46.936+00:00"
+      "updated_at": "2026-09-18T07:05:08.445+00:00"
     }
   ]
 }
