@@ -84,6 +84,23 @@ function internalPath(href?: string | null): string | null {
   }
   return "/" + raw.replace(/^\/+/, "");
 }
+
+/**
+ * Some menu buttons intentionally send visitors to the external checkout,
+ * while their editable landing page lives inside this site.
+ */
+function editableMenuPath(href?: string | null): string | null {
+  const path = internalPath(href);
+  if (path) return path;
+  const raw = (href ?? "").trim();
+  try {
+    const url = new URL(raw);
+    if (url.hostname === "sales.si24.ir") return "/third-party";
+  } catch {
+    return null;
+  }
+  return null;
+}
 import { notifyFailed, notifySaved } from "@/lib/notify";
 import { MoveHorizontal } from "lucide-react";
 
@@ -1691,7 +1708,6 @@ function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
-  const sitePages = useSitePages();
   const dragId = useRef<string | null>(null);
 
   const load = async () => {
@@ -1715,6 +1731,26 @@ function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) 
 
   const roots = shown.filter((i) => !i.parent_id);
   const childrenOf = (id: string) => shown.filter((i) => i.parent_id === id);
+  const quickPages = useMemo(() => {
+    const pages: { path: string; label: string; color: string }[] = [];
+    const seen = new Set<string>();
+    const byParent = new Map<string | null, MenuItem[]>();
+    for (const item of shown) {
+      const siblings = byParent.get(item.parent_id) ?? [];
+      siblings.push(item);
+      byParent.set(item.parent_id, siblings);
+    }
+    const walk = (item: MenuItem, color: string) => {
+      const path = editableMenuPath(item.href);
+      if (path && !seen.has(path)) {
+        seen.add(path);
+        pages.push({ path, label: item.label, color });
+      }
+      for (const child of byParent.get(item.id) ?? []) walk(child, color);
+    };
+    roots.forEach((root, index) => walk(root, GROUP_COLORS[index % GROUP_COLORS.length]!));
+    return pages;
+  }, [shown]);
 
   const siblingsOf = (parent_id: string | null, excludeId?: string) =>
     items
@@ -1937,19 +1973,19 @@ function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) 
       }
     >
       {onOpenPage && (
-        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-3">
-          <p className="text-[11px] text-slate-600 leading-6 mb-2">
-            همهٔ برگه‌های سایت — حتی برگه‌هایی که تازه ساخته شده‌اند و هنوز در فهرست بالا نیستند —
-            اینجا دکمهٔ «ویرایش بصری» دارند.
+        <div className="mb-4 rounded-xl border border-slate-200 bg-white p-3">
+          <p className="mb-2 text-[11px] leading-6 text-slate-600">
+            دسترسی سریع به برگه‌های همین نما؛ با ثبت لینک داخلی جدید، دکمهٔ هم‌رنگ گروه آن خودکار اضافه می‌شود.
           </p>
-          <div className="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto">
-            {sitePages.map((p) => (
+          <div className="flex flex-wrap gap-1.5">
+            {quickPages.map((p) => (
               <button
                 key={p.path}
                 type="button"
                 onClick={() => onOpenPage(p.path)}
                 title={p.path}
-                className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 hover:bg-[#0b1e3f] hover:text-white transition"
+                style={{ backgroundColor: p.color, borderColor: p.color }}
+                className="rounded-lg border px-2.5 py-1.5 text-[11px] font-bold text-white transition hover:opacity-85"
               >
                 {p.label}
               </button>
@@ -2027,8 +2063,8 @@ function MenuRow({
   // Rows without their own link (pure parent items) fall back to the first
   // child's page, so every row can be opened in the visual editor.
   const rowPath =
-    internalPath(href || item.href) ??
-    kids.map((k) => internalPath(k.href)).find(Boolean) ??
+    editableMenuPath(href || item.href) ??
+    kids.map((k) => editableMenuPath(k.href)).find(Boolean) ??
     null;
 
   return (
@@ -2091,7 +2127,8 @@ function MenuRow({
             <button
               type="button"
               onClick={() => onOpenPage(rowPath)}
-              className="text-[11px] font-bold px-2 py-1.5 rounded-lg bg-[#0b1e3f] text-white"
+              style={{ backgroundColor: groupColor }}
+              className="rounded-lg px-2 py-1.5 text-[11px] font-bold text-white transition hover:opacity-85"
               title="این برگ را در ویرایشگر بصری باز کن"
             >
               ویرایش بصری
