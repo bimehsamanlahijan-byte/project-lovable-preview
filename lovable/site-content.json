@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-18T07:18:00.395Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
+  "exportedAt": "2026-09-18T07:30:50.760Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (ai_assistant)",
   "settings": [
     {
       "key": "wheel_background",
@@ -127,6 +127,19 @@
       "updated_at": "2026-09-07T03:43:01.145284+00:00"
     },
     {
+      "key": "ai_assistant",
+      "value": {
+        "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+        "title": "دستیار هوشمند بیمه سامان",
+        "enabled": true,
+        "welcome": "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
+        "provider": "cloudflare",
+        "temperature": 0.4,
+        "systemPrompt": "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی و مؤدبانه پاسخ دهید."
+      },
+      "updated_at": "2026-09-18T07:30:47.519+00:00"
+    },
+    {
       "key": "hero_slider",
       "value": {
         "fit": "cover",
@@ -169,19 +182,6 @@
         "tickerSchematic": true
       },
       "updated_at": "2026-09-11T17:13:44.019+00:00"
-    },
-    {
-      "key": "ai_assistant",
-      "value": {
-        "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
-        "title": "دستیار هوشمند بیمه سامان",
-        "enabled": true,
-        "welcome": "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
-        "provider": "cloudflare",
-        "temperature": 0.4,
-        "systemPrompt": "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی و مؤدبانه پاسخ دهید."
-      },
-      "updated_at": "2026-09-09T10:16:33.945+00:00"
     },
     {
       "key": "branding",
