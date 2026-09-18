@@ -54,6 +54,7 @@ import { InspectorPane } from "@/components/dashboard/InspectorPane";
 import { dashboardStatus, lockDashboard, unlockDashboard } from "@/lib/admin.functions";
 import { VE_SETTING_KEY, type OverrideMap } from "@/lib/visual-editor";
 import { EDITOR_PAGES } from "@/lib/editor-pages";
+import { useSitePages } from "@/lib/use-site-pages";
 import { OVERLAY_SETTING_KEY, type OverlayItem } from "@/lib/overlays";
 import { OVERLAY_TARGETS } from "@/lib/overlay-targets";
 import { OverlayPanel } from "@/components/dashboard/OverlayEditor";
@@ -429,7 +430,16 @@ type Selection = {
 function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
   const [page, setPage] = useState(initialPage);
   const [tab, setTab] = useState<"elements" | "media" | "wheel">("elements");
+  const sitePages = useSitePages();
   const [pageOptions, setPageOptions] = useState(EDITOR_PAGES);
+  // Any page added to the site later shows up here automatically.
+  useEffect(() => {
+    setPageOptions((prev) => {
+      const next = [...prev];
+      for (const p of sitePages) if (!next.some((x) => x.path === p.path)) next.push(p);
+      return next.length === prev.length ? prev : next;
+    });
+  }, [sitePages]);
 
 
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
@@ -617,6 +627,25 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
     send({ type: "ve:ov-tool", on: next });
   };
 
+  /**
+   * Switching the mode must also put the special tools away: the overlay
+   * catcher and the menu-drag layer sit on top of the page and would swallow
+   * every click/tap, so selecting an element silently stopped working (and the
+   * settings column never appeared).
+   */
+  const switchMode = (next: "select" | "interact") => {
+    if (msTool) {
+      setMsTool(false);
+      send({ type: "ve:ms-tool", on: false });
+    }
+    if (ovDraw) {
+      setOvDraw(false);
+      send({ type: "ve:ov-tool", on: false });
+    }
+    setMode(next);
+    send({ type: "ve:mode", mode: next });
+  };
+
   const previewSrc = (path: string, bust?: number) => {
     const separator = path.includes("?") ? "&" : "?";
     return `${path}${separator}ve=1&veDevice=${device}${bust ? `&t=${bust}` : ""}`;
@@ -742,11 +771,11 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
           </button>
         </div>
         <div className="flex rounded-xl overflow-hidden border border-slate-300 bg-white">
-          <button onClick={() => setMode("select")}
+          <button onClick={() => switchMode("select")}
             className={`px-3 py-2 text-xs font-bold ${mode === "select" ? "bg-[#0b1e3f] text-white" : ""}`}>
             حالت انتخاب
           </button>
-          <button onClick={() => setMode("interact")}
+          <button onClick={() => switchMode("interact")}
             className={`px-3 py-2 text-xs font-bold ${mode === "interact" ? "bg-[#0b1e3f] text-white" : ""}`}>
             حالت تعامل
           </button>
@@ -1662,6 +1691,7 @@ function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
+  const sitePages = useSitePages();
   const dragId = useRef<string | null>(null);
 
   const load = async () => {
@@ -1906,6 +1936,27 @@ function MenuPane({ onOpenPage }: { onOpenPage?: (path: string) => void } = {}) 
         </div>
       }
     >
+      {onOpenPage && (
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-3">
+          <p className="text-[11px] text-slate-600 leading-6 mb-2">
+            همهٔ برگه‌های سایت — حتی برگه‌هایی که تازه ساخته شده‌اند و هنوز در فهرست بالا نیستند —
+            اینجا دکمهٔ «ویرایش بصری» دارند.
+          </p>
+          <div className="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto">
+            {sitePages.map((p) => (
+              <button
+                key={p.path}
+                type="button"
+                onClick={() => onOpenPage(p.path)}
+                title={p.path}
+                className="text-[11px] font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 hover:bg-[#0b1e3f] hover:text-white transition"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {loading ? <Empty text="در حال بارگذاری..." /> : roots.length === 0 ? (
         <Empty text="هنوز آیتمی برای این نما تعریف نشده — با «افزودن آیتم اصلی» شروع کنید." />
       ) : (
@@ -1973,6 +2024,12 @@ function MenuRow({
   const [dragOver, setDragOver] = useState(false);
   const kids = childrenOf(item.id);
   const dirty = label !== item.label || (href || "") !== (item.href || "");
+  // Rows without their own link (pure parent items) fall back to the first
+  // child's page, so every row can be opened in the visual editor.
+  const rowPath =
+    internalPath(href || item.href) ??
+    kids.map((k) => internalPath(k.href)).find(Boolean) ??
+    null;
 
   return (
     <li>
@@ -2030,13 +2087,10 @@ function MenuRow({
               <Save className="w-4 h-4" />
             </IconBtn>
           )}
-          {onOpenPage && internalPath(href || item.href) && (
+          {onOpenPage && rowPath && (
             <button
               type="button"
-              onClick={() => {
-                const p = internalPath(href || item.href);
-                if (p) onOpenPage(p);
-              }}
+              onClick={() => onOpenPage(rowPath)}
               className="text-[11px] font-bold px-2 py-1.5 rounded-lg bg-[#0b1e3f] text-white"
               title="این برگ را در ویرایشگر بصری باز کن"
             >

@@ -243,11 +243,45 @@ export function VisualEditorRuntime() {
       post({ type: "ve:selected", payload: describe(t) });
     };
 
+    /**
+     * A plain <a href> inside the frame does a full page load, which drops
+     * ?ve=1 / ?veDevice — the next page then loads without the editor and no
+     * click ever selects anything again. Re-add the editor params so browsing
+     * in «حالت تعامل» keeps the editor alive.
+     */
+    const keepEditParams = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const a = (e.target as HTMLElement | null)?.closest?.("a") as HTMLAnchorElement | null;
+      if (!a) return;
+      const href = a.getAttribute("href") ?? "";
+      if (!href || href.startsWith("#") || /^(mailto:|tel:|javascript:)/i.test(href)) return;
+      if (a.target && a.target !== "_self") return;
+      let url: URL;
+      try {
+        url = new URL(a.href, window.location.href);
+      } catch {
+        return;
+      }
+      if (url.origin !== window.location.origin) return;
+      if (url.searchParams.get(VE_EDIT_PARAM) === "1") return;
+      url.searchParams.set(VE_EDIT_PARAM, "1");
+      if (hasForcedDevice) {
+        const dev = params.get("veDevice");
+        if (dev) url.searchParams.set("veDevice", dev);
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.assign(url.toString());
+    };
+
     const onClick = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
       // Interact mode: let the real site behave (wheel opens, menus, tabs…).
       // Alt+click still selects the element under the cursor.
-      if (mode === "interact" && !e.altKey) return;
+      if (mode === "interact" && !e.altKey) {
+        keepEditParams(e);
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       select(t);
@@ -296,6 +330,12 @@ export function VisualEditorRuntime() {
       if (data.type === "ve:mode") {
         mode = data.mode === "interact" ? "interact" : "select";
         applyModeClass();
+        // Going back to select mode must clear the tools that cover the page,
+        // otherwise their transparent layers keep eating clicks and taps.
+        if (mode === "select") {
+          ovCtl.setTool(false);
+          menuSorter.setOn(false);
+        }
         return;
       }
 
