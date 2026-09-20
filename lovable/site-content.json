@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T06:18:34.603Z",
+  "exportedAt": "2026-09-20T06:19:07.510Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1452,7 +1452,7 @@
               "sameForAll": true
             },
             "interaction": {
-              "url": "https://sales.si24.ir/?agent=8452",
+              "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
               "block": true,
               "action": "url",
               "target": "_blank"
@@ -1460,7 +1460,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-20T06:18:32.852+00:00"
+      "updated_at": "2026-09-20T06:19:07.347+00:00"
     }
   ]
 }
