@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T06:17:11.816Z",
+  "exportedAt": "2026-09-20T06:17:55.289Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1354,7 +1354,8 @@
                 "font-size": "16px",
                 "text-align": "center",
                 "font-weight": "700"
-              }
+              },
+              "iframeProxy": true
             },
             "visible": true,
             "createdAt": 1789885029927,
@@ -1368,7 +1369,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-20T06:17:10.745+00:00"
+      "updated_at": "2026-09-20T06:17:54.643+00:00"
     }
   ]
 }
