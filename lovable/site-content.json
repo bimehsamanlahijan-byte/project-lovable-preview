@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T06:19:42.651Z",
+  "exportedAt": "2026-09-20T06:20:10.129Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1431,7 +1431,7 @@
               "width": 159,
               "height": 56
             },
-            "mode": "interactive",
+            "mode": "cover-content",
             "page": "/partners",
             "type": "overlay",
             "label": "لینک خارجی سازگار",
@@ -1472,7 +1472,7 @@
           }
         ]
       },
-      "updated_at": "2026-09-20T06:19:42.118+00:00"
+      "updated_at": "2026-09-20T06:20:07.468+00:00"
     }
   ]
 }
