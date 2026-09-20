@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T06:18:17.670Z",
+  "exportedAt": "2026-09-20T06:18:34.603Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1410,10 +1410,57 @@
               "block": true,
               "action": "none"
             }
+          },
+          {
+            "id": "ov-mu9fdrds-zx4hh",
+            "box": {
+              "top": 61,
+              "left": 181,
+              "width": 159,
+              "height": 56
+            },
+            "mode": "interactive",
+            "page": "/partners",
+            "type": "overlay",
+            "label": "لینک خارجی سازگار",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              },
+              "iframeProxy": true
+            },
+            "visible": true,
+            "createdAt": 1789885112032,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "url": "https://sales.si24.ir/?agent=8452",
+              "block": true,
+              "action": "url",
+              "target": "_blank"
+            }
           }
         ]
       },
-      "updated_at": "2026-09-20T06:18:16.655+00:00"
+      "updated_at": "2026-09-20T06:18:32.852+00:00"
     }
   ]
 }
