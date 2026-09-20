@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T15:29:40.073Z",
+  "exportedAt": "2026-09-20T15:29:50.800Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1534,10 +1534,54 @@
               "action": "url",
               "target": "_blank"
             }
+          },
+          {
+            "id": "ov-mu9z2ocr-asgkj",
+            "box": {
+              "top": 246,
+              "left": 16,
+              "width": 1408,
+              "height": 308
+            },
+            "mode": "cover-content",
+            "page": "/contact",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789918187211,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
           }
         ]
       },
-      "updated_at": "2026-09-20T15:29:37.623+00:00"
+      "updated_at": "2026-09-20T15:29:48.029+00:00"
     }
   ]
 }
