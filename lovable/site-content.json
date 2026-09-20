@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T15:28:25.212Z",
+  "exportedAt": "2026-09-20T15:28:36.401Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
   "settings": [
     {
@@ -1531,13 +1531,13 @@
             "interaction": {
               "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
               "block": true,
-              "action": "popup",
+              "action": "url",
               "target": "_blank"
             }
           }
         ]
       },
-      "updated_at": "2026-09-20T15:28:21.854+00:00"
+      "updated_at": "2026-09-20T15:28:33.057+00:00"
     }
   ]
 }
