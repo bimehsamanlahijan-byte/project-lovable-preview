@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-20T06:20:10.129Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overlays)",
+  "exportedAt": "2026-09-20T06:21:24.851Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
       "key": "wheel_background",
@@ -768,6 +768,18 @@
             },
             "hoverDeep": false
           },
+          "/third-party::@desktop::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a": {
+            "href": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
+            "hover": {},
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "hoverDeep": false
+          },
           "/partners/apply::@desktop::body > div:nth-of-type(1) > main > div > div > div:nth-of-type(2) > form > div:nth-of-type(6)": {
             "text": "لطفا کد پیگیری بعد از ارسال موفق را یاداشت نمایید",
             "hover": {},
@@ -1011,7 +1023,7 @@
           }
         }
       },
-      "updated_at": "2026-09-20T06:19:19.14+00:00"
+      "updated_at": "2026-09-20T06:21:22.317+00:00"
     },
     {
       "key": "visual_overlays",
