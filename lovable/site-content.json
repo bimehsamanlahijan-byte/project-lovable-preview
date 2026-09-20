@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-20T06:13:22.744Z",
+  "exportedAt": "2026-09-20T06:15:52.832Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -1056,9 +1056,17 @@
           },
           "/contact::@desktop::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a": {
             "rel": "noopener noreferrer",
+            "href": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
             "hover": {},
-            "style": {},
-            "target": "_blank"
+            "style": {
+              "color": "#001a00",
+              "font-size": "14px",
+              "text-align": "start",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "500"
+            },
+            "target": "_blank",
+            "hoverDeep": false
           },
           "/::@desktop::body > div:nth-of-type(1) > header > div > div:nth-of-type(1) > div:nth-of-type(1) > a:nth-of-type(3)": {
             "html": "پرتال اعلانات و تخفیفات",
@@ -1316,7 +1324,7 @@
           }
         }
       },
-      "updated_at": "2026-09-20T06:13:21.306+00:00"
+      "updated_at": "2026-09-20T06:15:46.416+00:00"
     }
   ]
 }
