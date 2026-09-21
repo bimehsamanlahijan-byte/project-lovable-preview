@@ -1,0 +1,9 @@
+# cPanel "Setup Node.js App" writes an equivalent block automatically into
+# the application root's .htaccess. Use this only if you configure Passenger
+# by hand. Do NOT commit it as .htaccess in the repo.
+PassengerAppRoot "/home/USERNAME/APP_FOLDER"
+PassengerBaseURI "/"
+PassengerNodejs "/home/USERNAME/nodevenv/APP_FOLDER/20/bin/node"
+PassengerAppType node
+PassengerStartupFile app.cjs
+PassengerAppEnv production
