@@ -1,0 +1,37 @@
+# (اختیاری) ساخت بسته آماده‌ی cPanel — فقط با اجرای دستی؛ روی دیپلوی Cloudflare اثری ندارد.
+name: Build for cPanel
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: bun install --frozen-lockfile
+      - name: Build (node-server preset)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: npm run build:cpanel
+      - name: Package
+        run: |
+          mkdir -p cpanel-build
+          cp -r .output app.cjs package.json CPANEL.md cpanel-build/
+          cp cpanel/.env.example cpanel-build/.env.example
+          cd cpanel-build && zip -qr ../cpanel-build.zip . 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpanel-build
+          path: cpanel-build.zip
