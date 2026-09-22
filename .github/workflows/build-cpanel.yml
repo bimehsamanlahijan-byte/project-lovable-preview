@@ -27,10 +27,15 @@ jobs:
         run: npm run build:cpanel
       - name: Package
         run: |
-          mkdir -p cpanel-build
+          mkdir -p cpanel-build/scripts cpanel-build/cpanel cpanel-build/node_modules
           cp -r .output app.cjs package.json CPANEL.md cpanel-build/
+          cp scripts/build-cpanel.mjs cpanel-build/scripts/
+          cp cpanel/.env.example cpanel/htaccess.example cpanel/websocket-polyfill.cjs cpanel-build/cpanel/
           cp cpanel/.env.example cpanel-build/.env.example
-          cd cpanel-build && zip -qr ../cpanel-build.zip . 
+          # `ws` gives Node 20 (cPanel) a WebSocket implementation; it has no deps.
+          npm install ws --no-save --silent
+          cp -r node_modules/ws cpanel-build/node_modules/ws
+          cd cpanel-build && zip -qr ../cpanel-build.zip . -x '*.DS_Store'
       - uses: actions/upload-artifact@v4
         with:
           name: cpanel-build

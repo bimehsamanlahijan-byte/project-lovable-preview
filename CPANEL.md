@@ -9,6 +9,7 @@
 | `scripts/build-cpanel.mjs` | بیلد پروژه با هدف `node-server` (بدون تغییر بیلد Cloudflare) |
 | `cpanel/.env.example` | فهرست متغیرهای محیطی لازم |
 | `cpanel/htaccess.example` | نمونه تنظیم Passenger (فقط برای تنظیم دستی) |
+| `cpanel/websocket-polyfill.cjs` | سازگاری WebSocket برای Node 20 (فقط مسیر cPanel) |
 | `.github/workflows/build-cpanel.yml` | (اختیاری) ساخت بسته آماده‌ی cPanel با یک کلیک در GitHub |
 | اسکریپت‌های `build:cpanel` و `start:cpanel` در `package.json` | دستورهای بیلد و اجرا |
 
@@ -74,3 +75,20 @@ package.json
 - `PORT` را خودتان تنظیم نکنید؛ Passenger آن را می‌دهد.
 - بعد از هر تغییر در متغیرهای `VITE_*` باید دوباره `build:cpanel` بگیرید.
 - برای به‌روزرسانی: بیلد جدید بگیرید، پوشه `.output` را جایگزین کنید و Restart بزنید.
+
+## رفع دو خطای رایج روی cPanel
+
+### ۱) `Cannot find module scripts/build-cpanel.mjs`
+این خطا وقتی رخ می‌دهد که فقط بسته‌ی آماده (`cpanel-build.zip`) روی هاست باشد؛ در نسخه‌های قبلی بسته، پوشه‌ی `scripts/` داخل زیپ نبود.
+- بسته‌ی جدید (Actions → Build for cPanel) حالا شامل `scripts/build-cpanel.mjs`، پوشه‌ی `cpanel/` و `node_modules/ws` است.
+- نکته‌ی مهم: وقتی از بسته‌ی آماده استفاده می‌کنید **نیازی به اجرای `build:cpanel` روی هاست نیست**؛ خروجی `.output/` از قبل ساخته شده است. فقط `app.cjs` را به‌عنوان startup file بگذارید و Restart بزنید.
+- اگر می‌خواهید روی خود هاست بیلد کنید، باید کل مخزن (با پوشه‌های `src/`, `scripts/`, `package.json`) روی هاست باشد و اول `npm install` اجرا شود.
+
+### ۲) `Node.js detected but native WebSocket not found`
+Node 20 (نسخه‌ی موجود روی cPanel) برخلاف Node 22 (Cloudflare) `WebSocket` سراسری ندارد.
+فایل `cpanel/websocket-polyfill.cjs` که از `app.cjs` بارگذاری می‌شود این را به‌صورت خودکار حل می‌کند:
+1. اگر Node نسخه ۲۲+ باشد، از WebSocket داخلی استفاده می‌شود.
+2. در غیر این صورت از پکیج `ws` استفاده می‌شود (در بسته‌ی آماده موجود است؛ در نصب دستی با `npm install ws`).
+3. اگر هیچ‌کدام نبود، برنامه با فلگ `--experimental-websocket` دوباره اجرا می‌شود.
+
+هیچ‌کدام از این تغییرات روی بیلد و دیپلوی Cloudflare Worker اثری ندارد.

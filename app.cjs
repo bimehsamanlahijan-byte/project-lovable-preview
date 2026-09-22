@@ -38,6 +38,32 @@ process.env.NITRO_PORT = process.env.NITRO_PORT || process.env.PORT || "3000";
 process.env.NITRO_HOST = process.env.NITRO_HOST || process.env.HOST || "127.0.0.1";
 process.env.NODE_ENV = process.env.NODE_ENV || "production";
 
+// --- WebSocket compatibility (Node 20 on cPanel has no global WebSocket) ---
+try {
+  const { installWebSocket, log } = require("./cpanel/websocket-polyfill.cjs");
+  const result = installWebSocket();
+  if (result.ok) {
+    if (result.source !== "native") log(`WebSocket polyfill enabled (${result.source}).`);
+  } else if (result.reexec) {
+    // Node 20 supports WebSocket behind a flag: restart this process with it.
+    const { spawnSync } = require("node:child_process");
+    log("restarting with --experimental-websocket (Node 20 compatibility)");
+    const child = spawnSync(
+      process.execPath,
+      ["--experimental-websocket", __filename, ...process.argv.slice(2)],
+      { stdio: "inherit", env: { ...process.env, CPANEL_WS_REEXEC: "1" } },
+    );
+    process.exit(child.status ?? 1);
+  } else {
+    log(
+      'no WebSocket implementation found. Run "npm install ws" in the app root ' +
+        "or use Node.js 22+ so realtime/AI chat features work.",
+    );
+  }
+} catch (error) {
+  console.error("[cpanel][ws] polyfill failed:", error);
+}
+
 const serverEntry = path.join(__dirname, ".output", "server", "index.mjs");
 if (!fs.existsSync(serverEntry)) {
   console.error(
