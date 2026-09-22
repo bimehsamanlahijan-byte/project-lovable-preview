@@ -54,6 +54,22 @@ package.json
 - `https://دامنه/api/public/env-check` باید `dbProbe.status = 200` نشان دهد.
 - در صورت خطا: cPanel → Setup Node.js App → لاگ‌ها (`stderr.log` در Application root).
 
+## چت هوش مصنوعی روی cPanel
+چت روی Cloudflare کار می‌کند چون کلید ارائه‌دهنده به‌صورت Secret روی Worker ست شده است.
+روی cPanel همان متغیرها باید دوباره وارد شوند (Secretهای Cloudflare به هاست منتقل نمی‌شوند).
+
+1. در Cloudflare → Workers & Pages → پروژه → **Settings → Variables and secrets** ببینید کدام کلید ست شده است
+   (`LOVABLE_API_KEY` یا `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` یا `GEMINI_API_KEY`/`GROQ_API_KEY`/...).
+   مقدار Secret قابل مشاهده نیست؛ همان مقدار اصلی را از منبعش بردارید یا یک توکن جدید بسازید.
+2. همان نام و مقدار را در cPanel → **Setup Node.js App → Environment variables** اضافه کنید
+   (یا در فایل `.env` کنار `app.cjs`).
+3. **Restart** بزنید.
+4. بررسی: `https://دامنه/api/public/env-check` — در بخش `ai.ready` باید نام ارائه‌دهنده‌ی انتخاب‌شده دیده شود.
+   اگر خالی بود یعنی کلید روی هاست ست نشده است.
+
+خطای «پاسخ‌گویی هوش مصنوعی موقتاً ممکن نیست» تقریباً همیشه یعنی کلید ارائه‌دهنده روی cPanel وجود ندارد
+یا با ارائه‌دهنده‌ی انتخاب‌شده در پنل مدیریت هم‌خوانی ندارد.
+
 ## نکته‌ها
 - `PORT` را خودتان تنظیم نکنید؛ Passenger آن را می‌دهد.
 - بعد از هر تغییر در متغیرهای `VITE_*` باید دوباره `build:cpanel` بگیرید.
