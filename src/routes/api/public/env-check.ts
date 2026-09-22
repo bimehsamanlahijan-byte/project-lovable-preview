@@ -5,7 +5,9 @@ import {
   getSupabasePublishableKey,
   getSupabaseServiceKey,
   getSessionSecret,
+  envValue,
 } from "@/lib/server-env";
+import { AI_PROVIDERS } from "@/lib/ai-providers";
 
 /**
  * Non-sensitive health check for the dashboard runtime configuration.
@@ -64,8 +66,20 @@ export const Route = createFileRoute("/api/public/env-check")({
           }
         }
 
+        // Which AI providers have their keys present in this runtime?
+        // Only booleans are reported, never key material.
+        const aiProviders = AI_PROVIDERS.map((p) => ({
+          id: p.id,
+          hasKey: Boolean(envValue(...p.keyNames)),
+          missingExtras: (p.extraNames ?? []).filter((n) => !envValue(n)),
+        }));
+
         return Response.json(
           {
+            ai: {
+              ready: aiProviders.filter((p) => p.hasKey && p.missingExtras.length === 0).map((p) => p.id),
+              providers: aiProviders,
+            },
             supabaseUrl: url ?? null,
             projectRef,
             hasPublishableKey: Boolean(publishable),
