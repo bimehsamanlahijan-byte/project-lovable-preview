@@ -8,6 +8,7 @@ import {
   type WidgetsAppearance,
 } from "@/lib/site-config";
 import { WidgetLauncher } from "./WidgetLauncher";
+import { TelegramLoginCard } from "./TelegramLoginCard";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -22,6 +23,8 @@ export function AiChatWidget() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needLogin, setNeedLogin] = useState(false);
+  const [pending, setPending] = useState<Msg[] | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -37,10 +40,14 @@ export function AiChatWidget() {
 
   async function send() {
     const text = input.trim();
-    if (!text || busy) return;
+    if (!text || busy || needLogin) return;
     const next = [...msgs, { role: "user" as const, content: text }];
     setMsgs(next);
     setInput("");
+    await ask(next);
+  }
+
+  async function ask(next: Msg[]) {
     setBusy(true);
     setError(null);
     try {
@@ -49,7 +56,21 @@ export function AiChatWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next.slice(-20) }),
       });
-      const data = (await res.json()) as { ok: boolean; reply?: string; error?: string };
+      const data = (await res.json()) as {
+        ok: boolean;
+        reply?: string;
+        error?: string;
+        loginRequired?: boolean;
+      };
+      if (res.status === 401 && data.loginRequired) {
+        setPending(next);
+        setNeedLogin(true);
+        return;
+      }
+      if (data.error === "question_limit") {
+        setError("سقف ۵ سؤال رایگان شما به پایان رسید. برای ادامه با مشاوران نمایندگی تماس بگیرید.");
+        return;
+      }
       if (!res.ok || !data.ok || !data.reply) {
         setError(
           data.error === "rate_limited"
@@ -116,6 +137,16 @@ export function AiChatWidget() {
                 <Loader2 className="w-4 h-4 animate-spin" /> در حال پاسخ‌گویی…
               </div>
             )}
+            {needLogin && (
+              <TelegramLoginCard
+                onDone={() => {
+                  setNeedLogin(false);
+                  const retry = pending;
+                  setPending(null);
+                  if (retry) void ask(retry);
+                }}
+              />
+            )}
             {error && <div className="text-xs text-rose-600 bg-rose-50 rounded-xl p-2">{error}</div>}
             <div ref={endRef} />
           </div>
@@ -135,7 +166,7 @@ export function AiChatWidget() {
             />
             <button
               type="submit"
-              disabled={busy || !input.trim()}
+              disabled={busy || needLogin || !input.trim()}
               style={{ backgroundColor: RED }}
               className="p-2 rounded-xl text-white disabled:opacity-50"
               aria-label="ارسال"

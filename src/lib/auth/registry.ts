@@ -71,3 +71,6 @@ export type PublicUser = {
 
 export const TELEGRAM_CALLBACK_PATH = "/api/public/auth/telegram/callback";
 export const TELEGRAM_START_PATH = "/api/public/auth/telegram/start";
+
+/** Free AI chat questions granted after a Telegram login. */
+export const AI_CHAT_FREE_QUESTIONS = 5;

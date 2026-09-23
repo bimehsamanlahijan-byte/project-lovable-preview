@@ -100,6 +100,19 @@ export const Route = createFileRoute("/api/ai-chat")({
           const { denyIfLoginRequired } = await import("@/lib/auth/guard.server");
           const denied = await denyIfLoginRequired("ai_chat", request);
           if (denied) return denied;
+          // After a login, the chat is unlocked for a limited number of questions.
+          const { checkModuleAccess } = await import("@/lib/auth/guard.server");
+          const access = await checkModuleAccess("ai_chat", request);
+          if (access.ok && access.user && access.mode !== "none") {
+            const { AI_CHAT_FREE_QUESTIONS } = await import("@/lib/auth/registry");
+            const { getUserSession } = await import("@/lib/auth/session.server");
+            const session = await getUserSession();
+            const used = session.data.aiCount ?? 0;
+            if (used >= AI_CHAT_FREE_QUESTIONS) {
+              return json(429, { ok: false, error: "question_limit", limit: AI_CHAT_FREE_QUESTIONS });
+            }
+            await session.update({ aiCount: used + 1 });
+          }
         }
 
         let raw: unknown;

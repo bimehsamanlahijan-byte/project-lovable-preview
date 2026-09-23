@@ -23,11 +23,25 @@ export const Route = createFileRoute("/api/public/telegram/bot-ai")({
         }
 
         const update = (await request.json()) as {
-          message?: { chat?: { id?: number }; text?: string };
+          message?: {
+            chat?: { id?: number; type?: string };
+            text?: string;
+            from?: { id?: number; username?: string; first_name?: string; last_name?: string };
+            contact?: { phone_number?: string; user_id?: number; first_name?: string; last_name?: string };
+          };
         };
-        const chatId = update.message?.chat?.id;
-        const text = (update.message?.text ?? "").trim();
-        if (!chatId || !text) return Response.json({ ok: true });
+        const msg = update.message;
+        const chatId = msg?.chat?.id;
+        const text = (msg?.text ?? "").trim();
+        if (!chatId) return Response.json({ ok: true });
+
+        // --- Site login through the bot (always active, independent of AI settings) ---
+        {
+          const handled = await handleBotLogin(botToken, chatId, text, msg);
+          if (handled) return Response.json({ ok: true });
+        }
+        if (!text) return Response.json({ ok: true });
+
 
         const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
         const supabase = await getSupabaseAdmin();
@@ -116,4 +130,85 @@ async function askAi(
     console.error("[bot-ai]", e);
     return null;
   }
+}
+
+type BotMsg = {
+  chat?: { id?: number; type?: string };
+  from?: { id?: number; username?: string; first_name?: string; last_name?: string };
+  contact?: { phone_number?: string; user_id?: number; first_name?: string; last_name?: string };
+};
+
+/** Returns true when the update belonged to the site-login flow. */
+async function handleBotLogin(
+  botToken: string,
+  chatId: number,
+  text: string,
+  msg: BotMsg | undefined,
+): Promise<boolean> {
+  const { tg } = await import("@/lib/telegram.server");
+  const login = await import("@/lib/auth/bot-login.server");
+  const fromId = msg?.from?.id;
+  if (!fromId || msg?.chat?.type !== "private") return false;
+
+  const startMatch = text.match(/^\/start\s+login_([A-Za-z0-9_-]{16,48})$/);
+  if (startMatch) {
+    await login.setPending(String(fromId), startMatch[1]);
+    await tg(botToken, "sendMessage", {
+      chat_id: chatId,
+      text:
+        "👋 به بیمه سامان لاهیجان خوش آمدید.\n\nبرای فعال شدن چت هوش مصنوعی در سایت، روی دکمه‌ی «📱 ارسال شماره من» در پایین بزنید.",
+      reply_markup: {
+        keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    });
+    return true;
+  }
+
+  const contact = msg?.contact;
+  if (!contact) return false;
+  if (contact.user_id !== fromId || !contact.phone_number) {
+    await tg(botToken, "sendMessage", {
+      chat_id: chatId,
+      text: "لطفاً فقط شماره‌ی خودتان را با همان دکمه ارسال کنید.",
+    });
+    return true;
+  }
+
+  const nonce = await login.takePending(String(fromId));
+  if (!nonce) {
+    await tg(botToken, "sendMessage", {
+      chat_id: chatId,
+      text: "درخواست ورود منقضی شده است. لطفاً دوباره از داخل سایت روی «ورود با تلگرام» بزنید.",
+      reply_markup: { remove_keyboard: true },
+    });
+    return true;
+  }
+
+  const store = await import("@/lib/auth/store.server");
+  const phone = contact.phone_number.startsWith("+") ? contact.phone_number : `+${contact.phone_number}`;
+  const name = [msg?.from?.first_name, msg?.from?.last_name].filter(Boolean).join(" ") || null;
+  const userId = await store.upsertIdentity({
+    provider: "telegram",
+    providerUserId: String(fromId),
+    displayName: name,
+    data: { username: msg?.from?.username ?? null, via: "bot_contact" },
+  });
+  await store.upsertTelegramUser(userId, {
+    telegramId: String(fromId),
+    username: msg?.from?.username ?? null,
+    firstName: msg?.from?.first_name ?? null,
+    lastName: msg?.from?.last_name ?? null,
+    verified: true,
+  });
+  await store.saveConsentedPhone(userId, phone);
+  await login.markDone(nonce, userId);
+
+  await tg(botToken, "sendMessage", {
+    chat_id: chatId,
+    text: "✅ ورود شما تأیید شد. به سایت برگردید؛ چت هوش مصنوعی برای ۵ سؤال فعال شد.",
+    reply_markup: { remove_keyboard: true },
+  });
+  return true;
 }

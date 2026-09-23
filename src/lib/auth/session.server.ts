@@ -7,6 +7,10 @@ export type UserSession = {
   provider?: string;
   /** Short-lived anti-CSRF state for OAuth/OIDC round trips. */
   oauthState?: string;
+  /** Pending Telegram-bot login nonce bound to this browser. */
+  loginNonce?: string;
+  /** AI chat questions asked since login. */
+  aiCount?: number;
 };
 
 function config(password: string) {

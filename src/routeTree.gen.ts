@@ -46,6 +46,7 @@ import { Route as ApiPublicTelegramBotAiRouteImport } from './routes/api/public/
 import { Route as ApiThirdPartyTrackingCodeCalculatePriceRouteImport } from './routes/api/third-party/$trackingCode/calculate-price'
 import { Route as ApiThirdPartyTrackingCodeSummaryRouteImport } from './routes/api/third-party/$trackingCode/summary'
 import { Route as ApiThirdPartyLookupsSplatRouteImport } from './routes/api/third-party/lookups/$'
+import { Route as ApiPublicAuthTelegramBotLoginRouteImport } from './routes/api/public/auth/telegram/bot-login'
 import { Route as ApiPublicAuthTelegramCallbackRouteImport } from './routes/api/public/auth/telegram/callback'
 import { Route as ApiPublicAuthTelegramStartRouteImport } from './routes/api/public/auth/telegram/start'
 import { Route as ApiPublicTelegramWebhookBotIdRouteImport } from './routes/api/public/telegram/webhook.$botId'
@@ -239,6 +240,12 @@ const ApiThirdPartyLookupsSplatRoute =
     path: '/api/third-party/lookups/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAuthTelegramBotLoginRoute =
+  ApiPublicAuthTelegramBotLoginRouteImport.update({
+    id: '/api/public/auth/telegram/bot-login',
+    path: '/api/public/auth/telegram/bot-login',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAuthTelegramCallbackRoute =
   ApiPublicAuthTelegramCallbackRouteImport.update({
     id: '/api/public/auth/telegram/callback',
@@ -296,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
   '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
   '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
+  '/api/public/auth/telegram/bot-login': typeof ApiPublicAuthTelegramBotLoginRoute
   '/api/public/auth/telegram/callback': typeof ApiPublicAuthTelegramCallbackRoute
   '/api/public/auth/telegram/start': typeof ApiPublicAuthTelegramStartRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -338,6 +346,7 @@ export interface FileRoutesByTo {
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
   '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
   '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
+  '/api/public/auth/telegram/bot-login': typeof ApiPublicAuthTelegramBotLoginRoute
   '/api/public/auth/telegram/callback': typeof ApiPublicAuthTelegramCallbackRoute
   '/api/public/auth/telegram/start': typeof ApiPublicAuthTelegramStartRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -381,6 +390,7 @@ export interface FileRoutesById {
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
   '/api/third-party/$trackingCode/summary': typeof ApiThirdPartyTrackingCodeSummaryRoute
   '/api/third-party/lookups/$': typeof ApiThirdPartyLookupsSplatRoute
+  '/api/public/auth/telegram/bot-login': typeof ApiPublicAuthTelegramBotLoginRoute
   '/api/public/auth/telegram/callback': typeof ApiPublicAuthTelegramCallbackRoute
   '/api/public/auth/telegram/start': typeof ApiPublicAuthTelegramStartRoute
   '/api/public/telegram/webhook/$botId': typeof ApiPublicTelegramWebhookBotIdRoute
@@ -425,6 +435,7 @@ export interface FileRouteTypes {
     | '/api/third-party/$trackingCode/calculate-price'
     | '/api/third-party/$trackingCode/summary'
     | '/api/third-party/lookups/$'
+    | '/api/public/auth/telegram/bot-login'
     | '/api/public/auth/telegram/callback'
     | '/api/public/auth/telegram/start'
     | '/api/public/telegram/webhook/$botId'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/api/third-party/$trackingCode/calculate-price'
     | '/api/third-party/$trackingCode/summary'
     | '/api/third-party/lookups/$'
+    | '/api/public/auth/telegram/bot-login'
     | '/api/public/auth/telegram/callback'
     | '/api/public/auth/telegram/start'
     | '/api/public/telegram/webhook/$botId'
@@ -509,6 +521,7 @@ export interface FileRouteTypes {
     | '/api/third-party/$trackingCode/calculate-price'
     | '/api/third-party/$trackingCode/summary'
     | '/api/third-party/lookups/$'
+    | '/api/public/auth/telegram/bot-login'
     | '/api/public/auth/telegram/callback'
     | '/api/public/auth/telegram/start'
     | '/api/public/telegram/webhook/$botId'
@@ -551,6 +564,7 @@ export interface RootRouteChildren {
   ApiThirdPartyTrackingCodeCalculatePriceRoute: typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
   ApiThirdPartyTrackingCodeSummaryRoute: typeof ApiThirdPartyTrackingCodeSummaryRoute
   ApiThirdPartyLookupsSplatRoute: typeof ApiThirdPartyLookupsSplatRoute
+  ApiPublicAuthTelegramBotLoginRoute: typeof ApiPublicAuthTelegramBotLoginRoute
   ApiPublicAuthTelegramCallbackRoute: typeof ApiPublicAuthTelegramCallbackRoute
   ApiPublicAuthTelegramStartRoute: typeof ApiPublicAuthTelegramStartRoute
   ApiPublicTelegramWebhookBotIdRoute: typeof ApiPublicTelegramWebhookBotIdRoute
@@ -817,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiThirdPartyLookupsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/auth/telegram/bot-login': {
+      id: '/api/public/auth/telegram/bot-login'
+      path: '/api/public/auth/telegram/bot-login'
+      fullPath: '/api/public/auth/telegram/bot-login'
+      preLoaderRoute: typeof ApiPublicAuthTelegramBotLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/auth/telegram/callback': {
       id: '/api/public/auth/telegram/callback'
       path: '/api/public/auth/telegram/callback'
@@ -891,6 +912,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiThirdPartyTrackingCodeCalculatePriceRoute,
   ApiThirdPartyTrackingCodeSummaryRoute: ApiThirdPartyTrackingCodeSummaryRoute,
   ApiThirdPartyLookupsSplatRoute: ApiThirdPartyLookupsSplatRoute,
+  ApiPublicAuthTelegramBotLoginRoute: ApiPublicAuthTelegramBotLoginRoute,
   ApiPublicAuthTelegramCallbackRoute: ApiPublicAuthTelegramCallbackRoute,
   ApiPublicAuthTelegramStartRoute: ApiPublicAuthTelegramStartRoute,
   ApiPublicTelegramWebhookBotIdRoute: ApiPublicTelegramWebhookBotIdRoute,
@@ -898,13 +920,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
