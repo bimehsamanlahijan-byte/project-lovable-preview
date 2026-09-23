@@ -50,6 +50,7 @@ import { DeployPane } from "@/components/dashboard/DeployPane";
 import { GithubPane } from "@/components/dashboard/GithubPane";
 import { navItems, type NavItem } from "@/components/site-data";
 import { TelegramPane } from "@/components/dashboard/TelegramPane";
+import { LoginsPane } from "@/components/dashboard/LoginsPane";
 import { BrandingPane } from "@/components/dashboard/BrandingPane";
 import { InspectorPane } from "@/components/dashboard/InspectorPane";
 import { dashboardStatus, lockDashboard, unlockDashboard } from "@/lib/admin.functions";
@@ -173,7 +174,8 @@ type TabKey =
   | "telegram"
   | "seo"
   | "deploy"
-  | "github";
+  | "github"
+  | "logins";
 
 /* ---------- Root ---------- */
 function Dashboard() {
@@ -210,6 +212,7 @@ function Dashboard() {
     { key: "seo", label: "سئو و نتایج گوگل", icon: SearchIcon },
     { key: "deploy", label: "انتشار در Cloudflare", icon: Cloud },
     { key: "github", label: "اتصال گیت‌هاب", icon: Github },
+    { key: "logins", label: "لاگین‌ها", icon: Lock },
   ];
 
   return (
@@ -295,6 +298,7 @@ function Dashboard() {
           {tab === "damages" && <DamagesPane />}
           {tab === "menu" && <MenuPane onOpenPage={openPageInVisualEditor} />}
           {tab === "footer" && <FooterPane />}
+          {tab === "logins" && <LoginsPane />}
           {tab === "social" && <SocialPane />}
           {tab === "ai" && <AiPane />}
           {tab === "chat" && <ChatRoomPane />}

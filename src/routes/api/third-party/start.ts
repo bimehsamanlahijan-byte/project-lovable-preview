@@ -5,6 +5,11 @@ export const Route = createFileRoute("/api/third-party/start")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        {
+          const { denyIfLoginRequired } = await import("@/lib/auth/guard.server");
+          const denied = await denyIfLoginRequired("third_party", request);
+          if (denied) return denied;
+        }
         const { si24Request } = await import("@/lib/third-party/si24.server");
         const { upsertCustomer, createAttempt, updateAttempt, newReferenceCode } = await import(
           "@/lib/third-party/store.server"

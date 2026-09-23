@@ -143,6 +143,11 @@ export const ADMIN_TABLES = [
   "telegram_flows",
   "telegram_runs",
   "telegram_updates",
+  "site_users",
+  "auth_identities",
+  "telegram_users",
+  "login_requirements",
+  "login_logs",
 ] as const;
 
 export type AdminTable = (typeof ADMIN_TABLES)[number];

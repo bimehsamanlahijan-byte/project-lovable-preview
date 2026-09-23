@@ -95,6 +95,13 @@ export const Route = createFileRoute("/api/ai-chat")({
             headers: { "Content-Type": "application/json" },
           });
 
+        // Central login system: enforce the module rule server-side.
+        {
+          const { denyIfLoginRequired } = await import("@/lib/auth/guard.server");
+          const denied = await denyIfLoginRequired("ai_chat", request);
+          if (denied) return denied;
+        }
+
         let raw: unknown;
         try {
           raw = await request.json();

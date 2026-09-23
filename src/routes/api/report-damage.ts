@@ -13,6 +13,11 @@ export const Route = createFileRoute("/api/report-damage")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        {
+          const { denyIfLoginRequired } = await import("@/lib/auth/guard.server");
+          const denied = await denyIfLoginRequired("damage_report", request);
+          if (denied) return denied;
+        }
         let body: unknown;
         try {
           body = await request.json();
