@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-23T13:44:08.082Z",
+  "exportedAt": "2026-09-23T16:59:50.115Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (login_bot_config)",
   "settings": [
     {
@@ -127,6 +127,19 @@
       "updated_at": "2026-09-07T03:43:01.145284+00:00"
     },
     {
+      "key": "login_bot_config",
+      "value": {
+        "aiModel": "google/gemini-2.5-flash",
+        "enabled": true,
+        "botTitle": "بیمه سامان لاهیجان",
+        "aiEnabled": true,
+        "aiProvider": "lovable",
+        "botUsername": "SamInsuranceBot",
+        "systemPrompt": "تو دستیار هوشمند نمایندگی بیمه سامان لاهیجان هستی. فقط درباره خدمات بیمه پاسخ بده."
+      },
+      "updated_at": "2026-09-23T16:59:47.945+00:00"
+    },
+    {
       "key": "hero_slider",
       "value": {
         "fit": "cover",
@@ -219,19 +232,6 @@
         "showUsernames": true
       },
       "updated_at": "2026-09-10T15:20:44.837+00:00"
-    },
-    {
-      "key": "login_bot_config",
-      "value": {
-        "aiModel": "google/gemini-2.5-flash",
-        "enabled": true,
-        "botTitle": "بیمه سامان لاهیجان",
-        "aiEnabled": true,
-        "aiProvider": "lovable",
-        "botUsername": "SamInsuranceBot",
-        "systemPrompt": "تو دستیار هوشمند نمایندگی بیمه سامان لاهیجان هستی. فقط درباره خدمات بیمه پاسخ بده."
-      },
-      "updated_at": "2026-09-23T13:44:07.068+00:00"
     },
     {
       "key": "github_sync",
