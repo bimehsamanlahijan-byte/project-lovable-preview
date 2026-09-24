@@ -25,3 +25,15 @@ export const listCustomPages = createServerFn({ method: "GET" }).handler(async (
     published: p.published,
   }));
 });
+
+/**
+ * Page Builder — extract a page's main content from a URL and return it as
+ * editable Blocks (strips the source site's header/footer/nav). Public POST;
+ * the helper blocks loopback/private hosts to avoid SSRF.
+ */
+export const extractPageFromUrl = createServerFn({ method: "POST" })
+  .inputValidator((data: { url: string }) => data)
+  .handler(async ({ data }) => {
+    const { extractFromUrl } = await import("./extract-content.server");
+    return await extractFromUrl(data.url);
+  });

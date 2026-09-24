@@ -14,6 +14,8 @@ import {
   Wand2,
   Bug,
   FilePlus2,
+  Globe,
+  Loader2,
 } from "lucide-react";
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { notifyFailed, notifySaved } from "@/lib/notify";
@@ -31,6 +33,7 @@ import {
 } from "@/lib/custom-pages";
 import { BlockRenderer } from "@/components/CustomPageView";
 import { githubPublishSnapshot } from "@/lib/github.functions";
+import { extractPageFromUrl } from "@/lib/custom-pages.functions";
 import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
 
 /**
@@ -57,6 +60,38 @@ export function PageBuilderPane({
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [mediaFor, setMediaFor] = useState<{ blockId: string; apply: (url: string) => void } | null>(null);
+  const [extractUrl, setExtractUrl] = useState("");
+  const [extracting, setExtracting] = useState(false);
+
+  async function runExtract() {
+    if (!draft) return;
+    const u = extractUrl.trim();
+    if (!u) return notifyFailed("استخراج محتوا", "ابتدا یک URL وارد کنید.");
+    setExtracting(true);
+    try {
+      const res = await extractPageFromUrl({ data: { url: u } });
+      if (!res.ok) {
+        notifyFailed("استخراج محتوا", res.error || "خطای ناشناخته");
+        return;
+      }
+      const next = {
+        ...draft,
+        title: res.title && res.title.trim() ? res.title : draft.title,
+        description: res.description && res.description.trim() ? res.description : draft.description,
+        seoTitle: res.title && res.title.trim() ? res.title : draft.seoTitle,
+        seoDescription: res.description && res.description.trim() ? res.description : draft.seoDescription,
+        blocks: res.blocks && res.blocks.length ? res.blocks : draft.blocks,
+        updatedAt: new Date().toISOString(),
+      };
+      setDraft(next);
+      setDirty(true);
+      notifySaved("استخراج محتوا");
+    } catch (e: any) {
+      notifyFailed("استخراج محتوا", e?.message || String(e));
+    } finally {
+      setExtracting(false);
+    }
+  }
 
   async function reload() {
     const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
@@ -339,6 +374,30 @@ export function PageBuilderPane({
                     </button>
                     <button onClick={() => draft.slug && void deletePage(draft.slug)} className={btnCls}>
                       <Trash2 className="w-3.5 h-3.5" /> حذف
+                    </button>
+                  </div>
+                </div>
+
+                {/* Extract from URL */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2">
+                  <div className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5" /> استخراج محتوا از URL
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-5">
+                    یک آدرس صفحه وب وارد کنید. سیستم Header/Footer سایت مرجع را حذف و Main Content را به بلوک‌های قابل ویرایش تبدیل می‌کند؛ سپس با Header/Footer فعلی سایت شما ترکیب می‌شود.
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      dir="ltr"
+                      className={inputCls}
+                      placeholder="https://example.com/some-page"
+                      value={extractUrl}
+                      onChange={(e) => setExtractUrl(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter" && !extracting) void runExtract(); }}
+                    />
+                    <button onClick={() => void runExtract()} disabled={!draft || extracting} className={primaryBtn}>
+                      {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                      {extracting ? "در حال استخراج…" : "استخراج"}
                     </button>
                   </div>
                 </div>
