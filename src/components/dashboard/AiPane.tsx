@@ -2,6 +2,7 @@ import { adminDb, adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { useEffect, useState } from "react";
 import { Plus, Save, Trash2, Bot, Loader2 } from "lucide-react";
 import { DEFAULT_AI, type AiAssistantSettings } from "@/lib/site-config";
+import { DEFAULT_LINK_POLICY } from "@/lib/ai-link-policy";
 import { AI_PROVIDERS, getProvider } from "@/lib/ai-providers";
 import { SalesPlaybookSection } from "./SalesPlaybookSection";
 
@@ -165,6 +166,36 @@ export function AiPane() {
           <span className="font-bold text-slate-600">نمایش دستیار در سایت</span>
         </label>
       </div>
+
+      {(() => {
+        const lp = { ...DEFAULT_LINK_POLICY, ...(cfg.linkPolicy ?? {}) };
+        const setLp = (patch: Partial<typeof lp>) => setCfg({ ...cfg, linkPolicy: { ...lp, ...patch } });
+        const lines = (v: string) => v.split("\n").map((x) => x.trim()).filter(Boolean);
+        return (
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+            <h2 className="text-sm font-extrabold text-[#0b1e3f] mb-1">قوانین لینک و منابع (فهرست مجاز فروش)</h2>
+            <p className="text-[11px] text-slate-500 mb-3">منابع داخلی فقط برای دانش هوش مصنوعی استفاده می‌شوند و هرگز به مشتری نمایش داده نمی‌شوند. لینک‌های غیرمجاز به‌صورت خودکار از پاسخ حذف یا با صفحه اصلی دامنه فروش جایگزین می‌شوند.</p>
+            <div className="grid md:grid-cols-2 gap-3">
+              <label className="text-xs flex items-center gap-2 md:col-span-2">
+                <input type="checkbox" checked={lp.enabled} onChange={(e) => setLp({ enabled: e.target.checked })} />
+                <span className="font-bold text-slate-600">اعمال قطعی قانون لینک در همه پاسخ‌ها (سایت و ربات تلگرام)</span>
+              </label>
+              <label className="text-xs">
+                <span className="block font-bold text-slate-600 mb-1">منابع داخلی (هر دامنه در یک خط)</span>
+                <textarea dir="ltr" rows={4} value={lp.internalDomains.join("\n")} onChange={(e) => setLp({ internalDomains: lines(e.target.value) })} className={inputCls} />
+              </label>
+              <label className="text-xs">
+                <span className="block font-bold text-slate-600 mb-1">لینک‌های مجاز فروش (فقط URLهای واقعی، هر کدام در یک خط)</span>
+                <textarea dir="ltr" rows={4} value={lp.allowedUrls.join("\n")} onChange={(e) => setLp({ allowedUrls: lines(e.target.value) })} className={inputCls} />
+              </label>
+              <label className="text-xs md:col-span-2">
+                <span className="block font-bold text-slate-600 mb-1">تنها دامنه فروش قابل نمایش برای مشتری</span>
+                <input dir="ltr" value={lp.salesDomain} onChange={(e) => setLp({ salesDomain: e.target.value })} className={inputCls} />
+              </label>
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
