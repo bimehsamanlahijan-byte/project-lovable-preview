@@ -29,6 +29,7 @@ import { Route as ApiTravelOrderRouteImport } from './routes/api/travel-order'
 import { Route as EServicesIndexRouteImport } from './routes/e-services.index'
 import { Route as InsuranceIndexRouteImport } from './routes/insurance.index'
 import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
+import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as PartnersDashboardRouteImport } from './routes/partners.dashboard'
 import { Route as PartnersApplyRouteImport } from './routes/partners_.apply'
 import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-providers'
@@ -151,6 +152,11 @@ const InsuranceIndexRoute = InsuranceIndexRouteImport.update({
 const InsuranceTravelRoute = InsuranceTravelRouteImport.update({
   id: '/insurance/travel',
   path: '/insurance/travel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersDashboardRoute = PartnersDashboardRouteImport.update({
@@ -297,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/p/$slug': typeof PSlugRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
   '/partners/apply': typeof PartnersApplyRoute
   '/e-services/': typeof EServicesIndexRoute
@@ -342,6 +349,7 @@ export interface FileRoutesByTo {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/p/$slug': typeof PSlugRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
   '/partners/apply': typeof PartnersApplyRoute
   '/e-services': typeof EServicesIndexRoute
@@ -388,6 +396,7 @@ export interface FileRoutesById {
   '/api/report-damage': typeof ApiReportDamageRoute
   '/api/travel-order': typeof ApiTravelOrderRoute
   '/insurance/travel': typeof InsuranceTravelRoute
+  '/p/$slug': typeof PSlugRoute
   '/partners/dashboard': typeof PartnersDashboardRoute
   '/partners_/apply': typeof PartnersApplyRoute
   '/e-services/': typeof EServicesIndexRoute
@@ -435,6 +444,7 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/p/$slug'
     | '/partners/dashboard'
     | '/partners/apply'
     | '/e-services/'
@@ -480,6 +490,7 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/p/$slug'
     | '/partners/dashboard'
     | '/partners/apply'
     | '/e-services'
@@ -525,6 +536,7 @@ export interface FileRouteTypes {
     | '/api/report-damage'
     | '/api/travel-order'
     | '/insurance/travel'
+    | '/p/$slug'
     | '/partners/dashboard'
     | '/partners_/apply'
     | '/e-services/'
@@ -571,6 +583,7 @@ export interface RootRouteChildren {
   ApiReportDamageRoute: typeof ApiReportDamageRoute
   ApiTravelOrderRoute: typeof ApiTravelOrderRoute
   InsuranceTravelRoute: typeof InsuranceTravelRoute
+  PSlugRoute: typeof PSlugRoute
   PartnersApplyRoute: typeof PartnersApplyRoute
   EServicesIndexRoute: typeof EServicesIndexRoute
   InsuranceIndexRoute: typeof InsuranceIndexRoute
@@ -737,6 +750,13 @@ declare module '@tanstack/react-router' {
       path: '/insurance/travel'
       fullPath: '/insurance/travel'
       preLoaderRoute: typeof InsuranceTravelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners/dashboard': {
@@ -934,6 +954,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReportDamageRoute: ApiReportDamageRoute,
   ApiTravelOrderRoute: ApiTravelOrderRoute,
   InsuranceTravelRoute: InsuranceTravelRoute,
+  PSlugRoute: PSlugRoute,
   PartnersApplyRoute: PartnersApplyRoute,
   EServicesIndexRoute: EServicesIndexRoute,
   InsuranceIndexRoute: InsuranceIndexRoute,

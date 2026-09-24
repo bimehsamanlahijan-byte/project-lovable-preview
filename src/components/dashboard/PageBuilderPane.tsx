@@ -1,0 +1,755 @@
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Copy,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Github,
+  Image as ImageIcon,
+  Plus,
+  Save,
+  Trash2,
+  Wand2,
+  Bug,
+  FilePlus2,
+} from "lucide-react";
+import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
+import { notifyFailed, notifySaved } from "@/lib/notify";
+import {
+  BLOCK_TYPES,
+  CUSTOM_PAGES_KEY,
+  emptyPage,
+  makeBlock,
+  pageUrl,
+  sanitizeSlug,
+  type Block,
+  type BlockType,
+  type CustomPage,
+  type CustomPagesMap,
+} from "@/lib/custom-pages";
+import { BlockRenderer } from "@/components/CustomPageView";
+import { githubPublishSnapshot } from "@/lib/github.functions";
+import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
+
+/**
+ * Page Builder pane.
+ *
+ * Workflow: create/edit a custom page from composable blocks → live preview →
+ * save to site_settings → open in the Visual Editor / Inspector for fine
+ * visual editing → publish through the existing GitHub Build/Commit/Deploy
+ * workflow (no parallel deploy system).
+ *
+ * Image / gallery / video fields integrate with the existing Media Library via
+ * `/api/admin/assets?folder=media`.
+ */
+export function PageBuilderPane({
+  onOpenVisualEditor,
+  onOpenInspector,
+}: {
+  onOpenVisualEditor: (path: string) => void;
+  onOpenInspector: (path: string) => void;
+}) {
+  const [pages, setPages] = useState<CustomPagesMap>({});
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [draft, setDraft] = useState<CustomPage | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [mediaFor, setMediaFor] = useState<{ blockId: string; apply: (url: string) => void } | null>(null);
+
+  async function reload() {
+    const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
+    setPages(map);
+    if (!selectedSlug) {
+      const first = Object.keys(map)[0] ?? null;
+      if (first) {
+        setSelectedSlug(first);
+        setDraft(map[first]);
+        setDirty(false);
+      } else {
+        setSelectedSlug(null);
+        setDraft(null);
+      }
+    }
+  }
+
+  useEffect(() => {
+    void reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function selectPage(slug: string | null) {
+    setSelectedSlug(slug);
+    setDirty(false);
+    setDraft(slug && pages[slug] ? pages[slug] : null);
+  }
+
+  function newPage() {
+    const base = `page-${Date.now().toString(36).slice(-4)}`;
+    const p = emptyPage(base);
+    setDraft(p);
+    setSelectedSlug(null);
+    setDirty(true);
+  }
+
+  function patchDraft(patch: Partial<CustomPage>) {
+    setDraft((d) => (d ? { ...d, ...patch } : d));
+    setDirty(true);
+  }
+
+  function addBlock(type: BlockType) {
+    if (!draft) return;
+    patchDraft({ blocks: [...draft.blocks, makeBlock(type)] });
+  }
+
+  function updateBlock(id: string, patch: Partial<Block>) {
+    if (!draft) return;
+    patchDraft({
+      blocks: draft.blocks.map((b) => (b.id === id ? { ...b, ...patch, props: { ...b.props, ...(patch.props ?? {}) } } : b)),
+    });
+  }
+
+  function setBlockProp(id: string, key: string, value: any) {
+    if (!draft) return;
+    patchDraft({
+      blocks: draft.blocks.map((b) => (b.id === id ? { ...b, props: { ...b.props, [key]: value } } : b)),
+    });
+  }
+
+  function moveBlock(id: string, dir: -1 | 1) {
+    if (!draft) return;
+    const idx = draft.blocks.findIndex((b) => b.id === id);
+    const j = idx + dir;
+    if (idx < 0 || j < 0 || j >= draft.blocks.length) return;
+    const next = [...draft.blocks];
+    const [it] = next.splice(idx, 1);
+    next.splice(j, 0, it);
+    patchDraft({ blocks: next });
+  }
+
+  function removeBlock(id: string) {
+    if (!draft) return;
+    patchDraft({ blocks: draft.blocks.filter((b) => b.id !== id) });
+  }
+
+  async function savePage() {
+    if (!draft) return;
+    const slug = sanitizeSlug(draft.slug);
+    if (!slug) return notifyFailed("ذخیره صفحه", "نامک (slug) معتبر نیست.");
+    const next: CustomPage = { ...draft, slug, updatedAt: new Date().toISOString() };
+    setBusy(true);
+    const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
+    // If slug changed and old slug existed, remove the old entry.
+    const cleaned: CustomPagesMap = { ...map };
+    if (selectedSlug && selectedSlug !== slug) delete cleaned[selectedSlug];
+    cleaned[slug] = next;
+    const res = (await adminWriteSetting(CUSTOM_PAGES_KEY, cleaned)) as { ok?: boolean; error?: { message?: string } };
+    setBusy(false);
+    if (res.ok === false) {
+      return notifyFailed("ذخیره صفحه", res.error?.message || "خطای دیتابیس");
+    }
+    setPages(cleaned);
+    setSelectedSlug(slug);
+    setDraft(next);
+    setDirty(false);
+    notifySaved("صفحه");
+  }
+
+  async function duplicatePage(slug: string) {
+    const src = pages[slug];
+    if (!src) return;
+    const copy: CustomPage = {
+      ...src,
+      slug: sanitizeSlug(`${src.slug}-copy`),
+      title: `${src.title} (کپی)`,
+      updatedAt: new Date().toISOString(),
+      blocks: src.blocks.map((b) => ({ ...b, id: `b_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}` })),
+      published: false,
+    };
+    setBusy(true);
+    const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
+    map[copy.slug] = copy;
+    await adminWriteSetting(CUSTOM_PAGES_KEY, map);
+    setBusy(false);
+    setPages(map);
+    setSelectedSlug(copy.slug);
+    setDraft(copy);
+    setDirty(false);
+    notifySaved("صفحه (کپی)");
+  }
+
+  async function deletePage(slug: string) {
+    if (!confirm(`حذف صفحه «${slug}»؟ این عمل قابل بازگشت نیست.`)) return;
+    setBusy(true);
+    const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
+    delete map[slug];
+    await adminWriteSetting(CUSTOM_PAGES_KEY, map);
+    setBusy(false);
+    setPages(map);
+    if (selectedSlug === slug) selectPage(Object.keys(map)[0] ?? null);
+    notifySaved("حذف صفحه");
+  }
+
+  async function publishToGithub() {
+    if (!draft) return;
+    if (dirty) await savePage();
+    setBusy(true);
+    const cfg = await adminReadSetting<GithubSyncSettings>(GITHUB_SETTING_KEY, DEFAULT_GITHUB_SYNC);
+    const acc = cfg.accounts.find((a) => a.isDefault) ?? cfg.accounts[0];
+    if (!acc) {
+      setBusy(false);
+      return notifyFailed("انتشار در گیت‌هاب", "هیچ حساب گیت‌هابی متصل نیست. ابتدا از تب «اتصال گیت‌هاب» یک حساب اضافه کنید.");
+    }
+    const res = await githubPublishSnapshot({
+      data: {
+        secretName: acc.secretName,
+        owner: acc.owner,
+        repo: acc.repo,
+        branch: acc.branch,
+        path: acc.path,
+        note: `انتشار صفحه‌ساز: ${draft.title}`,
+      },
+    });
+    setBusy(false);
+    if (res.ok) notifySaved("ارسال به گیت‌هاب (Build/Commit/Deploy)");
+    else notifyFailed("ارسال به گیت‌هاب", res.error);
+  }
+
+  const list = Object.values(pages).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  const inputCls = "px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm w-full";
+  const btnCls = "px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold flex items-center gap-1.5 hover:bg-slate-50";
+  const primaryBtn = "px-3 py-2 rounded-xl bg-[#0b1e3f] text-white text-xs font-bold flex items-center gap-1.5 hover:bg-[#15294a] disabled:opacity-50";
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#0b1e3f] flex items-center gap-2">
+            <FilePlus2 className="w-6 h-6" /> صفحه‌ساز
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            ساخت صفحه از بلوک‌ها → ذخیره → ویرایش بصری → انتشار در گیت‌هاب. صفحات در <code>/p/{"<slug>"}</code> نمایش داده می‌شوند.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={newPage} className={primaryBtn}>
+            <Plus className="w-4 h-4" /> صفحه جدید
+          </button>
+          <button onClick={() => void savePage()} disabled={!draft || busy} className={primaryBtn}>
+            <Save className="w-4 h-4" /> ذخیره
+          </button>
+          <button onClick={() => void publishToGithub()} disabled={!draft || busy} className={primaryBtn}>
+            <Github className="w-4 h-4" /> انتشار در گیت‌هاب
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-4">
+        {/* Pages list */}
+        <aside className="col-span-12 lg:col-span-3">
+          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+            <div className="px-3 py-2 bg-slate-50 text-xs font-bold text-slate-600 border-b border-slate-200">صفحات ساخته‌شده</div>
+            <ul className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
+              {list.length === 0 && (
+                <li className="px-3 py-6 text-center text-xs text-slate-400">هنوز صفحه‌ای نساخته‌اید.</li>
+              )}
+              {list.map((p) => {
+                const active = selectedSlug === p.slug;
+                return (
+                  <li
+                    key={p.slug}
+                    className={`px-3 py-2.5 cursor-pointer ${active ? "bg-[#0b1e3f] text-white" : "hover:bg-slate-50"}`}
+                    onClick={() => selectPage(p.slug)}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold truncate">{p.title || p.slug}</div>
+                        <div className="text-[11px] opacity-70 truncate" dir="ltr">/p/{p.slug}</div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-[10px] ${p.published ? "bg-emerald-500/20 text-emerald-700" : "bg-slate-200 text-slate-600"}`}
+                        >
+                          {p.published ? "منتشر" : "پیش‌نویس"}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </aside>
+
+        {/* Editor + preview */}
+        <section className="col-span-12 lg:col-span-9">
+          {!draft ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-400">
+              یک صفحه را انتخاب کنید یا «صفحه جدید» را بزنید.
+            </div>
+          ) : (
+            <div className="grid grid-cols-12 gap-4">
+              {/* Block editor */}
+              <div className="col-span-12 xl:col-span-7 space-y-4">
+                {/* Page settings */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-bold text-slate-600">تنظیمات صفحه</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="text-xs text-slate-500 col-span-1">
+                      عنوان
+                      <input className={inputCls} value={draft.title} onChange={(e) => patchDraft({ title: e.target.value })} />
+                    </label>
+                    <label className="text-xs text-slate-500 col-span-1">
+                      نامک (slug) → /p/…
+                      <input dir="ltr" className={inputCls} value={draft.slug} onChange={(e) => patchDraft({ slug: e.target.value })} />
+                    </label>
+                  </div>
+                  <label className="text-xs text-slate-500 block">
+                    توضیح کوتاه
+                    <textarea className={inputCls} rows={2} value={draft.description} onChange={(e) => patchDraft({ description: e.target.value })} />
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="text-xs text-slate-500 col-span-1">
+                      عنوان سئو
+                      <input className={inputCls} value={draft.seoTitle} onChange={(e) => patchDraft({ seoTitle: e.target.value })} />
+                    </label>
+                    <label className="text-xs text-slate-500 col-span-1 flex items-center gap-2 pt-4">
+                      <input
+                        type="checkbox"
+                        checked={draft.published}
+                        onChange={(e) => patchDraft({ published: e.target.checked })}
+                      />
+                      منتشر (index در گوگل)
+                    </label>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button onClick={() => draft && onOpenVisualEditor(pageUrl(draft.slug))} className={btnCls}>
+                      <Wand2 className="w-3.5 h-3.5" /> ویرایشگر بصری
+                    </button>
+                    <button onClick={() => draft && onOpenInspector(pageUrl(draft.slug))} className={btnCls}>
+                      <Bug className="w-3.5 h-3.5" /> موس ایرادیاب
+                    </button>
+                    <a href={pageUrl(draft.slug)} target="_blank" rel="noreferrer" className={btnCls}>
+                      <ExternalLink className="w-3.5 h-3.5" /> مشاهده زنده
+                    </a>
+                    <button onClick={() => draft.slug && void duplicatePage(draft.slug)} className={btnCls}>
+                      <Copy className="w-3.5 h-3.5" /> کپی
+                    </button>
+                    <button onClick={() => draft.slug && void deletePage(draft.slug)} className={btnCls}>
+                      <Trash2 className="w-3.5 h-3.5" /> حذف
+                    </button>
+                  </div>
+                </div>
+
+                {/* Block palette */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <div className="text-xs font-bold text-slate-600 mb-2">افزودن بلوک</div>
+                  <div className="flex flex-wrap gap-2">
+                    {BLOCK_TYPES.map((b) => (
+                      <button
+                        key={b.type}
+                        onClick={() => addBlock(b.type)}
+                        className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold hover:bg-slate-50 flex items-center gap-1.5"
+                      >
+                        <span>{b.icon}</span> {b.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Blocks list */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-bold text-slate-600">بلوک‌ها</div>
+                  {draft.blocks.length === 0 && (
+                    <div className="text-xs text-slate-400 text-center py-4">بدون بلوک. یک بلوک اضافه کنید.</div>
+                  )}
+                  {draft.blocks.map((b, i) => (
+                    <BlockEditor
+                      key={b.id}
+                      block={b}
+                      index={i}
+                      total={draft.blocks.length}
+                      onMove={(dir) => moveBlock(b.id, dir)}
+                      onRemove={() => removeBlock(b.id)}
+                      onProp={(k, v) => setBlockProp(b.id, k, v)}
+                      onPickMedia={(apply) => setMediaFor({ blockId: b.id, apply })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Live preview */}
+              <div className="col-span-12 xl:col-span-5">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 sticky top-4">
+                  <div className="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
+                    <span>پیش‌نمایش زنده</span>
+                    {dirty && <span className="text-amber-600">ذخیره نشده</span>}
+                  </div>
+                  <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[70vh] overflow-y-auto">
+                    {draft.blocks.map((b) => (
+                      <BlockRenderer key={b.id} block={b} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
+
+      {mediaFor && draft && (
+        <MediaPicker
+          onClose={() => setMediaFor(null)}
+          onPick={(url) => {
+            if (mediaFor) mediaFor.apply(url);
+            setMediaFor(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Block editor ---------------- */
+
+function BlockEditor({
+  block,
+  index,
+  total,
+  onMove,
+  onRemove,
+  onProp,
+  onPickMedia,
+}: {
+  block: Block;
+  index: number;
+  total: number;
+  onMove: (dir: -1 | 1) => void;
+  onRemove: () => void;
+  onProp: (key: string, value: any) => void;
+  onPickMedia: (apply: (url: string) => void) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const p = block.props ?? {};
+  const inputCls = "px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm w-full";
+  const meta = BLOCK_TYPES.find((b) => b.type === block.type);
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/60">
+      <div className="flex items-center gap-2 px-3 py-2">
+        <span className="text-sm">{meta?.icon}</span>
+        <button onClick={() => setOpen((v) => !v)} className="text-xs font-bold flex-1 text-right hover:underline">
+          {meta?.label} <span className="text-slate-400">#{index + 1}</span>
+        </button>
+        <button onClick={() => onMove(-1)} disabled={index === 0} className="p-1 rounded hover:bg-white disabled:opacity-30">
+          <ArrowUp className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={() => onMove(1)} disabled={index === total - 1} className="p-1 rounded hover:bg-white disabled:opacity-30">
+          <ArrowDown className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={onRemove} className="p-1 rounded hover:bg-white text-red-600">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="px-3 pb-3 space-y-2">
+          <BlockProps block={block} onProp={onProp} onPickMedia={onPickMedia} inputCls={inputCls} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MediaButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className="px-2 py-1 rounded-lg border border-slate-300 bg-white text-[11px] font-bold flex items-center gap-1 hover:bg-slate-50">
+      <ImageIcon className="w-3 h-3" /> از کتابخانه رسانه
+    </button>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="text-xs text-slate-500 block">
+      {label}
+      <div className="mt-1">{children}</div>
+    </label>
+  );
+}
+
+function BlockProps({
+  block,
+  onProp,
+  onPickMedia,
+  inputCls,
+}: {
+  block: Block;
+  onProp: (key: string, value: any) => void;
+  onPickMedia: (apply: (url: string) => void) => void;
+  inputCls: string;
+}) {
+  const p = block.props ?? {};
+  switch (block.type) {
+    case "hero":
+      return (
+        <>
+          <Field label="عنوان">
+            <input className={inputCls} value={p.title ?? ""} onChange={(e) => onProp("title", e.target.value)} />
+          </Field>
+          <Field label="توضیح">
+            <input className={inputCls} value={p.subtitle ?? ""} onChange={(e) => onProp("subtitle", e.target.value)} />
+          </Field>
+          <Field label="تصویر پس‌زمینه (اختیاری)">
+            <div className="flex gap-2">
+              <input dir="ltr" className={inputCls} value={p.bgImage ?? ""} onChange={(e) => onProp("bgImage", e.target.value)} placeholder="https://… یا خالی برای گرادیان" />
+              <MediaButton onClick={() => onPickMedia((url) => onProp("bgImage", url))} />
+            </div>
+          </Field>
+          <div className="grid grid-cols-3 gap-2">
+            <Field label="متن دکمه">
+              <input className={inputCls} value={p.ctaText ?? ""} onChange={(e) => onProp("ctaText", e.target.value)} />
+            </Field>
+            <Field label="لینک دکته">
+              <input dir="ltr" className={inputCls} value={p.ctaHref ?? ""} onChange={(e) => onProp("ctaHref", e.target.value)} />
+            </Field>
+            <Field label="تراز">
+              <select className={inputCls} value={p.align ?? "center"} onChange={(e) => onProp("align", e.target.value)}>
+                <option value="center">مرکز</option>
+                <option value="right">راست</option>
+                <option value="left">چپ</option>
+              </select>
+            </Field>
+          </div>
+        </>
+      );
+    case "text":
+      return (
+        <>
+          <Field label="عنوان">
+            <input className={inputCls} value={p.title ?? ""} onChange={(e) => onProp("title", e.target.value)} />
+          </Field>
+          <Field label="متن">
+            <textarea className={inputCls} rows={4} value={p.body ?? ""} onChange={(e) => onProp("body", e.target.value)} />
+          </Field>
+          <Field label="تراز">
+            <select className={inputCls} value={p.align ?? "right"} onChange={(e) => onProp("align", e.target.value)}>
+              <option value="right">راست</option>
+              <option value="center">مرکز</option>
+              <option value="left">چپ</option>
+            </select>
+          </Field>
+        </>
+      );
+    case "cta":
+      return (
+        <>
+          <Field label="عنوان">
+            <input className={inputCls} value={p.title ?? ""} onChange={(e) => onProp("title", e.target.value)} />
+          </Field>
+          <Field label="توضیح">
+            <input className={inputCls} value={p.body ?? ""} onChange={(e) => onProp("body", e.target.value)} />
+          </Field>
+          <div className="grid grid-cols-3 gap-2">
+            <Field label="متن دکمه">
+              <input className={inputCls} value={p.buttonLabel ?? ""} onChange={(e) => onProp("buttonLabel", e.target.value)} />
+            </Field>
+            <Field label="لینک">
+              <input dir="ltr" className={inputCls} value={p.buttonHref ?? ""} onChange={(e) => onProp("buttonHref", e.target.value)} />
+            </Field>
+            <Field label="رنگ پس‌زمینه">
+              <input dir="ltr" className={inputCls} value={p.bg ?? "#0b1e3f"} onChange={(e) => onProp("bg", e.target.value)} />
+            </Field>
+          </div>
+        </>
+      );
+    case "cards": {
+      const items: { title?: string; text?: string }[] = Array.isArray(p.items) ? p.items : [];
+      return (
+        <>
+          <Field label="تعداد ستون‌ها">
+            <select className={inputCls} value={p.columns ?? "3"} onChange={(e) => onProp("columns", e.target.value)}>
+              <option value="2">۲</option>
+              <option value="3">۳</option>
+              <option value="4">۴</option>
+            </select>
+          </Field>
+          {items.map((it, i) => (
+            <div key={i} className="grid grid-cols-12 gap-2 items-end">
+              <div className="col-span-5">
+                <Field label={`کارت ${i + 1} عنوان`}>
+                  <input className={inputCls} value={it.title ?? ""} onChange={(e) => {
+                    const next = [...items]; next[i] = { ...next[i], title: e.target.value }; onProp("items", next);
+                  }} />
+                </Field>
+              </div>
+              <div className="col-span-6">
+                <Field label="متن">
+                  <input className={inputCls} value={it.text ?? ""} onChange={(e) => {
+                    const next = [...items]; next[i] = { ...next[i], text: e.target.value }; onProp("items", next);
+                  }} />
+                </Field>
+              </div>
+              <button onClick={() => onProp("items", items.filter((_, j) => j !== i))} className="col-span-1 mb-1 p-1 text-red-600">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          <button onClick={() => onProp("items", [...items, { title: "کارت جدید", text: "" }])} className="px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+            + افزودن کارت
+          </button>
+        </>
+      );
+    }
+    case "image":
+      return (
+        <>
+          <Field label="آدرس تصویر">
+            <div className="flex gap-2">
+              <input dir="ltr" className={inputCls} value={p.src ?? ""} onChange={(e) => onProp("src", e.target.value)} />
+              <MediaButton onClick={() => onPickMedia((url) => onProp("src", url))} />
+            </div>
+          </Field>
+          <div className="grid grid-cols-3 gap-2">
+            <Field label="متن جایگزین (alt)">
+              <input className={inputCls} value={p.alt ?? ""} onChange={(e) => onProp("alt", e.target.value)} />
+            </Field>
+            <Field label="لینک (اختیاری)">
+              <input dir="ltr" className={inputCls} value={p.href ?? ""} onChange={(e) => onProp("href", e.target.value)} />
+            </Field>
+            <Field label="عرض">
+              <select className={inputCls} value={p.width ?? "full"} onChange={(e) => onProp("width", e.target.value)}>
+                <option value="full">تمام‌عرض</option>
+                <option value="boxed">وسط‌چین</option>
+              </select>
+            </Field>
+          </div>
+        </>
+      );
+    case "gallery": {
+      const images: string[] = Array.isArray(p.images) ? p.images : [];
+      return (
+        <>
+          <Field label="تعداد ستون‌ها">
+            <select className={inputCls} value={p.columns ?? "3"} onChange={(e) => onProp("columns", e.target.value)}>
+              <option value="2">۲</option>
+              <option value="3">۳</option>
+              <option value="4">۴</option>
+            </select>
+          </Field>
+          {images.map((src, i) => (
+            <div key={i} className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Field label={`تصویر ${i + 1}`}>
+                  <input dir="ltr" className={inputCls} value={src} onChange={(e) => {
+                    const next = [...images]; next[i] = e.target.value; onProp("images", next);
+                  }} />
+                </Field>
+              </div>
+              <MediaButton onClick={() => onPickMedia((url) => { const next = [...images]; next[i] = url; onProp("images", next); })} />
+              <button onClick={() => onProp("images", images.filter((_, j) => j !== i))} className="mb-1 p-1 text-red-600">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          <button onClick={() => onProp("images", [...images, ""])} className="px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-bold">
+            + افزودن تصویر
+          </button>
+        </>
+      );
+    }
+    case "video":
+      return (
+        <>
+          <Field label="آدرس ویدیو">
+            <div className="flex gap-2">
+              <input dir="ltr" className={inputCls} value={p.src ?? ""} onChange={(e) => onProp("src", e.target.value)} />
+              <MediaButton onClick={() => onPickMedia((url) => onProp("src", url))} />
+            </div>
+          </Field>
+          <Field label="پوستر (اختیاری)">
+            <div className="flex gap-2">
+              <input dir="ltr" className={inputCls} value={p.poster ?? ""} onChange={(e) => onProp("poster", e.target.value)} />
+              <MediaButton onClick={() => onPickMedia((url) => onProp("poster", url))} />
+            </div>
+          </Field>
+        </>
+      );
+    case "divider":
+      return <p className="text-xs text-slate-400">بدون تنظیمات.</p>;
+    case "html":
+      return (
+        <Field label="کد HTML">
+          <textarea dir="ltr" className={inputCls} rows={6} value={p.html ?? ""} onChange={(e) => onProp("html", e.target.value)} />
+        </Field>
+      );
+    default:
+      return null;
+  }
+}
+
+/* ---------------- Media picker ---------------- */
+
+function MediaPicker({ onClose, onPick }: { onClose: () => void; onPick: (url: string) => void }) {
+  const [items, setItems] = useState<{ url: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    fetch(`/api/admin/assets?folder=media`)
+      .then((r) => r.json())
+      .then((j: { files?: { url: string; name: string }[]; error?: string }) => {
+        if (alive) {
+          setItems(j.files ?? []);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+          <div className="font-bold text-sm">کتابخانه رسانه</div>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-800">✕</button>
+        </div>
+        <div className="p-4 overflow-y-auto">
+          {loading ? (
+            <div className="text-center text-sm text-slate-400 py-10">در حال بارگذاری…</div>
+          ) : items.length === 0 ? (
+            <div className="text-center text-sm text-slate-400 py-10">
+              رسانه‌ای در پوشه <code>media</code> نیست. ابتدا از تب «کتابخانه رسانه» فایل آپلود کنید.
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-3">
+              {items.map((it) => {
+                const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(it.url);
+                return (
+                  <button
+                    key={it.url}
+                    onClick={() => onPick(it.url)}
+                    className="rounded-xl overflow-hidden border border-slate-200 hover:border-[#0b1e3f] aspect-square bg-slate-100"
+                    title={it.name}
+                  >
+                    {isVideo ? (
+                      <video src={it.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+                    ) : (
+                      <img src={it.url} alt={it.name} loading="lazy" className="h-full w-full object-cover" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

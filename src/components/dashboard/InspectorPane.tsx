@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bug, Copy, Monitor, RefreshCw, Save, Smartphone, Tablet, Trash2 } from "lucide-react";
 import { EDITOR_PAGES } from "@/lib/editor-pages";
 import { adminWriteSetting } from "@/lib/admin-db";
 import { VE_SETTING_KEY, type OverrideMap } from "@/lib/visual-editor";
+import { useCustomPageEntries } from "@/hooks/use-custom-pages";
 
 type Report = {
   selector: string;
@@ -53,8 +54,17 @@ function toText(r: Report) {
     .join("\n");
 }
 
-export function InspectorPane() {
-  const [page, setPage] = useState("/");
+export function InspectorPane({ initialPage = "/" }: { initialPage?: string }) {
+  const [page, setPage] = useState(initialPage);
+  const customEntries = useCustomPageEntries();
+  const allPages = useMemo(
+    () => {
+      const next = [...EDITOR_PAGES];
+      for (const c of customEntries) if (!next.some((x) => x.path === c.path)) next.push(c);
+      return next;
+    },
+    [customEntries],
+  );
   const [customPath, setCustomPath] = useState("");
   const [currentPath, setCurrentPath] = useState("/");
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
@@ -153,7 +163,7 @@ export function InspectorPane() {
           onChange={(e) => { setPage(e.target.value); setReport(null); }}
           className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm"
         >
-          {EDITOR_PAGES.map((p) => (
+          {allPages.map((p) => (
             <option key={p.path} value={p.path}>{p.label}</option>
           ))}
         </select>

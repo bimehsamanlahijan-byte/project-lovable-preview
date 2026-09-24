@@ -40,6 +40,7 @@ import {
   Database,
   Car,
   MessageSquarePlus,
+  FilePlus2,
 
 } from "lucide-react";
 import { SocialPane } from "@/components/dashboard/SocialPane";
@@ -48,6 +49,7 @@ import { ChatRoomPane } from "@/components/dashboard/ChatRoomPane";
 import { DocsPane } from "@/components/dashboard/DocsPane";
 import { DeployPane } from "@/components/dashboard/DeployPane";
 import { GithubPane } from "@/components/dashboard/GithubPane";
+import { PageBuilderPane } from "@/components/dashboard/PageBuilderPane";
 import { navItems, type NavItem } from "@/components/site-data";
 import { TelegramPane } from "@/components/dashboard/TelegramPane";
 import { LoginsPane } from "@/components/dashboard/LoginsPane";
@@ -57,6 +59,7 @@ import { dashboardStatus, lockDashboard, unlockDashboard } from "@/lib/admin.fun
 import { VE_SETTING_KEY, type OverrideMap } from "@/lib/visual-editor";
 import { EDITOR_PAGES } from "@/lib/editor-pages";
 import { useSitePages } from "@/lib/use-site-pages";
+import { useCustomPageEntries } from "@/hooks/use-custom-pages";
 import { OVERLAY_SETTING_KEY, type OverlayItem } from "@/lib/overlays";
 import { OVERLAY_TARGETS } from "@/lib/overlay-targets";
 import { OverlayPanel } from "@/components/dashboard/OverlayEditor";
@@ -175,7 +178,8 @@ type TabKey =
   | "seo"
   | "deploy"
   | "github"
-  | "logins";
+  | "logins"
+  | "pagebuilder";
 
 /* ---------- Root ---------- */
 function Dashboard() {
@@ -190,10 +194,18 @@ function Dashboard() {
     setSidebarOpen(false);
   };
 
+  const [inspectorPage, setInspectorPage] = useState("/");
+  const openPageInInspector = (path: string) => {
+    setInspectorPage(path);
+    setTab("inspector");
+    setSidebarOpen(false);
+  };
+
   const nav: { key: TabKey; label: string; icon: any }[] = [
     { key: "overview", label: "پیشخوان", icon: LayoutDashboard },
     { key: "editor", label: "ویرایشگر بصری سایت", icon: Wand2 },
     { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
+    { key: "pagebuilder", label: "صفحه‌ساز", icon: FilePlus2 },
     { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
     { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
     { key: "applications", label: "درخواست همکاری", icon: Users },
@@ -291,7 +303,10 @@ function Dashboard() {
         <main className="flex-1 min-w-0 min-h-0 overflow-y-auto overscroll-contain p-4 md:p-8 lg:mr-0">
           {tab === "overview" && <OverviewPane />}
           {tab === "editor" && <VisualEditorPane initialPage={editorPage} />}
-          {tab === "inspector" && <InspectorPane />}
+          {tab === "inspector" && <InspectorPane initialPage={inspectorPage} />}
+          {tab === "pagebuilder" && (
+            <PageBuilderPane onOpenVisualEditor={openPageInVisualEditor} onOpenInspector={openPageInInspector} />
+          )}
           {tab === "contacts" && <ContactsPane />}
           {tab === "suggestions" && <SuggestionsPane />}
           {tab === "applications" && <PartnerApplicationsPane />}
@@ -459,6 +474,7 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
   const [page, setPage] = useState(initialPage);
   const [tab, setTab] = useState<"elements" | "media" | "wheel">("elements");
   const sitePages = useSitePages();
+  const customEntries = useCustomPageEntries();
   const [pageOptions, setPageOptions] = useState(EDITOR_PAGES);
   // Any page added to the site later shows up here automatically.
   useEffect(() => {
@@ -468,6 +484,15 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
       return next.length === prev.length ? prev : next;
     });
   }, [sitePages]);
+  // Custom Page-Builder pages appear in the dropdown too.
+  useEffect(() => {
+    if (!customEntries.length) return;
+    setPageOptions((prev) => {
+      const next = [...prev];
+      for (const p of customEntries) if (!next.some((x) => x.path === p.path)) next.push(p);
+      return next.length === prev.length ? prev : next;
+    });
+  }, [customEntries]);
 
 
   const [device, setDevice] = useState<"desktop" | "mobile" | "tablet">("desktop");
