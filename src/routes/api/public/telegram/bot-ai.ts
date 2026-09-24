@@ -199,7 +199,7 @@ async function handleBotLogin(
     await tg(botToken, "sendMessage", {
       chat_id: chatId,
       text:
-        "👋 به بیمه سامان لاهیجان خوش آمدید.\n\nبرای فعال شدن چت هوش مصنوعی در سایت، روی دکمه‌ی «📱 ارسال شماره من» در پایین بزنید.\n\nاگر دکمه کار نکرد (مثلاً در نسخه‌ی وب تلگرام)، شماره‌ی موبایل خود را همین‌جا تایپ کنید (مثل 09123456789).",
+        "👋 به بیمه سامان لاهیجان خوش آمدید.\n\nبرای فعال شدن چت هوش مصنوعی در سایت، روی دکمه‌ی «📱 ارسال شماره من» در پایین بزنید.",
       reply_markup: {
         keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
         resize_keyboard: true,
@@ -209,17 +209,14 @@ async function handleBotLogin(
     return true;
   }
 
-  let contact = msg?.contact;
-  if (!contact) {
-    // Telegram Web cannot send contacts via the share button — accept the phone typed as text.
-    const typedPhone = parseTypedPhone(text);
-    if (typedPhone) contact = { phone_number: typedPhone, user_id: fromId };
-    else return false;
-  }
+  // Only Telegram's verified contact share is accepted — typed numbers are rejected
+  // so nobody can log in with someone else's phone number.
+  const contact = msg?.contact;
+  if (!contact) return false;
   if (contact.user_id !== fromId || !contact.phone_number) {
     await tg(botToken, "sendMessage", {
       chat_id: chatId,
-      text: "لطفاً فقط شماره‌ی خودتان را با همان دکمه ارسال کنید، یا شماره را به‌صورت متن بنویسید (مثل 09123456789).",
+      text: "لطفاً فقط شماره‌ی خودتان را با دکمه‌ی «📱 ارسال شماره من» ارسال کنید.",
     });
     return true;
   }
@@ -263,27 +260,6 @@ async function handleBotLogin(
   return true;
 }
 
-/** Accepts a phone number typed as plain text (Persian/Arabic digits OK) and normalizes to E.164. */
-function parseTypedPhone(text: string): string | null {
-  const fa = "۰۱۲۳۴۵۶۷۸۹";
-  const ar = "٠١٢٣٤٥٦٧٨٩";
-  let t = text
-    .split("")
-    .map((ch) => {
-      const i = fa.indexOf(ch);
-      if (i >= 0) return String(i);
-      const j = ar.indexOf(ch);
-      if (j >= 0) return String(j);
-      return ch;
-    })
-    .join("")
-    .replace(/[\s\-().]/g, "");
-  if (t.startsWith("0098")) t = `+${t.slice(2)}`;
-  else if (t.startsWith("98")) t = `+${t}`;
-  else if (t.startsWith("0")) t = `+98${t.slice(1)}`;
-  else if (!t.startsWith("+")) t = `+${t}`;
-  return /^\+98\d{10}$/.test(t) ? t : null;
-}
 
 async function sendLoginCard(botToken: string, chatId: number) {
   const { tg } = await import("@/lib/telegram.server");
@@ -293,8 +269,7 @@ async function sendLoginCard(botToken: string, chatId: number) {
     text:
       "🔐 <b>ورود با تلگرام — بیمه سامان</b>\n\n" +
       "برای استفاده از دستیار هوشمند بیمه، ابتدا وارد شوید.\n" +
-      "👇 روی دکمه‌ی <b>«📱 ارسال شماره من»</b> در پایین صفحه بزنید.\n" +
-      "اگر دکمه کار نکرد (مثلاً در نسخه‌ی وب تلگرام)، شماره‌ی موبایل خود را همین‌جا تایپ کنید (مثل 09123456789).",
+      "👇 روی دکمه‌ی <b>«📱 ارسال شماره من»</b> در پایین صفحه بزنید.",
     reply_markup: {
       keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
       resize_keyboard: true,
