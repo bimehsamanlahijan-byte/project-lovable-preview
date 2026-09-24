@@ -19,6 +19,7 @@ export type AiAssistantSettings = {
   welcome: string;
   systemPrompt: string;
   temperature: number;
+  linkPolicy?: import("./ai-link-policy").AiLinkPolicy;
 };
 
 export type LiveChatSettings = { enabled: boolean; title: string; welcome: string };
@@ -60,6 +61,7 @@ export const DEFAULT_AI: AiAssistantSettings = {
   systemPrompt:
     "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی پاسخ دهید و تنها بر اساس دانش تأییدشده پاسخ دهید.",
   temperature: 0.4,
+  linkPolicy: { enabled: true, internalDomains: ["si24.ir"], salesDomain: "saman8452.ir", allowedUrls: ["https://saman8452.ir/"] },
 };
 
 export const DEFAULT_LIVE_CHAT: LiveChatSettings = {
