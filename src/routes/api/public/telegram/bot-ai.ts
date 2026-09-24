@@ -199,9 +199,10 @@ async function handleBotLogin(
     await tg(botToken, "sendMessage", {
       chat_id: chatId,
       text:
-        "👋 به بیمه سامان لاهیجان خوش آمدید.\n\nبرای فعال شدن چت هوش مصنوعی در سایت، روی دکمه‌ی «📱 ارسال شماره من» در پایین بزنید.",
+        "👋 به بیمه سامان لاهیجان خوش آمدید.\n\n" +
+        "برای ورود، دکمه‌ی «🔑 لاگین» را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید تا شماره‌ی موبایل خود را به‌صورت امن ارسال کنید.",
       reply_markup: {
-        keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
+        keyboard: [[{ text: "🔑 لاگین", request_contact: true }]],
         resize_keyboard: true,
         one_time_keyboard: true,
       },
@@ -216,7 +217,7 @@ async function handleBotLogin(
   if (contact.user_id !== fromId || !contact.phone_number) {
     await tg(botToken, "sendMessage", {
       chat_id: chatId,
-      text: "لطفاً فقط شماره‌ی خودتان را با دکمه‌ی «📱 ارسال شماره من» ارسال کنید.",
+      text: "لطفاً فقط شماره‌ی خودتان را با دکمه‌ی «🔑 لاگین» در نوار تایپ ارسال کنید.",
     });
     return true;
   }
@@ -269,9 +270,9 @@ async function sendLoginCard(botToken: string, chatId: number) {
     text:
       "🔐 <b>ورود با تلگرام — بیمه سامان</b>\n\n" +
       "برای استفاده از دستیار هوشمند بیمه، ابتدا وارد شوید.\n" +
-      "👇 روی دکمه‌ی <b>«📱 ارسال شماره من»</b> در پایین صفحه بزنید.",
+      "👇 دکمه‌ی <b>«🔑 لاگین»</b> را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید تا شماره‌ی موبایل شما به‌صورت امن ارسال شود.",
     reply_markup: {
-      keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
+      keyboard: [[{ text: "🔑 لاگین", request_contact: true }]],
       resize_keyboard: true,
       one_time_keyboard: true,
     },
