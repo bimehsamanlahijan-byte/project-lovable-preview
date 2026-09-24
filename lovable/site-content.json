@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-23T17:43:38.105Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (login_bot_config)",
+  "exportedAt": "2026-09-24T15:44:38.135Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (ai_assistant)",
   "settings": [
     {
       "key": "wheel_background",
@@ -184,6 +184,44 @@
       "updated_at": "2026-09-11T17:13:44.019+00:00"
     },
     {
+      "key": "ai_assistant",
+      "value": {
+        "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+        "title": "دستیار هوشمند بیمه سامان",
+        "agency": {
+          "name": "بیمه سامان — نمایندگی آذرخش (لاهیجان)",
+          "note": "صدور، تمدید و مشاوره همه رشته‌های بیمه سامان فقط از طریق همین نمایندگی و همین وب‌سایت.",
+          "email": "info@parsianbimeh.ir",
+          "hours": "شنبه تا پنجشنبه، ۹ تا ۱۸",
+          "mobile": "09116169215",
+          "address": "لاهیجان، خیابان امام خمینی، روبروی بانک توسعه و تعاون، مجتمع پارادایس",
+          "landline": "01342249250",
+          "telegram": ""
+        },
+        "advisor": {
+          "analyze": true,
+          "maxWords": 320,
+          "consultative": true
+        },
+        "enabled": true,
+        "welcome": "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
+        "provider": "cloudflare",
+        "linkPolicy": {
+          "enabled": true,
+          "allowedUrls": [
+            "https://saman8452.ir/"
+          ],
+          "salesDomain": "saman8452.ir",
+          "internalDomains": [
+            "si24.ir"
+          ]
+        },
+        "temperature": 0.4,
+        "systemPrompt": "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی و مؤدبانه پاسخ دهید و از پاسخ های حدس زدنی خوداری کن"
+      },
+      "updated_at": "2026-09-24T15:44:37.612+00:00"
+    },
+    {
       "key": "branding",
       "value": {
         "brandFont": "",
@@ -207,19 +245,6 @@
         "welcome": "به چت روم آنلاین نمایندگی آذرخش خوش آمدید."
       },
       "updated_at": "2026-09-09T15:49:29.452+00:00"
-    },
-    {
-      "key": "ai_assistant",
-      "value": {
-        "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
-        "title": "دستیار هوشمند بیمه سامان",
-        "enabled": true,
-        "welcome": "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
-        "provider": "cloudflare",
-        "temperature": 0.4,
-        "systemPrompt": "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی و مؤدبانه پاسخ دهید."
-      },
-      "updated_at": "2026-09-18T07:45:40.915+00:00"
     },
     {
       "key": "social_layout",
