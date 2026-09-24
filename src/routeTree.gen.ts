@@ -32,6 +32,7 @@ import { Route as InsuranceTravelRouteImport } from './routes/insurance.travel'
 import { Route as PartnersDashboardRouteImport } from './routes/partners.dashboard'
 import { Route as PartnersApplyRouteImport } from './routes/partners_.apply'
 import { Route as ApiAdminAiProvidersRouteImport } from './routes/api/admin/ai-providers'
+import { Route as ApiAdminAiSourcesRouteImport } from './routes/api/admin/ai-sources'
 import { Route as ApiAdminAssetsRouteImport } from './routes/api/admin/assets'
 import { Route as ApiAdminBackendRouteImport } from './routes/api/admin/backend'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
@@ -41,6 +42,7 @@ import { Route as ApiPublicPartnerApplicationsRouteImport } from './routes/api/p
 import { Route as ApiPublicPartnerStatsRouteImport } from './routes/api/public/partner-stats'
 import { Route as ApiPublicSuggestionsRouteImport } from './routes/api/public/suggestions'
 import { Route as ApiThirdPartyStartRouteImport } from './routes/api/third-party/start'
+import { Route as ApiPublicAiSourcesRefreshRouteImport } from './routes/api/public/ai-sources/refresh'
 import { Route as ApiPublicAssetSplatRouteImport } from './routes/api/public/asset/$'
 import { Route as ApiPublicTelegramBotAiRouteImport } from './routes/api/public/telegram/bot-ai'
 import { Route as ApiThirdPartyTrackingCodeCalculatePriceRouteImport } from './routes/api/third-party/$trackingCode/calculate-price'
@@ -166,6 +168,11 @@ const ApiAdminAiProvidersRoute = ApiAdminAiProvidersRouteImport.update({
   path: '/api/admin/ai-providers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAiSourcesRoute = ApiAdminAiSourcesRouteImport.update({
+  id: '/api/admin/ai-sources',
+  path: '/api/admin/ai-sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminAssetsRoute = ApiAdminAssetsRouteImport.update({
   id: '/api/admin/assets',
   path: '/api/admin/assets',
@@ -212,6 +219,12 @@ const ApiThirdPartyStartRoute = ApiThirdPartyStartRouteImport.update({
   path: '/api/third-party/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAiSourcesRefreshRoute =
+  ApiPublicAiSourcesRefreshRouteImport.update({
+    id: '/api/public/ai-sources/refresh',
+    path: '/api/public/ai-sources/refresh',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAssetSplatRoute = ApiPublicAssetSplatRouteImport.update({
   id: '/api/public/asset/$',
   path: '/api/public/asset/$',
@@ -289,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
+  '/api/admin/ai-sources': typeof ApiAdminAiSourcesRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -298,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/third-party/start': typeof ApiThirdPartyStartRoute
+  '/api/public/ai-sources/refresh': typeof ApiPublicAiSourcesRefreshRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/bot-ai': typeof ApiPublicTelegramBotAiRoute
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
@@ -332,6 +347,7 @@ export interface FileRoutesByTo {
   '/e-services': typeof EServicesIndexRoute
   '/insurance': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
+  '/api/admin/ai-sources': typeof ApiAdminAiSourcesRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -341,6 +357,7 @@ export interface FileRoutesByTo {
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/third-party/start': typeof ApiThirdPartyStartRoute
+  '/api/public/ai-sources/refresh': typeof ApiPublicAiSourcesRefreshRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/bot-ai': typeof ApiPublicTelegramBotAiRoute
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
@@ -376,6 +393,7 @@ export interface FileRoutesById {
   '/e-services/': typeof EServicesIndexRoute
   '/insurance/': typeof InsuranceIndexRoute
   '/api/admin/ai-providers': typeof ApiAdminAiProvidersRoute
+  '/api/admin/ai-sources': typeof ApiAdminAiSourcesRoute
   '/api/admin/assets': typeof ApiAdminAssetsRoute
   '/api/admin/backend': typeof ApiAdminBackendRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
@@ -385,6 +403,7 @@ export interface FileRoutesById {
   '/api/public/partner-stats': typeof ApiPublicPartnerStatsRoute
   '/api/public/suggestions': typeof ApiPublicSuggestionsRoute
   '/api/third-party/start': typeof ApiThirdPartyStartRoute
+  '/api/public/ai-sources/refresh': typeof ApiPublicAiSourcesRefreshRoute
   '/api/public/asset/$': typeof ApiPublicAssetSplatRoute
   '/api/public/telegram/bot-ai': typeof ApiPublicTelegramBotAiRoute
   '/api/third-party/$trackingCode/calculate-price': typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
@@ -421,6 +440,7 @@ export interface FileRouteTypes {
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
+    | '/api/admin/ai-sources'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -430,6 +450,7 @@ export interface FileRouteTypes {
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
     | '/api/third-party/start'
+    | '/api/public/ai-sources/refresh'
     | '/api/public/asset/$'
     | '/api/public/telegram/bot-ai'
     | '/api/third-party/$trackingCode/calculate-price'
@@ -464,6 +485,7 @@ export interface FileRouteTypes {
     | '/e-services'
     | '/insurance'
     | '/api/admin/ai-providers'
+    | '/api/admin/ai-sources'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -473,6 +495,7 @@ export interface FileRouteTypes {
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
     | '/api/third-party/start'
+    | '/api/public/ai-sources/refresh'
     | '/api/public/asset/$'
     | '/api/public/telegram/bot-ai'
     | '/api/third-party/$trackingCode/calculate-price'
@@ -507,6 +530,7 @@ export interface FileRouteTypes {
     | '/e-services/'
     | '/insurance/'
     | '/api/admin/ai-providers'
+    | '/api/admin/ai-sources'
     | '/api/admin/assets'
     | '/api/admin/backend'
     | '/api/admin/upload'
@@ -516,6 +540,7 @@ export interface FileRouteTypes {
     | '/api/public/partner-stats'
     | '/api/public/suggestions'
     | '/api/third-party/start'
+    | '/api/public/ai-sources/refresh'
     | '/api/public/asset/$'
     | '/api/public/telegram/bot-ai'
     | '/api/third-party/$trackingCode/calculate-price'
@@ -550,6 +575,7 @@ export interface RootRouteChildren {
   EServicesIndexRoute: typeof EServicesIndexRoute
   InsuranceIndexRoute: typeof InsuranceIndexRoute
   ApiAdminAiProvidersRoute: typeof ApiAdminAiProvidersRoute
+  ApiAdminAiSourcesRoute: typeof ApiAdminAiSourcesRoute
   ApiAdminAssetsRoute: typeof ApiAdminAssetsRoute
   ApiAdminBackendRoute: typeof ApiAdminBackendRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
@@ -559,6 +585,7 @@ export interface RootRouteChildren {
   ApiPublicPartnerStatsRoute: typeof ApiPublicPartnerStatsRoute
   ApiPublicSuggestionsRoute: typeof ApiPublicSuggestionsRoute
   ApiThirdPartyStartRoute: typeof ApiThirdPartyStartRoute
+  ApiPublicAiSourcesRefreshRoute: typeof ApiPublicAiSourcesRefreshRoute
   ApiPublicAssetSplatRoute: typeof ApiPublicAssetSplatRoute
   ApiPublicTelegramBotAiRoute: typeof ApiPublicTelegramBotAiRoute
   ApiThirdPartyTrackingCodeCalculatePriceRoute: typeof ApiThirdPartyTrackingCodeCalculatePriceRoute
@@ -733,6 +760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAiProvidersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/ai-sources': {
+      id: '/api/admin/ai-sources'
+      path: '/api/admin/ai-sources'
+      fullPath: '/api/admin/ai-sources'
+      preLoaderRoute: typeof ApiAdminAiSourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/assets': {
       id: '/api/admin/assets'
       path: '/api/admin/assets'
@@ -794,6 +828,13 @@ declare module '@tanstack/react-router' {
       path: '/api/third-party/start'
       fullPath: '/api/third-party/start'
       preLoaderRoute: typeof ApiThirdPartyStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ai-sources/refresh': {
+      id: '/api/public/ai-sources/refresh'
+      path: '/api/public/ai-sources/refresh'
+      fullPath: '/api/public/ai-sources/refresh'
+      preLoaderRoute: typeof ApiPublicAiSourcesRefreshRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/asset/$': {
@@ -897,6 +938,7 @@ const rootRouteChildren: RootRouteChildren = {
   EServicesIndexRoute: EServicesIndexRoute,
   InsuranceIndexRoute: InsuranceIndexRoute,
   ApiAdminAiProvidersRoute: ApiAdminAiProvidersRoute,
+  ApiAdminAiSourcesRoute: ApiAdminAiSourcesRoute,
   ApiAdminAssetsRoute: ApiAdminAssetsRoute,
   ApiAdminBackendRoute: ApiAdminBackendRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
@@ -906,6 +948,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPartnerStatsRoute: ApiPublicPartnerStatsRoute,
   ApiPublicSuggestionsRoute: ApiPublicSuggestionsRoute,
   ApiThirdPartyStartRoute: ApiThirdPartyStartRoute,
+  ApiPublicAiSourcesRefreshRoute: ApiPublicAiSourcesRefreshRoute,
   ApiPublicAssetSplatRoute: ApiPublicAssetSplatRoute,
   ApiPublicTelegramBotAiRoute: ApiPublicTelegramBotAiRoute,
   ApiThirdPartyTrackingCodeCalculatePriceRoute:
@@ -920,3 +963,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

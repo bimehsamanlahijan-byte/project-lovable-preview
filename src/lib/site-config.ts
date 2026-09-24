@@ -10,6 +10,28 @@ export type SocialLayout = {
   showUsernames: boolean;
 };
 
+/** The only contact/sales details the assistant may ever hand to a customer. */
+export type AiAgencyInfo = {
+  name: string;
+  address: string;
+  landline: string;
+  mobile: string;
+  telegram: string;
+  email: string;
+  hours: string;
+  note: string;
+};
+
+/** Consultative analyst behaviour of the assistant. */
+export type AiAdvisorSettings = {
+  /** Act as an insurance consultant (interpret, compare, recommend). */
+  consultative: boolean;
+  /** Include the analysis step (pros, limits, comparison). */
+  analyze: boolean;
+  /** Soft answer-length target in words. */
+  maxWords: number;
+};
+
 export type AiAssistantSettings = {
   enabled: boolean;
   /** Provider id from src/lib/ai-providers.ts (lovable, cloudflare, google, ...). */
@@ -20,6 +42,25 @@ export type AiAssistantSettings = {
   systemPrompt: string;
   temperature: number;
   linkPolicy?: import("./ai-link-policy").AiLinkPolicy;
+  agency?: AiAgencyInfo;
+  advisor?: AiAdvisorSettings;
+};
+
+export const DEFAULT_AI_AGENCY: AiAgencyInfo = {
+  name: "بیمه سامان — نمایندگی آذرخش (لاهیجان)",
+  address: "لاهیجان، خیابان امام خمینی، روبروی بانک توسعه و تعاون، مجتمع پارادایس",
+  landline: "01342249250",
+  mobile: "09116169215",
+  telegram: "",
+  email: "info@parsianbimeh.ir",
+  hours: "شنبه تا پنجشنبه، ۹ تا ۱۸",
+  note: "صدور، تمدید و مشاوره همه رشته‌های بیمه سامان فقط از طریق همین نمایندگی و همین وب‌سایت.",
+};
+
+export const DEFAULT_AI_ADVISOR: AiAdvisorSettings = {
+  consultative: true,
+  analyze: true,
+  maxWords: 320,
 };
 
 export type LiveChatSettings = { enabled: boolean; title: string; welcome: string };
@@ -59,9 +100,11 @@ export const DEFAULT_AI: AiAssistantSettings = {
   title: "دستیار هوشمند بیمه سامان",
   welcome: "سلام! درباره انواع بیمه‌های سامان، شرایط و مدارک از من بپرسید.",
   systemPrompt:
-    "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی پاسخ دهید و تنها بر اساس دانش تأییدشده پاسخ دهید.",
+    "شما دستیار هوشمند و مشاور بیمه در نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی پاسخ دهید، اطلاعات محصولات بیمه سامان را تفسیر و تحلیل کنید و اولویت پاسخ همیشه دانش تأییدشده نمایندگی است.",
   temperature: 0.4,
   linkPolicy: { enabled: true, internalDomains: ["si24.ir"], salesDomain: "saman8452.ir", allowedUrls: ["https://saman8452.ir/"] },
+  agency: DEFAULT_AI_AGENCY,
+  advisor: DEFAULT_AI_ADVISOR,
 };
 
 export const DEFAULT_LIVE_CHAT: LiveChatSettings = {

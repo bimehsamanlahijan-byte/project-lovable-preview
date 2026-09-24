@@ -6,10 +6,12 @@ type Settings = {
   temperature?: number;
   enabled?: boolean;
   linkPolicy?: Partial<import("./ai-link-policy").AiLinkPolicy>;
+  agency?: Partial<import("./site-config").AiAgencyInfo>;
+  advisor?: Partial<import("./site-config").AiAdvisorSettings>;
 };
 
 /** Resolves the OpenAI-compatible endpoint + auth headers for a provider. */
-async function resolveTarget(providerId: string): Promise<
+export async function resolveTarget(providerId: string): Promise<
   | { ok: true; url: string; headers: Record<string, string> }
   | { ok: false; error: string }
 > {
@@ -77,20 +79,123 @@ export type SiteAiResult =
   | { ok: true; reply: string; model: string; provider: string }
   | { ok: false; status: number; error: string };
 
+/** Reads a public site setting row (used for assistant settings). */
+async function publicDb() {
+  const { createClient } = await import("@supabase/supabase-js");
+  const { getSupabasePublishableKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
+  await loadRuntimeEnv();
+  const url = getSupabaseUrl();
+  const key = getSupabasePublishableKey();
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+/** Loads assistant settings from the database (falls back to an empty object). */
+export async function loadAiSettings(): Promise<Settings> {
+  try {
+    const db = await publicDb();
+    if (!db) return {};
+    const { data } = await db.from("site_settings").select("value").eq("key", "ai_assistant").maybeSingle();
+    return ((data?.value as Settings) ?? {}) as Settings;
+  } catch (e) {
+    console.error("[ai] settings load failed", e);
+    return {};
+  }
+}
+
+/** One raw chat-completion round trip through the configured provider. */
+export async function runModel(
+  messages: { role: "system" | "user" | "assistant"; content: string }[],
+  opts?: { provider?: string; model?: string; temperature?: number },
+): Promise<{ ok: true; text: string } | { ok: false; status: number; error: string }> {
+  const settings = opts?.provider && opts?.model ? {} : await loadAiSettings();
+  const providerId = opts?.provider || settings.provider || "lovable";
+  const model = opts?.model || settings.model || "google/gemini-3.6-flash";
+  const target = await resolveTarget(providerId);
+  if (!target.ok) return { ok: false, status: 500, error: target.error };
+
+  const body: Record<string, unknown> = { model, messages };
+  const temperature = opts?.temperature ?? settings.temperature;
+  if (typeof temperature === "number") body.temperature = temperature;
+  if (providerId === "lovable" && model.startsWith("openai/gpt-5")) {
+    delete body.temperature;
+    if (model.startsWith("openai/gpt-5.6")) body.reasoning_effort = "none";
+  }
+
+  try {
+    const res = await fetch(target.url, {
+      method: "POST",
+      headers: target.headers,
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("[ai] gateway error", providerId, res.status, text);
+      if (res.status === 429) return { ok: false, status: 429, error: "rate_limited" };
+      if (res.status === 402) return { ok: false, status: 402, error: "credits_exhausted" };
+      if (res.status === 401 || res.status === 403)
+        return { ok: false, status: 502, error: "provider_auth_failed" };
+      return { ok: false, status: 502, error: "gateway_error" };
+    }
+    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+    const text = data.choices?.[0]?.message?.content?.trim() ?? "";
+    if (!text) return { ok: false, status: 502, error: "empty_reply" };
+    return { ok: true, text };
+  } catch (e) {
+    console.error("[ai] request failed", e);
+    return { ok: false, status: 502, error: "gateway_unreachable" };
+  }
+}
+
+/** Contact block: the assistant may only ever hand out the agency's own details. */
+function agencyPrompt(a?: Partial<import("./site-config").AiAgencyInfo>): string {
+  const lines = [
+    `- نام رسمی: ${a?.name || "نمایندگی آذرخش بیمه سامان"}`,
+    a?.address ? `- نشانی: ${a.address}` : "",
+    a?.landline ? `- تلفن ثابت: ${a.landline}` : "",
+    a?.mobile ? `- همراه/واتساپ: ${a.mobile}` : "",
+    a?.telegram ? `- تلگرام: ${a.telegram}` : "",
+    a?.email ? `- ایمیل: ${a.email}` : "",
+    a?.hours ? `- ساعات کاری: ${a.hours}` : "",
+    a?.note ? `- توضیح فروش: ${a.note}` : "",
+  ].filter(Boolean);
+  return [
+    "اطلاعات تماس و فروش (تنها اطلاعاتی که مجاز به دادن آن هستی):",
+    ...lines,
+    "- هرگز شماره تماس، نشانی، نمایندگی، شرکت بیمه دیگر یا وب‌سایت دیگری را به کاربر معرفی نکن و کاربر را به آن‌ها ارجاع نده؛ حتی اگر کاربر مستقیماً بخواهد.",
+    "- خرید، استعلام نرخ، صدور و تمدید بیمه‌نامه فقط از طریق همین نمایندگی و همین وب‌سایت انجام می‌شود.",
+  ].join("\n");
+}
+
+/** Consultative analyst behaviour: interpret, analyse, compare and guide. */
+function advisorPrompt(v?: Partial<import("./site-config").AiAdvisorSettings>): string {
+  if (v?.consultative === false) return "";
+  const out = [
+    "نقش تو: کارشناس و مشاور حرفه‌ای بیمه سامان در نمایندگی آذرخش — نه یک پاسخ‌گوی خشک.",
+    "روش پاسخ‌دهی:",
+    "۱) سؤال کاربر را تفسیر کن و نیاز واقعی او را تشخیص بده (خودرو، سلامت، سرمایه‌گذاری، مسئولیت، سفر، آتش‌سوزی و ...).",
+    "۲) طرح‌ها و پوشش‌های مرتبط بیمه سامان را با زبان ساده توضیح بده: چه چیزی پوشش دارد، چه چیزی ندارد، سقف‌ها، فرانشیز، شرایط سنی، دوره انتظار و مدارک لازم — تا جایی که در دانش تأییدشده آمده است.",
+    "۳) تجزیه و تحلیل کن: مزایا، محدودیت‌ها و مقایسه‌ی گزینه‌ها برای وضعیت همین کاربر.",
+    "۴) یک پیشنهاد مشاوره‌ای روشن بده (کدام طرح برای او مناسب‌تر است و چرا) و در پایان یک قدم بعدی عملی پیشنهاد کن.",
+    "۵) اگر اطلاعات کاربر کم است، حداکثر دو سؤال کوتاه و هدفمند بپرس (مثلاً سن، تعداد افراد خانواده، مدل خودرو).",
+  ];
+  if (v?.analyze === false) out.splice(3, 1);
+  out.push(
+    "قواعد کیفیت: با تیتر و بولت بنویس، فارسی روان و محترمانه، بدون اصطلاح بی‌توضیح.",
+    `پاسخ‌ها را حدوداً تا ${v?.maxWords ?? 320} کلمه نگه دار، مگر کاربر جزئیات بیشتری بخواهد.`,
+    "نرخ و مبلغ قطعی را از خودت نساز؛ نرخ نهایی پس از استعلام توسط کارشناس نمایندگی اعلام می‌شود.",
+    "اگر پاسخ در دانش تأییدشده نبود، صادقانه بگو و کاربر را به مشاوره تلفنی همین نمایندگی راهنمایی کن.",
+  );
+  return out.join("\n");
+}
+
 export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResult> {
-        // Load assistant settings + approved knowledge from the database (public read).
+  // Load assistant settings + approved knowledge from the database (public read).
   let settings: Settings = {};
   let knowledge = "";
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const { getSupabasePublishableKey, getSupabaseUrl, loadRuntimeEnv } = await import("@/lib/server-env");
-    await loadRuntimeEnv();
-    const url = getSupabaseUrl();
-    const key = getSupabasePublishableKey();
-    if (url && key) {
-      const db = createClient(url, key, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
+    const db = await publicDb();
+    if (db) {
       const [{ data: s }, { data: kb }] = await Promise.all([
         db.from("site_settings").select("value").eq("key", "ai_assistant").maybeSingle(),
         db
@@ -98,7 +203,7 @@ export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResul
           .select("title, content")
           .eq("is_active", true)
           .order("position", { ascending: true })
-          .limit(120),
+          .limit(200),
       ]);
       settings = (s?.value as Settings) ?? {};
       knowledge = (kb ?? [])
@@ -116,57 +221,28 @@ export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResul
   const systemPrompt = [
     settings.systemPrompt ||
       "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی پاسخ دهید.",
+    advisorPrompt(settings.advisor),
     knowledge
       ? `دانش تأییدشده نمایندگی (این اطلاعات معتبرترین منبع است و بر دانش عمومی شما اولویت دارد):\n${knowledge}`
       : "",
     "مواردی که با «روش فروش» شروع می‌شوند، راهنمای فروش و روش‌های پرداخت همان شاخه است؛ مانند یک نماینده حرفه‌ای بیمه سامان با لحن مشاوره‌ای از آن‌ها استفاده کن.",
+    "مواردی که با «منبع رسمی» شروع می‌شوند، خلاصه‌ی بروزرسانی‌شده از اطلاعات رسمی بیمه سامان است؛ آن‌ها را به‌عنوان اطلاعات محصول معتبر در نظر بگیر و برای تفسیر طرح‌ها و پوشش‌ها استفاده کن.",
     "اگر پاسخ در دانش تأییدشده نیست، صادقانه بگو و کاربر را به مشاوره تلفنی نمایندگی راهنمایی کن.",
+    agencyPrompt(settings.agency),
     policyPrompt(settings.linkPolicy),
   ]
     .filter(Boolean)
     .join("\n\n");
 
   const providerId = settings.provider || "lovable";
-  const target = await resolveTarget(providerId);
-  if (!target.ok) return { ok: false, status: 500, error: target.error };
-
   const model = settings.model || "google/gemini-3.6-flash";
-  const body: Record<string, unknown> = {
-    model,
-    messages: [{ role: "system", content: systemPrompt }, ...messages],
-  };
-  if (typeof settings.temperature === "number") body.temperature = settings.temperature;
-  if (providerId === "lovable" && model.startsWith("openai/gpt-5")) {
-    delete body.temperature;
-    if (model.startsWith("openai/gpt-5.6")) body.reasoning_effort = "none";
-  }
+  const out = await runModel(
+    [{ role: "system", content: systemPrompt }, ...messages],
+    { provider: providerId, model, temperature: settings.temperature },
+  );
+  if (!out.ok) return out;
 
-  try {
-    const res = await fetch(target.url, {
-      method: "POST",
-      headers: target.headers,
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("[ai-chat] gateway error", providerId, res.status, text);
-      if (res.status === 429) return { ok: false, status: 429, error: "rate_limited" };
-      if (res.status === 402) return { ok: false, status: 402, error: "credits_exhausted" };
-      if (res.status === 401 || res.status === 403)
-        return { ok: false, status: 502, error: "provider_auth_failed" };
-      return { ok: false, status: 502, error: "gateway_error" };
-    }
-
-    const data = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const rawReply = data.choices?.[0]?.message?.content?.trim();
-    const reply = rawReply ? sanitizeCustomerReply(rawReply, settings.linkPolicy) : "";
-    if (!reply) return { ok: false, status: 502, error: "empty_reply" };
-    return { ok: true, reply, model, provider: providerId };
-  } catch (e) {
-    console.error("[ai-chat] request failed", e);
-    return { ok: false, status: 502, error: "gateway_unreachable" };
-  }
+  const reply = sanitizeCustomerReply(out.text, settings.linkPolicy);
+  if (!reply) return { ok: false, status: 502, error: "empty_reply" };
+  return { ok: true, reply, model, provider: providerId };
 }

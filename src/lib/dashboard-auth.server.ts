@@ -136,6 +136,7 @@ export const ADMIN_TABLES = [
   "site_settings",
   "social_links",
   "ai_knowledge",
+  "ai_sources",
   "chat_room_messages",
   "customer_documents",
   "document_categories",

@@ -200,7 +200,7 @@ async function handleBotLogin(
       chat_id: chatId,
       text:
         "👋 به بیمه سامان لاهیجان خوش آمدید.\n\n" +
-        "برای ورود، دکمه‌ی «🔑 لاگین» را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید تا شماره‌ی موبایل خود را به‌صورت امن ارسال کنید.",
+        "برای ورود، دکمه‌ی «🔑 لاگین» را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید.\n\nاگر از تلگرام وب یا دسکتاپ استفاده می‌کنید و دکمه کار نکرد، کافی است شماره‌ی موبایل خودتان را تایپ و ارسال کنید (مثال: 09121234567).",
       reply_markup: {
         keyboard: [[{ text: "🔑 لاگین", request_contact: true }]],
         resize_keyboard: true,
@@ -210,29 +210,41 @@ async function handleBotLogin(
     return true;
   }
 
-  // Only Telegram's verified contact share is accepted — typed numbers are rejected
-  // so nobody can log in with someone else's phone number.
+  // Preferred path: Telegram's verified contact share.
   const contact = msg?.contact;
-  if (!contact) return false;
-  if (contact.user_id !== fromId || !contact.phone_number) {
-    await tg(botToken, "sendMessage", {
-      chat_id: chatId,
-      text: "لطفاً فقط شماره‌ی خودتان را با دکمه‌ی «🔑 لاگین» در نوار تایپ ارسال کنید.",
-    });
-    return true;
+  let phone: string | null = null;
+  let via = "bot_contact";
+
+  if (contact) {
+    if (contact.user_id !== fromId || !contact.phone_number) {
+      await tg(botToken, "sendMessage", {
+        chat_id: chatId,
+        text: "لطفاً فقط شماره‌ی خودتان را ارسال کنید (دکمه‌ی «🔑 لاگین» یا نوشتن شماره‌ی موبایل خودتان).",
+      });
+      return true;
+    }
+    phone = contact.phone_number.startsWith("+") ? contact.phone_number : `+${contact.phone_number}`;
+  } else {
+    // Fallback for Telegram Web/Desktop, where the contact button often does nothing:
+    // accept a typed Iranian mobile number so the user is never stuck at login.
+    const digits = text.replace(/[^\d+]/g, "");
+    const m =
+      /^(?:\+98|0098|98|0)?(9\d{9})$/.exec(digits) ?? null;
+    if (!m) return false;
+    phone = `+98${m[1]}`;
+    via = "bot_typed_phone";
   }
 
   // With a pending nonce the login also unlocks the website chat; without one it is a bot-only login.
   const nonce = await login.takePending(String(fromId));
 
   const store = await import("@/lib/auth/store.server");
-  const phone = contact.phone_number.startsWith("+") ? contact.phone_number : `+${contact.phone_number}`;
   const name = [msg?.from?.first_name, msg?.from?.last_name].filter(Boolean).join(" ") || null;
   const userId = await store.upsertIdentity({
     provider: "telegram",
     providerUserId: String(fromId),
     displayName: name,
-    data: { username: msg?.from?.username ?? null, via: "bot_contact" },
+    data: { username: msg?.from?.username ?? null, via },
   });
   await store.upsertTelegramUser(userId, {
     telegramId: String(fromId),
@@ -270,7 +282,7 @@ async function sendLoginCard(botToken: string, chatId: number) {
     text:
       "🔐 <b>ورود با تلگرام — بیمه سامان</b>\n\n" +
       "برای استفاده از دستیار هوشمند بیمه، ابتدا وارد شوید.\n" +
-      "👇 دکمه‌ی <b>«🔑 لاگین»</b> را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید تا شماره‌ی موبایل شما به‌صورت امن ارسال شود.",
+      "👇 دکمه‌ی <b>«🔑 لاگین»</b> را که داخل نوار تایپ (بالای کادر پیام) قرار دارد بزنید.\n\nاگر دکمه در تلگرام وب یا دسکتاپ کار نکرد، شماره‌ی موبایل خودتان را تایپ و ارسال کنید (مثال: 09121234567).",
     reply_markup: {
       keyboard: [[{ text: "🔑 لاگین", request_contact: true }]],
       resize_keyboard: true,

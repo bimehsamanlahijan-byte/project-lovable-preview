@@ -1,10 +1,16 @@
 import { adminDb, adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { useEffect, useState } from "react";
 import { Plus, Save, Trash2, Bot, Loader2 } from "lucide-react";
-import { DEFAULT_AI, type AiAssistantSettings } from "@/lib/site-config";
+import {
+  DEFAULT_AI,
+  DEFAULT_AI_ADVISOR,
+  DEFAULT_AI_AGENCY,
+  type AiAssistantSettings,
+} from "@/lib/site-config";
 import { DEFAULT_LINK_POLICY } from "@/lib/ai-link-policy";
 import { AI_PROVIDERS, getProvider } from "@/lib/ai-providers";
 import { SalesPlaybookSection } from "./SalesPlaybookSection";
+import { KnowledgeSourcesSection } from "./KnowledgeSourcesSection";
 
 type ProviderStatus = { id: string; hasKey: boolean; missing: string[] };
 
@@ -196,6 +202,76 @@ export function AiPane() {
           </div>
         );
       })()}
+
+      {(() => {
+        const ad = { ...DEFAULT_AI_ADVISOR, ...(cfg.advisor ?? {}) };
+        const setAd = (patch: Partial<typeof ad>) => setCfg({ ...cfg, advisor: { ...ad, ...patch } });
+        return (
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+            <h2 className="text-sm font-extrabold text-[#0b1e3f] mb-1">رفتار مشاوره‌ای دستیار</h2>
+            <p className="text-[11px] text-slate-500 mb-3 leading-6">
+              با فعال بودن این گزینه‌ها، دستیار فقط اطلاعات را بازگو نمی‌کند؛ سؤال کاربر را تفسیر می‌کند، پوشش‌ها و
+              محدودیت‌ها را تحلیل می‌کند و طرح مناسب را پیشنهاد می‌دهد.
+            </p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <label className="text-xs flex items-center gap-2">
+                <input type="checkbox" checked={ad.consultative} onChange={(e) => setAd({ consultative: e.target.checked })} />
+                <span className="font-bold text-slate-600">پاسخ مشاوره‌ای (تفسیر و پیشنهاد طرح)</span>
+              </label>
+              <label className="text-xs flex items-center gap-2">
+                <input type="checkbox" checked={ad.analyze} onChange={(e) => setAd({ analyze: e.target.checked })} />
+                <span className="font-bold text-slate-600">تجزیه و تحلیل (مزایا، محدودیت‌ها، مقایسه)</span>
+              </label>
+              <label className="text-xs">
+                <span className="block font-bold text-slate-600 mb-1">حدود طول پاسخ ({ad.maxWords} کلمه)</span>
+                <input type="range" min={120} max={600} step={20} value={ad.maxWords} onChange={(e) => setAd({ maxWords: Number(e.target.value) })} className="w-full" />
+              </label>
+            </div>
+          </div>
+        );
+      })()}
+
+      {(() => {
+        const ag = { ...DEFAULT_AI_AGENCY, ...(cfg.agency ?? {}) };
+        const setAg = (patch: Partial<typeof ag>) => setCfg({ ...cfg, agency: { ...ag, ...patch } });
+        const field = (
+          key: keyof typeof ag,
+          label: string,
+          opts?: { ltr?: boolean; area?: boolean; wide?: boolean },
+        ) => (
+          <label className={`text-xs ${opts?.wide ? "md:col-span-2" : ""}`}>
+            <span className="block font-bold text-slate-600 mb-1">{label}</span>
+            {opts?.area ? (
+              <textarea rows={2} value={ag[key]} onChange={(e) => setAg({ [key]: e.target.value } as never)} className={inputCls} />
+            ) : (
+              <input dir={opts?.ltr ? "ltr" : undefined} value={ag[key]} onChange={(e) => setAg({ [key]: e.target.value } as never)} className={inputCls} />
+            )}
+          </label>
+        );
+        return (
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+            <h2 className="text-sm font-extrabold text-[#0b1e3f] mb-1">اطلاعات فروش و تماس (فقط نمایندگی آذرخش)</h2>
+            <p className="text-[11px] text-slate-500 mb-3 leading-6">
+              دستیار برای خرید، صدور و مشاوره تنها همین اطلاعات را به کاربر می‌دهد و به هیچ نمایندگی یا وب‌سایت دیگری
+              ارجاع نمی‌دهد.
+            </p>
+            <div className="grid md:grid-cols-2 gap-3">
+              {field("name", "نام نمایندگی", { wide: true })}
+              {field("address", "آدرس", { wide: true, area: true })}
+              {field("mobile", "موبایل", { ltr: true })}
+              {field("landline", "تلفن ثابت", { ltr: true })}
+              {field("email", "ایمیل", { ltr: true })}
+              {field("telegram", "آیدی تلگرام (اختیاری)", { ltr: true })}
+              {field("hours", "ساعات پاسخ‌گویی")}
+              {field("note", "یادآوری فروش برای دستیار")}
+            </div>
+          </div>
+        );
+      })()}
+
+      <KnowledgeSourcesSection />
+
+
 
       <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
