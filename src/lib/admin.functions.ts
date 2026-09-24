@@ -259,3 +259,54 @@ export const clearStorageTarget = createServerFn({ method: "POST" }).handler(asy
   await writeStorageTarget({ url: "", serviceKey: "", bucket: "site-assets" });
   return { ok: true as const };
 });
+
+/* ---------- Default bot (token stored as server secret TELEGRAM_BOT_TOKEN) ---------- */
+
+async function defaultBotToken() {
+  const { envValueAsync } = await import("./server-env");
+  return envValueAsync("TELEGRAM_LOGIN_BOT_TOKEN", "TELEGRAM_BOT_TOKEN");
+}
+
+export const defaultBotStatus = createServerFn({ method: "POST" }).handler(async () => {
+  await requireUnlocked();
+  const token = await defaultBotToken();
+  if (!token) return { configured: false as const };
+  try {
+    const me = (await tg(token, "getMe", {})) as { username?: string; first_name?: string };
+    const hook = (await tg(token, "getWebhookInfo", {})) as {
+      url?: string;
+      pending_update_count?: number;
+      last_error_message?: string;
+      last_error_date?: number;
+    };
+    return {
+      configured: true as const,
+      username: me.username ?? null,
+      name: me.first_name ?? null,
+      webhookUrl: hook.url ?? "",
+      pending: hook.pending_update_count ?? 0,
+      lastError: hook.last_error_message ?? null,
+    };
+  } catch (e) {
+    return { configured: true as const, error: e instanceof Error ? e.message : "telegram_error" };
+  }
+});
+
+export const defaultBotSetWebhook = createServerFn({ method: "POST" })
+  .inputValidator((data: { origin: string }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const token = await defaultBotToken();
+    if (!token) return { ok: false as const, error: "TELEGRAM_BOT_TOKEN تنظیم نشده است." };
+    const origin = new URL(data.origin);
+    if (origin.protocol !== "https:") return { ok: false as const, error: "آدرس باید HTTPS باشد." };
+    const { createHash } = await import("node:crypto");
+    const secret = createHash("sha256").update(`telegram-bot-ai:${token}`).digest("base64url");
+    const url = `${origin.origin}/api/public/telegram/bot-ai`;
+    await tg(token, "setWebhook", {
+      url,
+      secret_token: secret,
+      allowed_updates: ["message", "edited_message", "callback_query"],
+    });
+    return { ok: true as const, url };
+  });

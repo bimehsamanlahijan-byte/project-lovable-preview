@@ -41,7 +41,7 @@ export const Route = createFileRoute("/api/public/telegram/bot-ai")({
           if (handled) return Response.json({ ok: true });
         }
         if (!text) return Response.json({ ok: true });
-
+        if (msg?.chat?.type !== "private") return Response.json({ ok: true });
 
         const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
         const supabase = await getSupabaseAdmin();
@@ -53,18 +53,61 @@ export const Route = createFileRoute("/api/public/telegram/bot-ai")({
         const cfg = ((row as { value?: Record<string, unknown> } | null)?.value ?? {}) as {
           enabled?: boolean;
           aiEnabled?: boolean;
+          useSiteAi?: boolean;
+          requireLogin?: boolean;
           aiProvider?: string;
           aiModel?: string;
           systemPrompt?: string;
         };
-        if (!cfg.enabled) return Response.json({ ok: true, disabled: true });
-
-        let reply = "سلام! برای دریافت خدمات بیمه سامان لاهیجان به سایت ما مراجعه کنید: https://saman8452.ir";
-        if (cfg.aiEnabled) {
-          reply = (await askAi(text, cfg)) ?? reply;
-        }
+        if (cfg.enabled === false) return Response.json({ ok: true, disabled: true });
 
         const { tg } = await import("@/lib/telegram.server");
+        const fromId = msg?.from?.id;
+
+        // 1) Telegram login first: until the user shares their phone, only the login card is shown.
+        if (cfg.requireLogin !== false && fromId) {
+          const { data: tu } = await supabase
+            .from("telegram_users" as never)
+            .select("phone_number, is_active")
+            .eq("telegram_id", fromId)
+            .maybeSingle();
+          const u = tu as { phone_number: string | null; is_active: boolean } | null;
+          if (!u || !u.phone_number) {
+            await sendLoginCard(botToken, chatId);
+            return Response.json({ ok: true, login: "required" });
+          }
+          if (u.is_active === false) {
+            await tg(botToken, "sendMessage", { chat_id: chatId, text: "دسترسی شما توسط مدیر غیرفعال شده است." });
+            return Response.json({ ok: true });
+          }
+          await supabase
+            .from("telegram_users" as never)
+            .update({ last_login: new Date().toISOString() } as never)
+            .eq("telegram_id", fromId);
+        }
+
+        if (text === "/start" || text === "/ai") {
+          await tg(botToken, "sendMessage", {
+            chat_id: chatId,
+            text: "🤖 سلام! من دستیار هوشمند بیمه سامان هستم. سؤال بیمه‌ای خود را بنویسید.",
+            reply_markup: { remove_keyboard: true },
+          });
+          return Response.json({ ok: true });
+        }
+        const question = text.replace(/^\/ai\s+/, "");
+
+        // 2) Answer with the same AI assistant as the website chat (settings + knowledge base).
+        let reply = "متأسفانه الان امکان پاسخ‌گویی نیست. لطفاً کمی بعد دوباره تلاش کنید.";
+        await tg(botToken, "sendChatAction", { chat_id: chatId, action: "typing" }).catch(() => null);
+        if (cfg.useSiteAi !== false) {
+          const { answerWithSiteAi } = await import("@/lib/site-ai.server");
+          const out = await answerWithSiteAi([{ role: "user", content: question.slice(0, 4000) }]);
+          if (out.ok) reply = out.reply;
+          else console.error("[bot-ai] site ai", out.status, out.error);
+        } else if (cfg.aiEnabled) {
+          reply = (await askAi(question, cfg)) ?? reply;
+        }
+
         await tg(botToken, "sendMessage", { chat_id: chatId, text: reply });
         return Response.json({ ok: true });
       },
@@ -176,15 +219,8 @@ async function handleBotLogin(
     return true;
   }
 
+  // With a pending nonce the login also unlocks the website chat; without one it is a bot-only login.
   const nonce = await login.takePending(String(fromId));
-  if (!nonce) {
-    await tg(botToken, "sendMessage", {
-      chat_id: chatId,
-      text: "درخواست ورود منقضی شده است. لطفاً دوباره از داخل سایت روی «ورود با تلگرام» بزنید.",
-      reply_markup: { remove_keyboard: true },
-    });
-    return true;
-  }
 
   const store = await import("@/lib/auth/store.server");
   const phone = contact.phone_number.startsWith("+") ? contact.phone_number : `+${contact.phone_number}`;
@@ -203,12 +239,38 @@ async function handleBotLogin(
     verified: true,
   });
   await store.saveConsentedPhone(userId, phone);
-  await login.markDone(nonce, userId);
+  if (nonce) await login.markDone(nonce, userId);
+  await store.logLogin({
+    userId,
+    method: nonce ? "telegram_bot_site" : "telegram_bot",
+    telegramId: String(fromId),
+    module: nonce ? "ai_chat" : "telegram_bot",
+    status: "success",
+  });
 
   await tg(botToken, "sendMessage", {
     chat_id: chatId,
-    text: "✅ ورود شما تأیید شد. به سایت برگردید؛ چت هوش مصنوعی برای ۵ سؤال فعال شد.",
+    text: nonce
+      ? "✅ ورود شما تأیید شد. به سایت برگردید؛ چت هوش مصنوعی فعال شد. همین‌جا در ربات هم می‌توانید سؤال بپرسید."
+      : "✅ ورود شما تأیید شد. حالا سؤال بیمه‌ای خود را بنویسید تا دستیار هوشمند پاسخ دهد.",
     reply_markup: { remove_keyboard: true },
   });
   return true;
+}
+
+async function sendLoginCard(botToken: string, chatId: number) {
+  const { tg } = await import("@/lib/telegram.server");
+  await tg(botToken, "sendMessage", {
+    chat_id: chatId,
+    parse_mode: "HTML",
+    text:
+      "🔐 <b>ورود با تلگرام — بیمه سامان</b>\n\n" +
+      "برای استفاده از دستیار هوشمند بیمه، ابتدا وارد شوید.\n" +
+      "👇 روی دکمه‌ی <b>«📱 ارسال شماره من»</b> در پایین صفحه بزنید.",
+    reply_markup: {
+      keyboard: [[{ text: "📱 ارسال شماره من", request_contact: true }]],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  });
 }

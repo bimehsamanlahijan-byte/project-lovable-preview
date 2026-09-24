@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bot, Plus, Save, Trash2, RefreshCw, Play, Link2, Zap, Info } from "lucide-react";
 import { adminDb } from "@/lib/admin-db";
+import { DefaultBotCard } from "./DefaultBotCard";
 import { telegramGetInfo, telegramRunFlow, telegramSetWebhook } from "@/lib/admin.functions";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
@@ -197,6 +198,8 @@ export function TelegramPane() {
             <Zap className="w-4 h-4" /> اتوماسیون جدید
           </button>
         </div>
+
+      <DefaultBotCard />
       </div>
 
       {msg && (
