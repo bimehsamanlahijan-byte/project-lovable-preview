@@ -5,6 +5,7 @@ type Settings = {
   systemPrompt?: string;
   temperature?: number;
   enabled?: boolean;
+  linkPolicy?: Partial<import("./ai-link-policy").AiLinkPolicy>;
 };
 
 /** Resolves the OpenAI-compatible endpoint + auth headers for a provider. */
@@ -110,6 +111,8 @@ export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResul
 
   if (settings.enabled === false) return { ok: false, status: 403, error: "assistant_disabled" };
 
+  const { policyPrompt, sanitizeCustomerReply, sanitizeKnowledge } = await import("./ai-link-policy");
+  knowledge = sanitizeKnowledge(knowledge, settings.linkPolicy);
   const systemPrompt = [
     settings.systemPrompt ||
       "شما دستیار هوشمند نمایندگی آذرخش بیمه سامان هستید. فقط به فارسی پاسخ دهید.",
@@ -118,6 +121,7 @@ export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResul
       : "",
     "مواردی که با «روش فروش» شروع می‌شوند، راهنمای فروش و روش‌های پرداخت همان شاخه است؛ مانند یک نماینده حرفه‌ای بیمه سامان با لحن مشاوره‌ای از آن‌ها استفاده کن.",
     "اگر پاسخ در دانش تأییدشده نیست، صادقانه بگو و کاربر را به مشاوره تلفنی نمایندگی راهنمایی کن.",
+    policyPrompt(settings.linkPolicy),
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -157,7 +161,8 @@ export async function answerWithSiteAi(messages: ChatMsg[]): Promise<SiteAiResul
     const data = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
     };
-    const reply = data.choices?.[0]?.message?.content?.trim();
+    const rawReply = data.choices?.[0]?.message?.content?.trim();
+    const reply = rawReply ? sanitizeCustomerReply(rawReply, settings.linkPolicy) : "";
     if (!reply) return { ok: false, status: 502, error: "empty_reply" };
     return { ok: true, reply, model, provider: providerId };
   } catch (e) {
