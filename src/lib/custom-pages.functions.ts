@@ -28,12 +28,14 @@ export const listCustomPages = createServerFn({ method: "GET" }).handler(async (
 
 /**
  * Page Builder — extract a page's main content from a URL and return it as
- * editable Blocks (strips the source site's header/footer/nav). Public POST;
- * the helper blocks loopback/private hosts to avoid SSRF.
+ * editable Blocks (strips the source site's header/footer/nav). This expensive
+ * operation is restricted to an unlocked dashboard session.
  */
 export const extractPageFromUrl = createServerFn({ method: "POST" })
   .inputValidator((data: { url: string }) => data)
   .handler(async ({ data }) => {
+    const { requireUnlocked } = await import("./dashboard-auth.server");
+    await requireUnlocked();
     const { extractFromUrl } = await import("./extract-content.server");
     return await extractFromUrl(data.url);
   });

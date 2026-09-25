@@ -64,7 +64,7 @@ export function newBlockId(): string {
 }
 
 export const BLOCK_TYPES: { type: BlockType; label: string; icon: string }[] = [
-  { type: "hero", label: "هیرو (عنوان بزرگ + دکته)", icon: "🖼️" },
+  { type: "hero", label: "هیرو (عنوان بزرگ + دکمه)", icon: "🖼️" },
   { type: "text", label: "متن و عنوان", icon: "📝" },
   { type: "cta", label: "بنر فراخوان (CTA)", icon: "📣" },
   { type: "cards", label: "کارت‌ها", icon: "🗂️" },

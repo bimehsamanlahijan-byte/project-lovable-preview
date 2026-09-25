@@ -6,9 +6,6 @@
  * chrome, isolate the main content, and convert it into the same Block model
  * the Page Builder / Visual Editor / Inspector use — so every extracted
  * element is a real, selectable DOM node, not raw HTML.
- *
- * Runs in the Worker runtime: uses fetch + linkedom (pure-JS DOM, no native
- * bindings). Never reaches for the filesystem or child_process.
  */
 import { parseHTML } from "linkedom";
 import { newBlockId, type Block } from "./custom-pages";
@@ -24,7 +21,12 @@ export type ExtractResult = {
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
-const STRIP = ["script", "style", "noscript", "nav", "header", "footer", "aside", "form", "iframe", "template", "svg", "button"];
+const STRIP = [
+  "script", "style", "noscript", "nav", "header", "footer", "aside", "form", "iframe", "template", "svg",
+  "[role='navigation']", "[role='banner']", "[role='contentinfo']", ".breadcrumb", ".breadcrumbs", ".cookie",
+  ".cookie-banner", ".popup", ".modal", ".sidebar", ".share-buttons", ".social-share", ".related-posts",
+  ".comments", "#comments", ".advertisement", ".ads", ".elementor-location-header", ".elementor-location-footer",
+];
 
 function absUrl(href: string, base: string): string {
   try {
@@ -38,12 +40,20 @@ function textOf(node: Element | null): string {
   return (node?.textContent || "").replace(/\s+/g, " ").trim();
 }
 
+function metaContent(document: Document, selector: string): string {
+  return document.querySelector(selector)?.getAttribute("content")?.replace(/\s+/g, " ").trim() || "";
+}
+
 /** Resolve srcset/src to a single best absolute URL. */
 function bestImg(img: Element, base: string): string {
   const srcset = img.getAttribute("srcset") || img.getAttribute("data-srcset") || "";
   if (srcset) {
-    const first = srcset.split(",")[0]?.trim().split(" ")[0];
-    if (first) return absUrl(first, base);
+    const candidates = srcset
+      .split(",")
+      .map((part) => part.trim().split(/\s+/))
+      .filter((part) => part[0]);
+    const best = candidates.at(-1)?.[0];
+    if (best) return absUrl(best, base);
   }
   const src = img.getAttribute("src") || img.getAttribute("data-src") || "";
   return src ? absUrl(src, base) : "";
@@ -81,36 +91,71 @@ export async function extractFromUrl(rawUrl: string): Promise<ExtractResult> {
   const html = await res.text();
   const { document } = parseHTML(html);
 
-  // Strip chrome and non-content nodes.
   for (const sel of STRIP) {
     document.querySelectorAll(sel).forEach((n: Element) => n.remove());
-}
+  }
 
-  // Title / description
   const title =
-    textOf(document.querySelector("meta[property='og:title']")) ||
+    metaContent(document, "meta[property='og:title']") ||
     textOf(document.querySelector("title")) ||
     textOf(document.querySelector("h1")) ||
     "صفحه استخراج‌شده";
   const description =
-    textOf(document.querySelector("meta[name='description']")) ||
-    textOf(document.querySelector("meta[property='og:description']")) ||
+    metaContent(document, "meta[name='description']") ||
+    metaContent(document, "meta[property='og:description']") ||
     "";
 
-  // Main content container.
-  const main =
-    document.querySelector("main") ||
-    document.querySelector("article") ||
-    document.querySelector("[role='main']") ||
-    document.querySelector("#content") ||
-    document.body;
+  const candidates = Array.from(
+    document.querySelectorAll(
+      "article, main, [role='main'], .entry-content, .post-content, .page-content, .elementor-widget-theme-post-content, #content, #main",
+    ),
+  );
+  const main = candidates
+    .filter((node) => textOf(node).length >= 120)
+    .sort((a, b) => {
+      const score = (node: Element) =>
+        textOf(node).length + node.querySelectorAll("h1,h2,h3,p,li,table,img").length * 120;
+      return score(b) - score(a);
+    })[0] || document.body;
 
   const blocks: Block[] = [];
-  const MAX = 40;
+  const MAX = 60;
+  const seenImages = new Set<string>();
 
   function push(block: Block) {
     if (blocks.length >= MAX) return;
+    const previous = blocks.at(-1);
+    if (block.type === "text" && previous?.type === "text" && !block.props.title && !previous.props.title) {
+      const body = [previous.props.body, block.props.body].filter(Boolean).join("\n\n");
+      if (body.length <= 6000) {
+        previous.props.body = body;
+        return;
+      }
+    }
     blocks.push(block);
+  }
+
+  function pushImage(img: Element, width: "full" | "boxed" = "boxed") {
+    const src = bestImg(img, url);
+    if (!src || src.startsWith("data:") || seenImages.has(src)) return;
+    const widthAttr = Number(img.getAttribute("width") || 0);
+    const heightAttr = Number(img.getAttribute("height") || 0);
+    if ((widthAttr && widthAttr < 120) || (heightAttr && heightAttr < 80)) return;
+    seenImages.add(src);
+    push({ id: newBlockId(), type: "image", props: { src, alt: img.getAttribute("alt") || "", href: "", width } });
+  }
+
+  function tableText(table: Element): string {
+    return Array.from(table.querySelectorAll("tr"))
+      .map((row) => Array.from(row.querySelectorAll(":scope > th, :scope > td")).map(textOf).filter(Boolean).join(" | "))
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  function isButtonLikeLink(node: Element): boolean {
+    const cls = `${node.getAttribute("class") || ""} ${node.getAttribute("role") || ""}`.toLowerCase();
+    const parentTag = node.parentElement?.tagName?.toLowerCase();
+    return /button|btn|cta/.test(cls) || parentTag === "button";
   }
 
   function walk(node: Element) {
@@ -118,7 +163,7 @@ export async function extractFromUrl(rawUrl: string): Promise<ExtractResult> {
     const tag = node.tagName?.toLowerCase?.();
     if (!tag) return;
 
-    // Headings → text block (hero if first h1).
+    // Headings
     if (tag === "h1" || tag === "h2" || tag === "h3" || tag === "h4") {
       const txt = textOf(node);
       if (!txt) return;
@@ -130,27 +175,24 @@ export async function extractFromUrl(rawUrl: string): Promise<ExtractResult> {
       return;
     }
 
-    // Image.
+    // Images
     if (tag === "img") {
-      const src = bestImg(node, url);
-      if (src) push({ id: newBlockId(), type: "image", props: { src, alt: node.getAttribute("alt") || "", href: "", width: "full" } });
+      pushImage(node);
       return;
     }
     if (tag === "figure") {
       const img = node.querySelector("img");
       if (img) {
-        const src = bestImg(img, url);
-        if (src) push({ id: newBlockId(), type: "image", props: { src, alt: img.getAttribute("alt") || "", href: "", width: "full" } });
+        pushImage(img);
       }
       const cap = textOf(node.querySelector("figcaption"));
       if (cap) push({ id: newBlockId(), type: "text", props: { title: "", body: cap, align: "right" } });
       return;
     }
 
-    // Paragraph / list → text.
     if (tag === "p") {
       const txt = textOf(node);
-      if (txt) push({ id: newBlockId(), type: "text", props: { title: "", body: txt, align: "right" } });
+      if (txt.length >= 2) push({ id: newBlockId(), type: "text", props: { title: "", body: txt, align: "right" } });
       return;
     }
     if (tag === "ul" || tag === "ol") {
@@ -161,60 +203,78 @@ export async function extractFromUrl(rawUrl: string): Promise<ExtractResult> {
       return;
     }
 
-    // A standalone block-level link → CTA.
-    if (tag === "a") {
-      const href = absUrl(node.getAttribute("href") || "", url);
-      const label = textOf(node);
-      if (label && href) push({ id: newBlockId(), type: "cta", props: { title: "", body: "", buttonLabel: label, buttonHref: href, bg: "#0b1e3f" } });
+    if (tag === "table") {
+      const body = tableText(node);
+      if (body) push({ id: newBlockId(), type: "text", props: { title: "", body, align: "right" } });
       return;
     }
 
-    // A group of similar children → cards (max 6).
-    if (tag === "section" || tag === "div" || tag === "ul" || tag === "article") {
+    if (tag === "a") {
+      const href = absUrl(node.getAttribute("href") || "", url);
+      const label = textOf(node);
+      if (label && label.length < 80 && href && isButtonLikeLink(node)) {
+        push({ id: newBlockId(), type: "cta", props: { title: "", body: "", buttonLabel: label, buttonHref: href, bg: "#0b1e3f" } });
+      }
+      return;
+    }
+
+    // Containers
+    if (tag === "section" || tag === "div" || tag === "article") {
       const direct = Array.from(node.children).filter((c: Element) => c.tagName);
-      // Detect card-like cluster: >=2 children each with a heading or image.
+      
+      // Only treat repeated, genuinely card-like children as cards. Generic
+      // content wrappers often have 2–8 children and caused the old extractor
+      // to collapse whole articles into inaccurate cards.
       if (direct.length >= 2 && direct.length <= 8) {
         const cards = direct
           .map((c: Element) => {
-            const h = textOf(c.querySelector("h2,h3,h4,.title,.card-title")) || textOf(c.querySelector("a"));
+            const h = textOf(c.querySelector("h2,h3,h4,.title")) || textOf(c.querySelector("a"));
             const img = c.querySelector("img");
             const body = textOf(c.querySelector("p")) || textOf(c);
             return { title: h, text: body.slice(0, 160), image: img ? bestImg(img, url) : "" };
           })
           .filter((c) => c.title || c.text);
-        if (cards.length === direct.length && cards.length >= 2) {
-          push({
-            id: newBlockId(),
-            type: "cards",
-            props: {
-              columns: String(Math.min(cards.length, 4)),
-              items: cards.map((c) => ({ title: c.title, text: c.text, image: c.image })),
-            },
-          });
+        const cardSignals = direct.filter((c) => c.querySelector("img") && c.querySelector("h2,h3,h4,.title,.card-title")).length;
+        if (cards.length === direct.length && cards.length >= 2 && cardSignals >= Math.ceil(direct.length / 2)) {
+          push({ id: newBlockId(), type: "cards", props: { columns: String(Math.min(cards.length, 4)), items: cards.map((c) => ({ title: c.title, text: c.text, image: c.image })) } });
           return;
         }
       }
-      // Gallery: a div/ul full of images only.
+
+      // Gallery detection
       const imgs = Array.from(node.querySelectorAll("img"));
       if (imgs.length >= 3 && imgs.length <= 12 && direct.every((c: Element) => c.querySelector("img") || c.tagName?.toLowerCase() === "img")) {
-        push({
-          id: newBlockId(),
-          type: "gallery",
-          props: { images: imgs.map((i) => bestImg(i, url)).filter(Boolean), columns: "3" },
-        });
+        push({ id: newBlockId(), type: "gallery", props: { images: imgs.map((i) => bestImg(i, url)).filter(Boolean), columns: "3" } });
         return;
       }
-      // Otherwise descend into children in order.
-      for (const child of direct) walk(child);
+
+      // Grouping consecutive text elements
+      let buffer: string[] = [];
+      const flushText = () => {
+        if (!buffer.length) return;
+        push({ id: newBlockId(), type: "text", props: { title: "", body: buffer.join("\n\n"), align: "right" } });
+        buffer = [];
+      };
+      for (const child of Array.from(node.children)) {
+        const cTag = child.tagName?.toLowerCase();
+        if (cTag === "p" || cTag === "ul" || cTag === "ol") {
+          const txt = cTag === "ul" || cTag === "ol" 
+            ? Array.from(child.querySelectorAll(":scope > li")).map(li => `• ${textOf(li)}`).join("\n")
+            : textOf(child);
+          if (txt) buffer.push(txt);
+        } else {
+          flushText();
+          walk(child as Element);
+        }
+      }
+      flushText();
       return;
     }
 
-    // Fallback: descend.
     for (const child of Array.from(node.children)) walk(child as Element);
   }
 
   if (main) {
-    // If main's own direct text is meaningful and there are no block children, capture it.
     const kids = Array.from(main.children).filter((c: Element) => c.tagName);
     if (kids.length === 0 && textOf(main)) {
       push({ id: newBlockId(), type: "text", props: { title: title, body: textOf(main).slice(0, 4000), align: "right" } });
@@ -223,9 +283,13 @@ export async function extractFromUrl(rawUrl: string): Promise<ExtractResult> {
     }
   }
 
-  if (blocks.length === 0) {
-    return { ok: false, error: "محتوای قابل استخراجی در صفحه پیدا نشد (احتمالاً صفحه محتوا را با جاوااسکریپت بارگذاری می‌کند)." };
+  if (!blocks.some((block) => block.type === "hero")) {
+    blocks.unshift({
+      id: newBlockId(),
+      type: "hero",
+      props: { title: textOf(main.querySelector("h1")) || title, subtitle: description, bgImage: "", ctaText: "", ctaHref: "", align: "right" },
+    });
   }
-
+  if (blocks.length === 0) return { ok: false, error: "محتوای قابل استخراجی پیدا نشد." };
   return { ok: true, title: title.slice(0, 120), description: description.slice(0, 300), blocks };
 }

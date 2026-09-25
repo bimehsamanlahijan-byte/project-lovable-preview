@@ -32,6 +32,8 @@ import {
   type CustomPagesMap,
 } from "@/lib/custom-pages";
 import { BlockRenderer } from "@/components/CustomPageView";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { githubPublishSnapshot } from "@/lib/github.functions";
 import { extractPageFromUrl } from "@/lib/custom-pages.functions";
 import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
@@ -447,9 +449,17 @@ export function PageBuilderPane({
                     {dirty && <span className="text-amber-600">ذخیره نشده</span>}
                   </div>
                   <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[70vh] overflow-y-auto">
-                    {draft.blocks.map((b) => (
-                      <BlockRenderer key={b.id} block={b} />
-                    ))}
+                    <div className="bg-white" dir="rtl">
+                      <SiteHeader />
+                      <main>
+                        {draft.blocks.map((b) => (
+                          <div id={`preview-page-block-${b.id}`} data-page-block={b.type} key={b.id}>
+                            <BlockRenderer block={b} />
+                          </div>
+                        ))}
+                      </main>
+                      <SiteFooter />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -36,11 +36,14 @@ function btnPrimary(label: string, href: string) {
 
 export function BlockRenderer({ block }: { block: Block }) {
   const p = block.props ?? {};
+  const id = block.id;
+
   switch (block.type) {
     case "hero": {
       const align = p.align || "center";
       return (
         <section
+          id={id}
           style={{
             position: "relative",
             overflow: "hidden",
@@ -75,7 +78,7 @@ export function BlockRenderer({ block }: { block: Block }) {
     case "text": {
       const align = p.align || "right";
       return (
-        <section style={{ padding: "32px 16px", maxWidth: 900, margin: "0 auto", textAlign: align }}>
+        <section id={id} style={{ padding: "32px 16px", maxWidth: 900, margin: "0 auto", textAlign: align }}>
           {p.title ? (
             <h2 style={{ fontWeight: 800, fontSize: 22, color: NAVY, margin: 0 }}>{p.title}</h2>
           ) : null}
@@ -90,6 +93,7 @@ export function BlockRenderer({ block }: { block: Block }) {
     case "cta": {
       return (
         <section
+          id={id}
           style={{
             margin: "24px 16px",
             padding: 28,
@@ -107,9 +111,10 @@ export function BlockRenderer({ block }: { block: Block }) {
     }
     case "cards": {
       const cols = Number(p.columns) || 3;
-      const items: { title?: string; text?: string }[] = Array.isArray(p.items) ? p.items : [];
+      const items: { title?: string; text?: string; image?: string }[] = Array.isArray(p.items) ? p.items : [];
       return (
         <section
+          id={id}
           style={{
             display: "grid",
             gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
@@ -128,6 +133,9 @@ export function BlockRenderer({ block }: { block: Block }) {
                 textAlign: "center",
               }}
             >
+              {it.image && (
+                 <img src={it.image} alt="" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 12, margin: "0 auto 12px" }} />
+              )}
               <h3 style={{ fontWeight: 800, color: NAVY, fontSize: 15, margin: 0 }}>{it.title}</h3>
               {it.text ? (
                 <p style={{ marginTop: 6, color: "#64748b", fontSize: 12, lineHeight: 1.8 }}>{it.text}</p>
@@ -148,7 +156,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         />
       );
       return (
-        <section style={{ padding: 16, maxWidth: wrap, margin: "0 auto" }}>
+        <section id={id} style={{ padding: 16, maxWidth: wrap, margin: "0 auto" }}>
           {p.href ? <a href={p.href}>{img}</a> : img}
         </section>
       );
@@ -159,6 +167,7 @@ export function BlockRenderer({ block }: { block: Block }) {
       if (!images.length) return null;
       return (
         <section
+          id={id}
           style={{
             display: "grid",
             gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))`,
@@ -180,7 +189,7 @@ export function BlockRenderer({ block }: { block: Block }) {
     case "video": {
       if (!p.src) return null;
       return (
-        <section style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}>
+        <section id={id} style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}>
           <video
             src={p.src}
             poster={p.poster || undefined}
@@ -191,10 +200,11 @@ export function BlockRenderer({ block }: { block: Block }) {
       );
     }
     case "divider":
-      return <div style={{ height: 1, background: "#e2e8f0", margin: "24px 16px" }} />;
+      return <div id={id} style={{ height: 1, background: "#e2e8f0", margin: "24px 16px" }} />;
     case "html":
       return (
         <section
+          id={id}
           style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}
           dangerouslySetInnerHTML={{ __html: p.html || "" }}
         />
@@ -202,4 +212,16 @@ export function BlockRenderer({ block }: { block: Block }) {
     default:
       return null;
   }
+}
+
+export function CustomPageContent({ blocks }: { blocks: Block[] }) {
+  return (
+    <main data-page-builder-content>
+      {blocks.map((block) => (
+        <div id={`page-block-${block.id}`} data-page-block={block.type} key={block.id}>
+          <BlockRenderer block={block} />
+        </div>
+      ))}
+    </main>
+  );
 }

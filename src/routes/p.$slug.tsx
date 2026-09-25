@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { BlockRenderer } from "@/components/CustomPageView";
+import { CustomPageContent } from "@/components/CustomPageView";
 import { getCustomPage } from "@/lib/custom-pages.functions";
 import type { CustomPage } from "@/lib/custom-pages";
 
@@ -41,6 +41,7 @@ export const Route = createFileRoute("/p/$slug")({
           content: page?.seoDescription || page?.description || "",
         },
         { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -70,11 +71,7 @@ function CustomPageRoute() {
   return (
     <div className="min-h-screen bg-background text-foreground" dir="rtl">
       <SiteHeader />
-      <main>
-        {page.blocks.map((b) => (
-          <BlockRenderer key={b.id} block={b} />
-        ))}
-      </main>
+      <CustomPageContent blocks={page.blocks} />
       <SiteFooter />
     </div>
   );
