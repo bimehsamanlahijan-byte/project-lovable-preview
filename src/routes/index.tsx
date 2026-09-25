@@ -26,6 +26,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { InsuranceWheel } from "@/components/InsuranceWheel";
 import { DarmanetCentersTable } from "@/components/DarmanetCentersTable";
 import { useSiteSetting } from "@/hooks/use-site-setting";
+import { useDeviceKind } from "@/hooks/use-device-kind";
 import { DEFAULT_HERO_SLIDER, type HeroSliderSettings } from "@/lib/site-config";
 
 
@@ -192,6 +193,7 @@ function HeroSlider() {
 }
 
 function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
+  const deviceKind = useDeviceKind();
   const data = cfg.slides && cfg.slides.length > 0 ? cfg.slides : slides;
   /* Inside the visual editor (?ve=1) autoplay is switched off so the admin can
      calmly edit a slide, while touch/drag stays on for moving between slides. */
@@ -214,6 +216,8 @@ function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
     cfg.heightMode === "fixed"
       ? { height: `${cfg.heightPx}px` }
       : { aspectRatio: `${cfg.ratioW} / ${cfg.ratioH}` };
+  const mobileCtaScale = deviceKind === "mobile" ? Math.max(50, Math.min(110, cfg.mobileCtaScale ?? 75)) / 100 : 1;
+  const mobileDotsScale = deviceKind === "mobile" ? Math.max(50, Math.min(120, cfg.mobileDotsScale ?? 70)) / 100 : 1;
 
   return (
     <section className="container mx-auto px-4 mt-6">
@@ -237,7 +241,7 @@ function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
                     </motion.h2>
                     {s.subtitle && <p className="text-xs sm:text-sm md:text-lg mb-4 md:mb-5 opacity-90">{s.subtitle}</p>}
                     {s.cta && (
-                      <a href={s.href || "#"} className="inline-block bg-white/95 text-primary px-6 py-3 rounded-full font-bold text-sm shadow-glow hover:scale-105 transition">
+                      <a href={s.href || "#"} className="inline-block bg-white/95 text-primary px-4 py-2 sm:px-6 sm:py-3 rounded-full font-bold text-xs sm:text-sm shadow-glow hover:scale-105 transition origin-center sm:scale-100" style={{ transform: `scale(${mobileCtaScale})` }}>
                         {s.cta}
                       </a>
                     )}
@@ -248,9 +252,9 @@ function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
           </div>
         </div>
         {/* Navigation arrows removed on purpose: slides move only by touch / drag. */}
-        <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-none">
+        <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 pointer-events-none origin-center sm:scale-100" style={{ scale: mobileDotsScale }}>
           {data.map((_, i) => (
-            <span key={i} className={`h-2 rounded-full transition-all ${i === idx ? "w-8 bg-white" : "w-2 bg-white/50"}`} />
+            <span key={i} className={`h-1.5 sm:h-2 rounded-full transition-all ${i === idx ? "w-5 sm:w-8 bg-white" : "w-1.5 sm:w-2 bg-white/50"}`} />
           ))}
         </div>
       </div>

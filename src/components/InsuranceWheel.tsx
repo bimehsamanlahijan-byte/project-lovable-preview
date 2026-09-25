@@ -71,6 +71,24 @@ function WheelSection() {
       : kind === "tablet"
         ? (intro.needleLenTablet ?? DEFAULT_WHEEL_INTRO.needleLenTablet)
         : (intro.needleLenDesktop ?? DEFAULT_WHEEL_INTRO.needleLenDesktop);
+  const wheelRadius =
+    kind === "mobile"
+      ? (intro.wheelRadiusMobile ?? DEFAULT_WHEEL_INTRO.wheelRadiusMobile)
+      : kind === "tablet"
+        ? (intro.wheelRadiusTablet ?? DEFAULT_WHEEL_INTRO.wheelRadiusTablet)
+        : (intro.wheelRadiusDesktop ?? DEFAULT_WHEEL_INTRO.wheelRadiusDesktop);
+  const wheelItemSize =
+    kind === "mobile"
+      ? (intro.wheelItemSizeMobile ?? DEFAULT_WHEEL_INTRO.wheelItemSizeMobile)
+      : kind === "tablet"
+        ? (intro.wheelItemSizeTablet ?? DEFAULT_WHEEL_INTRO.wheelItemSizeTablet)
+        : (intro.wheelItemSizeDesktop ?? DEFAULT_WHEEL_INTRO.wheelItemSizeDesktop);
+  const centerImageSize =
+    kind === "mobile"
+      ? (intro.centerImageSizeMobile ?? intro.centerImageSize ?? DEFAULT_WHEEL_INTRO.centerImageSizeMobile)
+      : kind === "tablet"
+        ? (intro.centerImageSizeTablet ?? intro.centerImageSize ?? DEFAULT_WHEEL_INTRO.centerImageSizeTablet)
+        : (intro.centerImageSizeDesktop ?? intro.centerImageSize ?? DEFAULT_WHEEL_INTRO.centerImageSizeDesktop);
   const centerTextX =
     kind === "mobile"
       ? (intro.centerTextXMobile ?? 0)
@@ -94,7 +112,6 @@ function WheelSection() {
   const movedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const moveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const rafRef = useRef<number | null>(null);
   const lastAngleRef = useRef(0);
   const n = items.length;
   const show = revealed || !intro.enabled;
@@ -156,40 +173,26 @@ function WheelSection() {
   };
 
 
-  useEffect(() => {
-    const onMove = (e: MouseEvent | TouchEvent) => {
-      const el = containerRef.current;
-      if (!el) return;
-      const point = "touches" in e ? e.touches[0] : (e as MouseEvent);
-      if (!point) return;
-      if (rafRef.current) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = null;
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const deg = (Math.atan2(point.clientY - cy, point.clientX - cx) * 180) / Math.PI + 90;
-        const prev = lastAngleRef.current;
-        let delta = deg - (prev % 360);
-        if (delta > 180) delta -= 360;
-        else if (delta < -180) delta += 360;
-        const next = prev + delta;
-        lastAngleRef.current = next;
-        setNeedleAngle(next);
-        setMoving(true);
-        if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
-        moveTimerRef.current = setTimeout(() => setMoving(false), 250);
-      });
-    };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("touchmove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("touchmove", onMove);
-      if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+  useEffect(() => () => {
+    if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
   }, []);
+
+  const updateNeedle = (clientX: number, clientY: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const deg = (Math.atan2(clientY - (r.top + r.height / 2), clientX - (r.left + r.width / 2)) * 180) / Math.PI;
+    const prev = lastAngleRef.current;
+    let delta = deg - (prev % 360);
+    if (delta > 180) delta -= 360;
+    else if (delta < -180) delta += 360;
+    const next = prev + delta;
+    lastAngleRef.current = next;
+    setNeedleAngle(next);
+    setMoving(true);
+    if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+    moveTimerRef.current = setTimeout(() => setMoving(false), 180);
+  };
 
   return (
     <section className="container mx-auto px-4 mt-10 mb-8" dir="rtl">
@@ -276,6 +279,8 @@ function WheelSection() {
         onMouseLeave={() => setPaused(false)}
         onTouchStart={() => setPaused(true)}
         onTouchEnd={() => setPaused(false)}
+        onPointerMove={(event) => updateNeedle(event.clientX, event.clientY)}
+        style={{ touchAction: "pan-y" }}
       >
 
 
@@ -291,7 +296,7 @@ function WheelSection() {
           {items.map((it, i) => {
             const angle = (i * 360) / n - 90; // start at top
             const rad = (angle * Math.PI) / 180;
-            const radius = 42; // percent of container
+            const radius = Math.max(25, Math.min(45, wheelRadius));
             const x = 50 + radius * Math.cos(rad);
             const y = 50 + radius * Math.sin(rad);
             const Icon = it.icon;
@@ -312,12 +317,13 @@ function WheelSection() {
                   <Link
                     to={it.href as never}
                     preload="intent"
-                    className="group flex flex-col items-center justify-center gap-1 w-[64px] sm:w-[92px] text-center"
+                    className="group flex flex-col items-center justify-center gap-0.5 sm:gap-1 text-center"
+                    style={{ width: `${wheelItemSize + 20}px` }}
                   >
-                    <div className="w-[58px] h-[58px] sm:w-[68px] sm:h-[68px] rounded-2xl bg-white border border-slate-100 shadow-[0_8px_24px_-10px_rgba(15,30,80,0.18)] flex items-center justify-center group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_30px_-12px_rgba(220,38,38,0.35)] transition-all">
-                      <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary group-hover:text-red-600 transition-colors" />
+                    <div className="rounded-2xl bg-white border border-slate-100 shadow-[0_8px_24px_-10px_rgba(15,30,80,0.18)] flex items-center justify-center group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_30px_-12px_rgba(220,38,38,0.35)] transition-all" style={{ width: wheelItemSize, height: wheelItemSize }}>
+                      <Icon className="text-primary group-hover:text-red-600 transition-colors" style={{ width: Math.max(18, wheelItemSize * 0.4), height: Math.max(18, wheelItemSize * 0.4) }} />
                     </div>
-                    <span className="text-[10px] sm:text-[11px] font-semibold text-foreground/80 leading-tight px-1 mt-1">
+                    <span className="text-[8px] sm:text-[11px] font-semibold text-foreground/80 leading-tight px-0.5 sm:px-1 mt-0.5 sm:mt-1 max-w-full">
                       {it.title}
                     </span>
                   </Link>
@@ -335,7 +341,7 @@ function WheelSection() {
               (intro.centerImageUrl ? "bg-white " : "bg-gradient-to-br from-red-500 to-red-700 ") +
               (moving ? "shield-pulse-navy" : "")
             }
-            style={{ width: intro.centerImageSize || 56, height: intro.centerImageSize || 56 }}
+            style={{ width: centerImageSize, height: centerImageSize }}
           >
             {intro.centerImageUrl ? (
               <img src={intro.centerImageUrl} alt={intro.centerTitle} className="w-full h-full object-contain" />
@@ -359,29 +365,25 @@ function WheelSection() {
 
 
         {/* Needle that follows the mouse */}
-        <motion.div
-          className="pointer-events-none absolute top-1/2 left-1/2 z-20 origin-top"
-          style={{ x: "-50%", y: "0%" }}
-          animate={{ rotate: needleAngle - 180 }}
-          transition={{ type: "tween", ease: "easeOut", duration: 0.25 }}
+        <div
+          className="pointer-events-none absolute top-1/2 left-1/2 z-20 origin-left"
+          dir="ltr"
+          style={{ width: `${Math.max(30, needleLen)}px`, transform: `translateY(-50%) rotate(${needleAngle}deg)` }}
         >
-          <div className="relative flex flex-col items-center">
-            <div className="w-3 h-3 rounded-full bg-red-600 shadow-md -mb-1 z-10" />
+          <div className="relative flex h-5 w-full items-center">
+            <div className="absolute -left-1.5 w-3 h-3 rounded-full bg-red-600 shadow-md z-10" />
+            <div className="h-1.5 w-full bg-gradient-to-l from-red-500 to-red-600 rounded-full" />
             <div
-              className="w-1.5 bg-gradient-to-b from-red-500 to-red-600 rounded-full"
-              style={{ height: `${Math.max(30, needleLen)}px` }}
-            />
-            <div
-              className="w-0 h-0 -mt-0.5"
+              className="w-0 h-0 -ml-0.5"
               style={{
-                borderLeft: "9px solid transparent",
-                borderRight: "9px solid transparent",
-                borderTop: "22px solid #dc2626",
+                borderTop: "9px solid transparent",
+                borderBottom: "9px solid transparent",
+                borderLeft: "22px solid #dc2626",
                 filter: "drop-shadow(0 2px 6px rgba(220,38,38,0.5))",
               }}
             />
           </div>
-        </motion.div>
+        </div>
       </motion.div>
       )}
       </div>

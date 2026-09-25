@@ -288,13 +288,37 @@ export function WheelPane() {
               onChange={(e) => setCfg({ ...cfg, needleLenDesktop: Number(e.target.value) })} className="w-full" />
           </Row>
           <Row label={`طول عقربه در تبلت: ${cfg.needleLenTablet ?? 120}px`}>
-            <input type="range" min={40} max={260} value={cfg.needleLenTablet ?? 120}
+            <input type="range" min={40} max={260} value={cfg.needleLenTablet ?? 160}
               onChange={(e) => setCfg({ ...cfg, needleLenTablet: Number(e.target.value) })} className="w-full" />
           </Row>
           <Row label={`طول عقربه در موبایل: ${cfg.needleLenMobile ?? 95}px`}>
             <input type="range" min={30} max={220} value={cfg.needleLenMobile ?? 95}
               onChange={(e) => setCfg({ ...cfg, needleLenMobile: Number(e.target.value) })} className="w-full" />
           </Row>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3 mt-4">
+          {(["Desktop", "Tablet", "Mobile"] as const).map((suffix) => {
+            const radiusKey = `wheelRadius${suffix}` as const;
+            const sizeKey = `wheelItemSize${suffix}` as const;
+            const imageKey = `centerImageSize${suffix}` as const;
+            const label = suffix === "Desktop" ? "دسکتاپ" : suffix === "Tablet" ? "تبلت" : "موبایل";
+            return (
+              <div key={suffix} className="space-y-3 rounded-xl border border-slate-200 p-3">
+                <Row label={`شعاع حلقه در ${label}: ${cfg[radiusKey] ?? DEFAULT_WHEEL_INTRO[radiusKey]}%`}>
+                  <input type="range" min={25} max={45} value={cfg[radiusKey] ?? DEFAULT_WHEEL_INTRO[radiusKey]}
+                    onChange={(e) => setCfg({ ...cfg, [radiusKey]: Number(e.target.value) })} className="w-full" />
+                </Row>
+                <Row label={`اندازه آیکن در ${label}: ${cfg[sizeKey] ?? DEFAULT_WHEEL_INTRO[sizeKey]}px`}>
+                  <input type="range" min={34} max={84} value={cfg[sizeKey] ?? DEFAULT_WHEEL_INTRO[sizeKey]}
+                    onChange={(e) => setCfg({ ...cfg, [sizeKey]: Number(e.target.value) })} className="w-full" />
+                </Row>
+                <Row label={`اندازه تصویر مرکز در ${label}: ${cfg[imageKey] ?? DEFAULT_WHEEL_INTRO[imageKey]}px`}>
+                  <input type="range" min={28} max={120} value={cfg[imageKey] ?? DEFAULT_WHEEL_INTRO[imageKey]}
+                    onChange={(e) => setCfg({ ...cfg, [imageKey]: Number(e.target.value) })} className="w-full" />
+                </Row>
+              </div>
+            );
+          })}
         </div>
         <div className="grid sm:grid-cols-3 gap-3 mt-4">
           <Row label={`جابجایی افقی نوشته (دسکتاپ): ${cfg.centerTextXDesktop ?? 0}px`}>

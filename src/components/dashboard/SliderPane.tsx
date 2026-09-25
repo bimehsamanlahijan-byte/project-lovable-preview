@@ -137,6 +137,14 @@ export function SliderPane() {
               <input dir="ltr" value={cfg.heightPx} onChange={(e) => setCfg({ ...cfg, heightPx: Number(e.target.value) || 420 })} className={inputCls} />
             </Row>
           )}
+          <Row label={`اندازه دکمه در موبایل: ${cfg.mobileCtaScale ?? 75}%`}>
+            <input type="range" min={50} max={110} step={5} value={cfg.mobileCtaScale ?? 75}
+              onChange={(e) => setCfg({ ...cfg, mobileCtaScale: Number(e.target.value) })} className="w-full" />
+          </Row>
+          <Row label={`اندازه نقاط در موبایل: ${cfg.mobileDotsScale ?? 70}%`}>
+            <input type="range" min={50} max={120} step={5} value={cfg.mobileDotsScale ?? 70}
+              onChange={(e) => setCfg({ ...cfg, mobileDotsScale: Number(e.target.value) })} className="w-full" />
+          </Row>
         </div>
 
         <div className="space-y-3">

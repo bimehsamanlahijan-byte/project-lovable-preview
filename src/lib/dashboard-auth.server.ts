@@ -46,7 +46,7 @@ export async function readPrivateSetting<T>(key: string): Promise<T | null> {
   // Never throw: when the service-role key is missing on the Worker we fall back
   // to the DASHBOARD_PASSWORD env var instead of breaking the login request.
   try {
-    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
     const supabaseAdmin = await getSupabaseAdmin();
     const { data } = await supabaseAdmin
       .from("admin_private_settings" as never)
@@ -62,7 +62,7 @@ export async function readPrivateSetting<T>(key: string): Promise<T | null> {
 
 export async function writePrivateSetting(key: string, value: unknown) {
   try {
-    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
     const supabaseAdmin = await getSupabaseAdmin();
     const { error } = await supabaseAdmin
       .from("admin_private_settings" as never)
@@ -95,11 +95,13 @@ export async function verifyDashboardPassword(input: string): Promise<
   const stored = await readPrivateSetting<{ hash?: string }>(PASSWORD_KEY);
   if (stored?.hash) {
     const bcrypt = await import("bcryptjs");
-    return (await bcrypt.compare(plainInput, stored.hash)) ? { ok: true } : { ok: false };
+    if (await bcrypt.compare(plainInput, stored.hash)) return { ok: true };
   }
 
+  // The DASHBOARD_PASSWORD secret always works as a recovery password and
+  // replaces an old/forgotten hash stored in the database.
   const envPassword = envValue("DASHBOARD_PASSWORD");
-  if (!envPassword) return { ok: false, reason: "not-configured" };
+  if (!envPassword) return stored?.hash ? { ok: false } : { ok: false, reason: "not-configured" };
   if (!passwordMatches(plainInput, envPassword)) return { ok: false };
   await writePrivateSetting(PASSWORD_KEY, {
     hash: await hashPassword(plainInput),
@@ -171,7 +173,7 @@ export async function runAdminOp(op: AdminOp) {
   if (!(ADMIN_TABLES as readonly string[]).includes(op.table)) {
     throw new Error("TABLE_NOT_ALLOWED");
   }
-  const { getSupabaseAdmin, hasServiceKey } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin, hasServiceKey } = await import("@/lib/cloud-admin.server");
   if (!(await hasServiceKey())) {
     return {
       data: null as unknown,

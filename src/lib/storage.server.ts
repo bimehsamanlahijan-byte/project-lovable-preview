@@ -44,7 +44,7 @@ export async function getStorage(): Promise<{
       host: safeHost(target.url),
     };
   }
-  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
   const { getSupabaseUrl } = await import("./server-env");
   const supabaseAdmin = await getSupabaseAdmin();
   return {

@@ -29,11 +29,13 @@ export function readPublicEnv(): PublicEnv {
       env["EXTERNAL_SUPABASE_URL"] ||
       env["SUPABASE_URL"] ||
       env["VITE_SUPABASE_URL"] ||
+      env["APP_SUPABASE_URL"] ||
       env["APP_DB_URL"],
     SUPABASE_PUBLISHABLE_KEY:
       env["EXTERNAL_SUPABASE_PUBLISHABLE_KEY"] ||
       env["SUPABASE_PUBLISHABLE_KEY"] ||
       env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+      env["APP_SUPABASE_PUBLISHABLE_KEY"] ||
       env["APP_DB_PUBLISHABLE_KEY"],
   };
 }

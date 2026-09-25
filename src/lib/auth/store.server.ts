@@ -3,7 +3,7 @@ import type { LoginMode, LoginRequirement, PublicUser } from "./registry";
 import { LOGIN_MODULES } from "./registry";
 
 async function db() {
-  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
   return getSupabaseAdmin();
 }
 

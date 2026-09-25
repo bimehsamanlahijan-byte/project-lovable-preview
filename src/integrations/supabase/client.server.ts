@@ -30,9 +30,8 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env['SUPABASE_URL'] || process.env['APP_DB_URL'];
-  const SUPABASE_SERVICE_ROLE_KEY =
-    process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['APP_DB_SERVICE_ROLE_KEY'];
+  const SUPABASE_URL = process.env['SUPABASE_URL'];
+  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [
@@ -44,7 +43,7 @@ function createSupabaseAdminClient() {
     throw new Error(message);
   }
 
-  return createClient<any>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     global: {
       fetch: createSupabaseFetch(SUPABASE_SERVICE_ROLE_KEY),
     },
@@ -68,17 +67,3 @@ export const supabaseAdmin = new Proxy({} as ReturnType<typeof createSupabaseAdm
     return Reflect.get(_supabaseAdmin, prop, receiver);
   },
 });
-
-// Async accessors used across server code. Kept alongside the generated client so
-// callers can lazily import this module inside handlers.
-export async function getSupabaseAdmin() {
-  if (!_supabaseAdmin) _supabaseAdmin = createSupabaseAdminClient();
-  return _supabaseAdmin;
-}
-
-export async function hasServiceKey(): Promise<boolean> {
-  return Boolean(
-    (process.env['SUPABASE_URL'] || process.env['APP_DB_URL']) &&
-      (process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['APP_DB_SERVICE_ROLE_KEY']),
-  );
-}

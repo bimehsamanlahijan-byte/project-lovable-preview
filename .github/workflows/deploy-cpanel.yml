@@ -1,0 +1,33 @@
+name: Deploy to cPanel
+
+# On every push to main, asks cPanel to pull the new commit from GitHub and run
+# .cpanel.yml. Skips silently until the CPANEL_* secrets are added in GitHub.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull and deploy on cPanel
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_TOKEN: ${{ secrets.CPANEL_TOKEN }}
+          CPANEL_REPO_PATH: ${{ secrets.CPANEL_REPO_PATH }}
+        run: |
+          if [ -z "$CPANEL_HOST" ] || [ -z "$CPANEL_TOKEN" ]; then
+            echo "CPANEL_* secrets not set; skipping."; exit 0
+          fi
+          API="https://$CPANEL_HOST:2083/execute"
+          AUTH="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          echo "Updating repository from GitHub..."
+          curl -fsS -H "$AUTH" --get "$API/VersionControl/update" \
+            --data-urlencode "repository_root=$CPANEL_REPO_PATH" --data-urlencode "branch=main" | tee u.json
+          grep -q '"status":1' u.json
+          echo "Starting deployment (.cpanel.yml)..."
+          curl -fsS -H "$AUTH" --get "$API/VersionControlDeployment/create" \
+            --data-urlencode "repository_root=$CPANEL_REPO_PATH" | tee d.json
+          grep -q '"status":1' d.json

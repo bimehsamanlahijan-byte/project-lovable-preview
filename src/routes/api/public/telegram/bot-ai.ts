@@ -43,7 +43,7 @@ export const Route = createFileRoute("/api/public/telegram/bot-ai")({
         if (!text) return Response.json({ ok: true });
         if (msg?.chat?.type !== "private") return Response.json({ ok: true });
 
-        const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
         const supabase = await getSupabaseAdmin();
         const { data: row } = await supabase
           .from("site_settings" as never)

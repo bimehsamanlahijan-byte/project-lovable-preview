@@ -15,7 +15,7 @@ const DONE_PREFIX = "bot_login:";
 const PENDING_PREFIX = "bot_login_pending:";
 
 async function db() {
-  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
   return getSupabaseAdmin();
 }
 

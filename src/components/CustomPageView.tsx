@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { Block } from "@/lib/custom-pages";
 
 /**
@@ -12,6 +13,14 @@ import type { Block } from "@/lib/custom-pages";
 
 const NAVY = "#0b1e3f";
 const RED = "#c81e35";
+
+function sanitizeHtml(value: string): string {
+  return value
+    .replace(/<(script|style|iframe|object|embed|form|meta|link)[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<(script|style|iframe|object|embed|form|meta|link)\b[^>]*\/?\s*>/gi, "")
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/\s(href|src)\s*=\s*(["'])\s*(javascript:|data:text\/html)[\s\S]*?\2/gi, "");
+}
 
 function btnPrimary(label: string, href: string) {
   return (
@@ -206,7 +215,7 @@ export function BlockRenderer({ block }: { block: Block }) {
         <section
           id={id}
           style={{ padding: 16, maxWidth: 900, margin: "0 auto" }}
-          dangerouslySetInnerHTML={{ __html: p.html || "" }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(p.html || "") }}
         />
       );
     default:
@@ -214,10 +223,25 @@ export function BlockRenderer({ block }: { block: Block }) {
   }
 }
 
-export function CustomPageContent({ blocks }: { blocks: Block[] }) {
+export function CustomPageContent({ blocks, acceptPreviewUpdates = false }: { blocks: Block[]; acceptPreviewUpdates?: boolean }) {
+  const [previewBlocks, setPreviewBlocks] = useState<Block[] | null>(null);
+
+  useEffect(() => {
+    if (!acceptPreviewUpdates) return;
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.source !== window.parent) return;
+      const payload = event.data as { type?: string; blocks?: Block[] };
+      if (payload.type === "pb:blocks" && Array.isArray(payload.blocks)) setPreviewBlocks(payload.blocks);
+    };
+    window.addEventListener("message", onMessage);
+    window.parent.postMessage({ type: "pb:ready" }, window.location.origin);
+    return () => window.removeEventListener("message", onMessage);
+  }, [acceptPreviewUpdates]);
+
+  const renderedBlocks = previewBlocks ?? blocks;
   return (
     <main data-page-builder-content>
-      {blocks.map((block) => (
+      {renderedBlocks.map((block) => (
         <div id={`page-block-${block.id}`} data-page-block={block.type} key={block.id}>
           <BlockRenderer block={block} />
         </div>

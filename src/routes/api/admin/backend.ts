@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api/admin/backend")({
         }
 
         try {
-          const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
           const supabaseAdmin = await getSupabaseAdmin();
           const { data: buckets } = await supabaseAdmin.storage.listBuckets();
 

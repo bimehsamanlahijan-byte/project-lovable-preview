@@ -42,7 +42,7 @@ export async function assertAdminAccess(): Promise<void> {
   const auth = getRequestHeader("authorization");
   const token = auth?.replace(/^Bearer\s+/i, "").trim();
   if (!token) return;
-  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
   const supabaseAdmin = await getSupabaseAdmin();
   const { data } = await supabaseAdmin.auth.getUser(token);
   const userId = data.user?.id;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -16,6 +16,9 @@ import {
   FilePlus2,
   Globe,
   Loader2,
+  Monitor,
+  Smartphone,
+  Tablet,
 } from "lucide-react";
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { notifyFailed, notifySaved } from "@/lib/notify";
@@ -31,9 +34,6 @@ import {
   type CustomPage,
   type CustomPagesMap,
 } from "@/lib/custom-pages";
-import { BlockRenderer } from "@/components/CustomPageView";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { githubPublishSnapshot } from "@/lib/github.functions";
 import { extractPageFromUrl } from "@/lib/custom-pages.functions";
 import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
@@ -64,6 +64,37 @@ export function PageBuilderPane({
   const [mediaFor, setMediaFor] = useState<{ blockId: string; apply: (url: string) => void } | null>(null);
   const [extractUrl, setExtractUrl] = useState("");
   const [extracting, setExtracting] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [previewWidth, setPreviewWidth] = useState(0);
+  const previewFrame = useRef<HTMLIFrameElement | null>(null);
+  const previewBox = useRef<HTMLDivElement | null>(null);
+
+  const sendPreview = () => {
+    if (!draft || !previewFrame.current?.contentWindow) return;
+    previewFrame.current.contentWindow.postMessage({ type: "pb:blocks", blocks: draft.blocks }, window.location.origin);
+  };
+
+  useEffect(() => {
+    const element = previewBox.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => setPreviewWidth(element.clientWidth));
+    observer.observe(element);
+    setPreviewWidth(element.clientWidth);
+    return () => observer.disconnect();
+  }, [draft, previewDevice]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(sendPreview, 80);
+    return () => window.clearTimeout(timer);
+  }, [draft?.blocks]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin === window.location.origin && event.source === previewFrame.current?.contentWindow && event.data?.type === "pb:ready") sendPreview();
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [draft?.blocks]);
 
   async function runExtract() {
     if (!draft) return;
@@ -446,20 +477,25 @@ export function PageBuilderPane({
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 sticky top-4">
                   <div className="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
                     <span>پیش‌نمایش زنده</span>
-                    {dirty && <span className="text-amber-600">ذخیره نشده</span>}
-                  </div>
-                  <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[70vh] overflow-y-auto">
-                    <div className="bg-white" dir="rtl">
-                      <SiteHeader />
-                      <main>
-                        {draft.blocks.map((b) => (
-                          <div id={`preview-page-block-${b.id}`} data-page-block={b.type} key={b.id}>
-                            <BlockRenderer block={b} />
-                          </div>
-                        ))}
-                      </main>
-                      <SiteFooter />
+                    <div className="flex items-center gap-2">
+                      <div className="flex overflow-hidden rounded-lg border border-slate-200">
+                        <button type="button" onClick={() => setPreviewDevice("desktop")} title="دسکتاپ" className={`p-1.5 ${previewDevice === "desktop" ? "bg-slate-900 text-white" : "bg-white"}`}><Monitor className="h-3.5 w-3.5" /></button>
+                        <button type="button" onClick={() => setPreviewDevice("tablet")} title="تبلت" className={`p-1.5 ${previewDevice === "tablet" ? "bg-slate-900 text-white" : "bg-white"}`}><Tablet className="h-3.5 w-3.5" /></button>
+                        <button type="button" onClick={() => setPreviewDevice("mobile")} title="موبایل" className={`p-1.5 ${previewDevice === "mobile" ? "bg-slate-900 text-white" : "bg-white"}`}><Smartphone className="h-3.5 w-3.5" /></button>
+                      </div>
+                      {dirty && <span className="text-amber-600">ذخیره نشده</span>}
                     </div>
+                  </div>
+                  <div ref={previewBox} className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                    {previewDevice === "desktop" ? (
+                      <div className="w-full overflow-hidden" style={{ height: Math.round(760 * (previewWidth ? Math.min(1, previewWidth / 1440) : 1)) }}>
+                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="border-0 bg-white" style={{ width: 1440, height: 760, transform: `scale(${previewWidth ? Math.min(1, previewWidth / 1440) : 1})`, transformOrigin: "top right" }} />
+                      </div>
+                    ) : (
+                      <div className={previewDevice === "mobile" ? "mx-auto w-full max-w-[390px]" : "mx-auto w-full max-w-[834px]"}>
+                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="h-[75vh] w-full border-0 bg-white" />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

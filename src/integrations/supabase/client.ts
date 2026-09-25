@@ -30,18 +30,15 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 
 function createSupabaseClient() {
-  // Browser: values come from window.__PUBLIC_ENV__ (rendered by the server) or
-  // from build-time VITE_ vars. Never touch bare `process` here: it does not
-  // exist in the browser bundle and would throw before the app can render.
-  const runtime = readPublicEnv();
+  // Use import.meta.env for client-side (Vite build-time replacement),
+  // then the runtime public-env bridge (window.__PUBLIC_ENV__ / aliases).
+  const publicEnv = readPublicEnv();
   const SUPABASE_URL =
-    import.meta.env['VITE_SUPABASE_URL'] ||
-    import.meta.env['VITE_APP_DB_URL'] ||
-    runtime.SUPABASE_URL;
+    import.meta.env['VITE_SUPABASE_URL'] || process.env['SUPABASE_URL'] || publicEnv.SUPABASE_URL;
   const SUPABASE_PUBLISHABLE_KEY =
     import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
-    import.meta.env['VITE_APP_DB_PUBLISHABLE_KEY'] ||
-    runtime.SUPABASE_PUBLISHABLE_KEY;
+    process.env['SUPABASE_PUBLISHABLE_KEY'] ||
+    publicEnv.SUPABASE_PUBLISHABLE_KEY;
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
@@ -53,7 +50,7 @@ function createSupabaseClient() {
     throw new Error(message);
   }
 
-  return createClient<any>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
       fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
     },

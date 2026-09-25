@@ -13,7 +13,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook/$botId")({
     handlers: {
       POST: async ({ request, params }) => {
         const botId = (params as { botId: string }).botId;
-        const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
         const supabaseAdmin = await getSupabaseAdmin();
 
         const { data: bot } = await supabaseAdmin

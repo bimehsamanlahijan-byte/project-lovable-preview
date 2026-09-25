@@ -1,3 +1,31 @@
+# دیپلوی خودکار GitHub → cPanel (یک‌بار تنظیم)
+
+مسیر: Lovable → GitHub main → GitHub Action → cPanel (pull + `.cpanel.yml`) → `npm run build:cpanel` → کپی به پوشه اپ → Restart Passenger.
+دیپلوی Cloudflare (`deploy-cloudflare.yml`) دست‌نخورده است.
+
+## ۱) Setup Node.js App
+Node 20+، Application root مثلاً `/home/USER/samanapp`، startup file: `app.cjs`، متغیرها در Environment variables یا `.env` داخل همان پوشه (شامل `VITE_SUPABASE_URL`، `VITE_SUPABASE_PUBLISHABLE_KEY` و بقیه).
+
+## ۲) Git Version Control
+Create → Clone URL مخزن GitHub، Repository Path مثلاً `/home/USER/repositories/saman` (با مسیر اپ یکی نباشد). برای مخزن خصوصی، SSH Key هاست را در GitHub → Deploy keys اضافه کنید.
+
+## ۳) فایل تنظیم روی هاست (خارج از گیت)
+در File Manager فایل `/home/USER/.cpanel-deploy.env` بسازید:
+```
+APP_ROOT=/home/USER/samanapp
+```
+
+## ۴) توکن API
+cPanel → Security → Manage API Tokens → یک توکن بسازید.
+
+## ۵) Secretهای GitHub
+Repo → Settings → Secrets and variables → Actions:
+`CPANEL_HOST` (مثلاً example.com)، `CPANEL_USER`، `CPANEL_TOKEN`، `CPANEL_REPO_PATH` (مسیر مرحله ۲).
+
+از این به بعد هر Commit روی main خودکار دیپلوی می‌شود. اجرای دستی: cPanel → Git Version Control → Manage → Pull or Deploy → Deploy HEAD Commit. لاگ: GitHub → Actions و `~/.cpanel/logs`.
+
+---
+
 # راهنمای کوتاه اجرا روی cPanel (Node.js / Passenger)
 
 این راهنما فقط یک روش دیپلوی «اضافه» است. دیپلوی فعلی روی Cloudflare (GitHub Actions → Wrangler → Worker → دامنه) بدون هیچ تغییری باقی می‌ماند.

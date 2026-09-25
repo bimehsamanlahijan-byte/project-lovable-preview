@@ -277,6 +277,8 @@ export type HeroSliderSettings = {
   ratioW: number;
   ratioH: number;
   heightPx: number;
+  mobileCtaScale: number;
+  mobileDotsScale: number;
   slides: HeroSlide[];
 };
 
@@ -289,6 +291,8 @@ export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
   ratioW: 1200,
   ratioH: 360,
   heightPx: 420,
+  mobileCtaScale: 75,
+  mobileDotsScale: 70,
   slides: [],
 };
 
@@ -308,12 +312,22 @@ export type WheelIntroSettings = {
   /* center disc of the wheel */
   centerImageUrl: string;
   centerImageSize: number;
+  centerImageSizeDesktop: number;
+  centerImageSizeTablet: number;
+  centerImageSizeMobile: number;
   centerTitle: string;
   centerSubtitle: string;
   /* needle length per breakpoint (px) */
   needleLenDesktop: number;
   needleLenTablet: number;
   needleLenMobile: number;
+  /* orbit geometry per breakpoint */
+  wheelRadiusDesktop: number;
+  wheelRadiusTablet: number;
+  wheelRadiusMobile: number;
+  wheelItemSizeDesktop: number;
+  wheelItemSizeTablet: number;
+  wheelItemSizeMobile: number;
   /* center text offset per breakpoint (px) */
   centerTextXDesktop: number;
   centerTextYDesktop: number;
@@ -361,11 +375,20 @@ export const DEFAULT_WHEEL_INTRO: WheelIntroSettings = {
   buttonY: 0,
   centerImageUrl: "",
   centerImageSize: 56,
+  centerImageSizeDesktop: 56,
+  centerImageSizeTablet: 54,
+  centerImageSizeMobile: 42,
   centerTitle: "بیمه‌نامه‌های سامان",
   centerSubtitle: "روی هر بیمه قرار بگیرید",
   needleLenDesktop: 150,
-  needleLenTablet: 120,
-  needleLenMobile: 95,
+  needleLenTablet: 160,
+  needleLenMobile: 82,
+  wheelRadiusDesktop: 41,
+  wheelRadiusTablet: 41,
+  wheelRadiusMobile: 38,
+  wheelItemSizeDesktop: 68,
+  wheelItemSizeTablet: 64,
+  wheelItemSizeMobile: 44,
   centerTextXDesktop: 0,
   centerTextYDesktop: 0,
   centerTextXTablet: 0,

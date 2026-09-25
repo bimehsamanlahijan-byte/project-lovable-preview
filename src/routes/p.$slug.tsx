@@ -15,6 +15,7 @@ import type { CustomPage } from "@/lib/custom-pages";
  * `noindex,nofollow` so they won't be indexed.
  */
 export const Route = createFileRoute("/p/$slug")({
+  validateSearch: (search: Record<string, unknown>) => ({ pbPreview: search.pbPreview === "1" }),
   loader: async ({ params }): Promise<CustomPage | null> => {
     try {
       return await getCustomPage({ data: { slug: params.slug } });
@@ -50,8 +51,9 @@ export const Route = createFileRoute("/p/$slug")({
 
 function CustomPageRoute() {
   const page = Route.useLoaderData() as CustomPage | null;
+  const { pbPreview } = Route.useSearch();
 
-  if (!page) {
+  if (!page && !pbPreview) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4" dir="rtl">
         <div className="max-w-md text-center">
@@ -71,7 +73,7 @@ function CustomPageRoute() {
   return (
     <div className="min-h-screen bg-background text-foreground" dir="rtl">
       <SiteHeader />
-      <CustomPageContent blocks={page.blocks} />
+      <CustomPageContent blocks={page?.blocks ?? []} acceptPreviewUpdates={pbPreview} />
       <SiteFooter />
     </div>
   );

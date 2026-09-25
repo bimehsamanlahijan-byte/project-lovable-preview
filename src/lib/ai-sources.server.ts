@@ -47,7 +47,7 @@ export function htmlToText(html: string): string {
 }
 
 async function db() {
-  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
   return await getSupabaseAdmin();
 }
 
@@ -57,7 +57,7 @@ export async function listSources(): Promise<AiSource[]> {
     .from("ai_sources" as never)
     .select("*")
     .order("position", { ascending: true });
-  return ((data ?? []) as unknown as AiSource[]) ?? [];
+  return (data ?? []) as unknown as AiSource[];
 }
 
 export async function addSource(input: {

@@ -1,0 +1,8 @@
+---
+# cPanel Git Version Control deployment (runs on "Deploy HEAD Commit").
+# Builds with the real project scripts (npm run build:cpanel -> .output/)
+# and restarts Passenger (startup file: app.cjs). Cloudflare is untouched.
+# The target folder comes from ~/.cpanel-deploy.env (APP_ROOT=...), never from git.
+deployment:
+  tasks:
+    - /bin/bash scripts/cpanel-deploy.sh

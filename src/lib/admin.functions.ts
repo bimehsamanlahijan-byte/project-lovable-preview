@@ -178,7 +178,7 @@ export const adminSignedUrl = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireUnlocked();
     if (!["customer-documents", "site-assets"].includes(data.bucket)) throw new Error("BAD_BUCKET");
-    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getSupabaseAdmin } = await import("@/lib/cloud-admin.server");
     const supabaseAdmin = await getSupabaseAdmin();
     const { data: res, error } = await supabaseAdmin.storage
       .from(data.bucket)
