@@ -15,17 +15,29 @@ for (const [key, value] of Object.entries(fileEnv)) {
   if (process.env[key] === undefined || process.env[key] === "") process.env[key] = value;
 }
 
-// The personal Supabase credentials are stored as APP_DB_* secrets (SUPABASE_*/VITE_*
-// names are reserved by the platform). Map them onto the names the app expects.
-const credentialAliases: Record<string, string> = {
-  SUPABASE_URL: "APP_DB_URL",
-  VITE_SUPABASE_URL: "APP_DB_URL",
-  SUPABASE_PUBLISHABLE_KEY: "APP_DB_PUBLISHABLE_KEY",
-  VITE_SUPABASE_PUBLISHABLE_KEY: "APP_DB_PUBLISHABLE_KEY",
-  SUPABASE_SERVICE_ROLE_KEY: "APP_DB_SERVICE_ROLE_KEY",
+// Personal Supabase credentials may use any supported external/app prefix
+// because SUPABASE_*/VITE_SUPABASE_* names are reserved by the platform.
+const credentialAliases: Record<string, string[]> = {
+  SUPABASE_URL: ["EXTERNAL_SUPABASE_URL", "APP_SUPABASE_URL", "APP_DB_URL"],
+  VITE_SUPABASE_URL: ["EXTERNAL_SUPABASE_URL", "APP_SUPABASE_URL", "APP_DB_URL"],
+  SUPABASE_PUBLISHABLE_KEY: [
+    "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
+    "APP_SUPABASE_PUBLISHABLE_KEY",
+    "APP_DB_PUBLISHABLE_KEY",
+  ],
+  VITE_SUPABASE_PUBLISHABLE_KEY: [
+    "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
+    "APP_SUPABASE_PUBLISHABLE_KEY",
+    "APP_DB_PUBLISHABLE_KEY",
+  ],
+  SUPABASE_SERVICE_ROLE_KEY: [
+    "EXTERNAL_SUPABASE_SERVICE_ROLE_KEY",
+    "APP_SUPABASE_SERVICE_ROLE_KEY",
+    "APP_DB_SERVICE_ROLE_KEY",
+  ],
 };
-for (const [target, source] of Object.entries(credentialAliases)) {
-  const value = process.env[source];
+for (const [target, sources] of Object.entries(credentialAliases)) {
+  const value = sources.map((source) => process.env[source]).find(Boolean);
   if (value && !process.env[target]) process.env[target] = value;
 }
 

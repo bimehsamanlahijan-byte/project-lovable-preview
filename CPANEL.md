@@ -120,3 +120,11 @@ Node 20 (نسخه‌ی موجود روی cPanel) برخلاف Node 22 (Cloudflar
 3. اگر هیچ‌کدام نبود، برنامه با فلگ `--experimental-websocket` دوباره اجرا می‌شود.
 
 هیچ‌کدام از این تغییرات روی بیلد و دیپلوی Cloudflare Worker اثری ندارد.
+
+## Node 20 hosts (automatic)
+
+The build tools need Node 22, but the built site runs fine on Node 20.
+On every push to `main`, GitHub Actions builds on Node 22 and pushes the
+ready output to the **`cpanel-build`** branch. In cPanel → Git Version Control,
+point the repository at the `cpanel-build` branch; deployment then only copies
+files and restarts the app (no build on the host). Cloudflare still uses Node 22.

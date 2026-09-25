@@ -1,16 +1,61 @@
 name: Deploy to cPanel
 
-# On every push to main, asks cPanel to pull the new commit from GitHub and run
-# .cpanel.yml. Skips silently until the CPANEL_* secrets are added in GitHub.
+# cPanel host runs Node 20, but the build tools (Vite 8) need Node 22.
+# So the site is BUILT here on Node 22, and the ready-to-run output (which
+# works on Node 20) is pushed to the "cpanel-build" branch. cPanel pulls that
+# branch and only copies files + restarts — no build on the host.
+# Cloudflare deploy (deploy-cloudflare.yml) is unchanged.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-cpanel
+  cancel-in-progress: false
+
 jobs:
-  trigger:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bun install --frozen-lockfile
+
+      - name: Build (node-server preset, runs on Node 20+)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+        run: npm run build:cpanel
+
+      - name: Assemble cpanel-build branch
+        run: |
+          rm -rf /tmp/pkg && mkdir -p /tmp/pkg/cpanel /tmp/pkg/scripts /tmp/pkg/node_modules
+          cp -R .output app.cjs CPANEL.md /tmp/pkg/
+          cp cpanel/websocket-polyfill.cjs cpanel/.env.example cpanel/htaccess.example /tmp/pkg/cpanel/
+          cp scripts/cpanel-deploy.sh /tmp/pkg/scripts/
+          cp .cpanel.yml /tmp/pkg/
+          cp -R node_modules/ws /tmp/pkg/node_modules/ws
+          # Runtime package.json: no build deps, just what Passenger needs.
+          node -e 'const p=require("./package.json");require("fs").writeFileSync("/tmp/pkg/package.json",JSON.stringify({name:p.name,private:true,type:"module",scripts:{start:"node app.cjs"},engines:{node:">=20"}},null,2))'
+          echo "prebuilt from ${GITHUB_SHA}" > /tmp/pkg/PREBUILT
+          cd /tmp/pkg
+          git init -q -b cpanel-build
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A -f
+          git commit -qm "cPanel build ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" cpanel-build
+
       - name: Pull and deploy on cPanel
         env:
           CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
@@ -19,15 +64,13 @@ jobs:
           CPANEL_REPO_PATH: ${{ secrets.CPANEL_REPO_PATH }}
         run: |
           if [ -z "$CPANEL_HOST" ] || [ -z "$CPANEL_TOKEN" ]; then
-            echo "CPANEL_* secrets not set; skipping."; exit 0
+            echo "CPANEL_* secrets not set; build branch updated, cPanel trigger skipped."; exit 0
           fi
           API="https://$CPANEL_HOST:2083/execute"
           AUTH="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
-          echo "Updating repository from GitHub..."
           curl -fsS -H "$AUTH" --get "$API/VersionControl/update" \
-            --data-urlencode "repository_root=$CPANEL_REPO_PATH" --data-urlencode "branch=main" | tee u.json
+            --data-urlencode "repository_root=$CPANEL_REPO_PATH" --data-urlencode "branch=cpanel-build" | tee u.json
           grep -q '"status":1' u.json
-          echo "Starting deployment (.cpanel.yml)..."
           curl -fsS -H "$AUTH" --get "$API/VersionControlDeployment/create" \
             --data-urlencode "repository_root=$CPANEL_REPO_PATH" | tee d.json
           grep -q '"status":1' d.json

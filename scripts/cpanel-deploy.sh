@@ -29,8 +29,14 @@ if [ -f "$APP_ROOT/.env" ]; then
 fi
 
 cd "$REPO_DIR"
-npm ci --no-audit --no-fund || npm install --no-audit --no-fund
-npm run build:cpanel
+if [ -f PREBUILT ] && [ -f .output/server/index.mjs ]; then
+  # "cpanel-build" branch: already built on Node 22 by GitHub Actions.
+  echo "[deploy] prebuilt output found ($(cat PREBUILT)) — skipping build"
+else
+  # Building on the host needs Node >= 20.19 (Vite 8). Prefer the cpanel-build branch.
+  npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+  npm run build:cpanel
+fi
 
 mkdir -p "$APP_ROOT/tmp" "$APP_ROOT/cpanel" "$APP_ROOT/scripts"
 rm -rf "$APP_ROOT/.output.new"
@@ -42,7 +48,7 @@ rm -rf "$APP_ROOT/.output.old"
 
 cp app.cjs package.json "$APP_ROOT/"
 cp cpanel/websocket-polyfill.cjs "$APP_ROOT/cpanel/"
-cp scripts/build-cpanel.mjs "$APP_ROOT/scripts/"
+[ -f scripts/build-cpanel.mjs ] && cp scripts/build-cpanel.mjs "$APP_ROOT/scripts/"
 if [ -d node_modules/ws ]; then
   mkdir -p "$APP_ROOT/node_modules"
   rm -rf "$APP_ROOT/node_modules/ws"

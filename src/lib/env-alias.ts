@@ -1,13 +1,28 @@
-// The personal Supabase credentials are stored as APP_DB_* secrets because the
-// SUPABASE_*/VITE_SUPABASE_* names are reserved by the platform. On the deployed
-// Worker, env is injected per request, so map the aliases at request time too.
-const ALIASES: Record<string, string> = {
-  SUPABASE_URL: "APP_SUPABASE_URL",
-  VITE_SUPABASE_URL: "APP_SUPABASE_URL",
-  SUPABASE_PUBLISHABLE_KEY: "APP_SUPABASE_PUBLISHABLE_KEY",
-  VITE_SUPABASE_PUBLISHABLE_KEY: "APP_SUPABASE_PUBLISHABLE_KEY",
-  SUPABASE_SERVICE_ROLE_KEY: "APP_SUPABASE_SERVICE_ROLE_KEY",
-  SUPABASE_ANON_KEY: "APP_SUPABASE_PUBLISHABLE_KEY",
+// Personal Supabase credentials can use any of the supported external/app
+// prefixes because the platform reserves the standard SUPABASE_* names.
+const ALIASES: Record<string, string[]> = {
+  SUPABASE_URL: ["EXTERNAL_SUPABASE_URL", "APP_SUPABASE_URL", "APP_DB_URL"],
+  VITE_SUPABASE_URL: ["EXTERNAL_SUPABASE_URL", "APP_SUPABASE_URL", "APP_DB_URL"],
+  SUPABASE_PUBLISHABLE_KEY: [
+    "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
+    "APP_SUPABASE_PUBLISHABLE_KEY",
+    "APP_DB_PUBLISHABLE_KEY",
+  ],
+  VITE_SUPABASE_PUBLISHABLE_KEY: [
+    "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
+    "APP_SUPABASE_PUBLISHABLE_KEY",
+    "APP_DB_PUBLISHABLE_KEY",
+  ],
+  SUPABASE_SERVICE_ROLE_KEY: [
+    "EXTERNAL_SUPABASE_SERVICE_ROLE_KEY",
+    "APP_SUPABASE_SERVICE_ROLE_KEY",
+    "APP_DB_SERVICE_ROLE_KEY",
+  ],
+  SUPABASE_ANON_KEY: [
+    "EXTERNAL_SUPABASE_PUBLISHABLE_KEY",
+    "APP_SUPABASE_PUBLISHABLE_KEY",
+    "APP_DB_PUBLISHABLE_KEY",
+  ],
 };
 
 export function applyEnvAliases(env?: unknown): void {
@@ -19,8 +34,10 @@ export function applyEnvAliases(env?: unknown): void {
     ?.env;
   if (!target) return;
 
-  for (const [alias, original] of Object.entries(ALIASES)) {
-    const value = target[original] ?? source[original] ?? source[alias];
+  for (const [alias, originals] of Object.entries(ALIASES)) {
+    const value = originals
+      .flatMap((original) => [target[original], source[original]])
+      .find((candidate) => Boolean(candidate)) ?? source[alias];
     if (value && !target[alias]) target[alias] = value;
   }
 }
