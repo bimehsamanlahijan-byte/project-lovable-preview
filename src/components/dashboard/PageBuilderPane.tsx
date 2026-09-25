@@ -65,6 +65,7 @@ export function PageBuilderPane({
   const [extractUrl, setExtractUrl] = useState("");
   const [extracting, setExtracting] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [pagesOpen, setPagesOpen] = useState(false);
   const [previewWidth, setPreviewWidth] = useState(0);
   const previewFrame = useRef<HTMLIFrameElement | null>(null);
   const previewBox = useRef<HTMLDivElement | null>(null);
@@ -291,227 +292,159 @@ export function PageBuilderPane({
   const primaryBtn = "px-3 py-2 rounded-xl bg-[#0b1e3f] text-white text-xs font-bold flex items-center gap-1.5 hover:bg-[#15294a] disabled:opacity-50";
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-2xl font-extrabold text-[#0b1e3f] flex items-center gap-2">
-            <FilePlus2 className="w-6 h-6" /> صفحه‌ساز
+    <div className="min-w-0">
+      <div className="relative mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-primary">
+            <FilePlus2 className="h-6 w-6 shrink-0" /> صفحه‌ساز
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            ساخت صفحه از بلوک‌ها → ذخیره → ویرایش بصری → انتشار در گیت‌هاب. صفحات در <code>/p/{"<slug>"}</code> نمایش داده می‌شوند.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">ساخت و تنظیم صفحه در کنار پیش‌نمایش زنده</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={newPage} className={primaryBtn}>
-            <Plus className="w-4 h-4" /> صفحه جدید
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => setPagesOpen((open) => !open)} className={btnCls} aria-expanded={pagesOpen}>
+            <FilePlus2 className="h-4 w-4" /> صفحات ساخته‌شده
+            {list.length > 0 && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px]">{list.length}</span>}
           </button>
-          <button onClick={() => void savePage()} disabled={!draft || busy} className={primaryBtn}>
-            <Save className="w-4 h-4" /> ذخیره
+          <button type="button" onClick={newPage} className={primaryBtn}>
+            <Plus className="h-4 w-4" /> صفحه جدید
           </button>
-          <button onClick={() => void publishToGithub()} disabled={!draft || busy} className={primaryBtn}>
-            <Github className="w-4 h-4" /> انتشار در گیت‌هاب
+          <button type="button" onClick={() => void savePage()} disabled={!draft || busy} className={primaryBtn}>
+            <Save className="h-4 w-4" /> ذخیره
+          </button>
+          <button type="button" onClick={() => void publishToGithub()} disabled={!draft || busy} className={primaryBtn}>
+            <Github className="h-4 w-4" /> انتشار در گیت‌هاب
           </button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        {/* Pages list */}
-        <aside className="col-span-12 lg:col-span-3">
-          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-            <div className="px-3 py-2 bg-slate-50 text-xs font-bold text-slate-600 border-b border-slate-200">صفحات ساخته‌شده</div>
-            <ul className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
-              {list.length === 0 && (
-                <li className="px-3 py-6 text-center text-xs text-slate-400">هنوز صفحه‌ای نساخته‌اید.</li>
-              )}
-              {list.map((p) => {
-                const active = selectedSlug === p.slug;
+        {pagesOpen && (
+          <div className="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:left-auto sm:w-[360px]">
+            <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-2 text-xs font-bold text-card-foreground">
+              <span>صفحات ساخته‌شده</span>
+              <button type="button" onClick={() => setPagesOpen(false)} className="rounded p-1 text-muted-foreground hover:bg-background" aria-label="بستن">✕</button>
+            </div>
+            <ul className="max-h-[55vh] divide-y divide-border overflow-y-auto">
+              {list.length === 0 && <li className="px-3 py-8 text-center text-xs text-muted-foreground">هنوز صفحه‌ای نساخته‌اید.</li>}
+              {list.map((pageItem) => {
+                const active = selectedSlug === pageItem.slug;
                 return (
-                  <li
-                    key={p.slug}
-                    className={`px-3 py-2.5 cursor-pointer ${active ? "bg-[#0b1e3f] text-white" : "hover:bg-slate-50"}`}
-                    onClick={() => selectPage(p.slug)}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-sm font-bold truncate">{p.title || p.slug}</div>
-                        <div className="text-[11px] opacity-70 truncate" dir="ltr">/p/{p.slug}</div>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] ${p.published ? "bg-emerald-500/20 text-emerald-700" : "bg-slate-200 text-slate-600"}`}
-                        >
-                          {p.published ? "منتشر" : "پیش‌نویس"}
-                        </span>
-                      </div>
-                    </div>
+                  <li key={pageItem.slug}>
+                    <button
+                      type="button"
+                      onClick={() => { selectPage(pageItem.slug); setPagesOpen(false); }}
+                      className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-3 text-right transition ${active ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-bold">{pageItem.title || pageItem.slug}</span>
+                        <span className="block truncate text-[11px] opacity-70" dir="ltr">/p/{pageItem.slug}</span>
+                      </span>
+                      <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] ${active ? "bg-primary-foreground/15" : "bg-muted text-muted-foreground"}`}>
+                        {pageItem.published ? "منتشر" : "پیش‌نویس"}
+                      </span>
+                    </button>
                   </li>
                 );
               })}
             </ul>
           </div>
-        </aside>
-
-        {/* Editor + preview */}
-        <section className="col-span-12 lg:col-span-9">
-          {!draft ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-400">
-              یک صفحه را انتخاب کنید یا «صفحه جدید» را بزنید.
-            </div>
-          ) : (
-            <div className="grid grid-cols-12 gap-4">
-              {/* Block editor */}
-              <div className="col-span-12 xl:col-span-7 space-y-4">
-                {/* Page settings */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
-                  <div className="text-xs font-bold text-slate-600">تنظیمات صفحه</div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="text-xs text-slate-500 col-span-1">
-                      عنوان
-                      <input className={inputCls} value={draft.title} onChange={(e) => patchDraft({ title: e.target.value })} />
-                    </label>
-                    <label className="text-xs text-slate-500 col-span-1">
-                      نامک (slug) → /p/…
-                      <input dir="ltr" className={inputCls} value={draft.slug} onChange={(e) => patchDraft({ slug: e.target.value })} />
-                    </label>
-                  </div>
-                  <label className="text-xs text-slate-500 block">
-                    توضیح کوتاه
-                    <textarea className={inputCls} rows={2} value={draft.description} onChange={(e) => patchDraft({ description: e.target.value })} />
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="text-xs text-slate-500 col-span-1">
-                      عنوان سئو
-                      <input className={inputCls} value={draft.seoTitle} onChange={(e) => patchDraft({ seoTitle: e.target.value })} />
-                    </label>
-                    <label className="text-xs text-slate-500 col-span-1 flex items-center gap-2 pt-4">
-                      <input
-                        type="checkbox"
-                        checked={draft.published}
-                        onChange={(e) => patchDraft({ published: e.target.checked })}
-                      />
-                      منتشر (index در گوگل)
-                    </label>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <button onClick={() => draft && onOpenVisualEditor(pageUrl(draft.slug))} className={btnCls}>
-                      <Wand2 className="w-3.5 h-3.5" /> ویرایشگر بصری
-                    </button>
-                    <button onClick={() => draft && onOpenInspector(pageUrl(draft.slug))} className={btnCls}>
-                      <Bug className="w-3.5 h-3.5" /> موس ایرادیاب
-                    </button>
-                    <a href={pageUrl(draft.slug)} target="_blank" rel="noreferrer" className={btnCls}>
-                      <ExternalLink className="w-3.5 h-3.5" /> مشاهده زنده
-                    </a>
-                    <button onClick={() => draft.slug && void duplicatePage(draft.slug)} className={btnCls}>
-                      <Copy className="w-3.5 h-3.5" /> کپی
-                    </button>
-                    <button onClick={() => draft.slug && void deletePage(draft.slug)} className={btnCls}>
-                      <Trash2 className="w-3.5 h-3.5" /> حذف
-                    </button>
-                  </div>
-                </div>
-
-                {/* Extract from URL */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2">
-                  <div className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5" /> استخراج محتوا از URL
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-5">
-                    یک آدرس صفحه وب وارد کنید. سیستم Header/Footer سایت مرجع را حذف و Main Content را به بلوک‌های قابل ویرایش تبدیل می‌کند؛ سپس با Header/Footer فعلی سایت شما ترکیب می‌شود.
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      dir="ltr"
-                      className={inputCls}
-                      placeholder="https://example.com/some-page"
-                      value={extractUrl}
-                      onChange={(e) => setExtractUrl(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter" && !extracting) void runExtract(); }}
-                    />
-                    <button onClick={() => void runExtract()} disabled={!draft || extracting} className={primaryBtn}>
-                      {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
-                      {extracting ? "در حال استخراج…" : "استخراج"}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Block palette */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <div className="text-xs font-bold text-slate-600 mb-2">افزودن بلوک</div>
-                  <div className="flex flex-wrap gap-2">
-                    {BLOCK_TYPES.map((b) => (
-                      <button
-                        key={b.type}
-                        onClick={() => addBlock(b.type)}
-                        className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold hover:bg-slate-50 flex items-center gap-1.5"
-                      >
-                        <span>{b.icon}</span> {b.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Blocks list */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3">
-                  <div className="text-xs font-bold text-slate-600">بلوک‌ها</div>
-                  {draft.blocks.length === 0 && (
-                    <div className="text-xs text-slate-400 text-center py-4">بدون بلوک. یک بلوک اضافه کنید.</div>
-                  )}
-                  {draft.blocks.map((b, i) => (
-                    <BlockEditor
-                      key={b.id}
-                      block={b}
-                      index={i}
-                      total={draft.blocks.length}
-                      onMove={(dir) => moveBlock(b.id, dir)}
-                      onRemove={() => removeBlock(b.id)}
-                      onProp={(k, v) => setBlockProp(b.id, k, v)}
-                      onPickMedia={(apply) => setMediaFor({ blockId: b.id, apply })}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Live preview */}
-              <div className="col-span-12 xl:col-span-5">
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 sticky top-4">
-                  <div className="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
-                    <span>پیش‌نمایش زنده</span>
-                    <div className="flex items-center gap-2">
-                      <div className="flex overflow-hidden rounded-lg border border-slate-200">
-                        <button type="button" onClick={() => setPreviewDevice("desktop")} title="دسکتاپ" className={`p-1.5 ${previewDevice === "desktop" ? "bg-slate-900 text-white" : "bg-white"}`}><Monitor className="h-3.5 w-3.5" /></button>
-                        <button type="button" onClick={() => setPreviewDevice("tablet")} title="تبلت" className={`p-1.5 ${previewDevice === "tablet" ? "bg-slate-900 text-white" : "bg-white"}`}><Tablet className="h-3.5 w-3.5" /></button>
-                        <button type="button" onClick={() => setPreviewDevice("mobile")} title="موبایل" className={`p-1.5 ${previewDevice === "mobile" ? "bg-slate-900 text-white" : "bg-white"}`}><Smartphone className="h-3.5 w-3.5" /></button>
-                      </div>
-                      {dirty && <span className="text-amber-600">ذخیره نشده</span>}
-                    </div>
-                  </div>
-                  <div ref={previewBox} className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-                    {previewDevice === "desktop" ? (
-                      <div className="w-full overflow-hidden" style={{ height: Math.round(860 * (previewWidth ? Math.min(1, previewWidth / 1440) : 1)) }}>
-                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="border-0 bg-white" style={{ width: 1440, height: 860, transform: `scale(${previewWidth ? Math.min(1, previewWidth / 1440) : 1})`, transformOrigin: "top right" }} />
-                      </div>
-                    ) : (
-                      <div className={previewDevice === "mobile" ? "mx-auto w-full max-w-[390px]" : "mx-auto w-full max-w-[834px]"}>
-                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="h-[75vh] w-full border-0 bg-white" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
+        )}
       </div>
 
+      {!draft ? (
+        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center text-muted-foreground">
+          از دکمه «صفحات ساخته‌شده» یک صفحه را انتخاب کنید یا «صفحه جدید» را بزنید.
+        </div>
+      ) : (
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+          {/* Large live preview — first grid track is on the right in RTL. */}
+          <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-extrabold text-card-foreground">پیش‌نمایش زنده — {draft.title || draft.slug}</div>
+                <div className="truncate text-[11px] text-muted-foreground" dir="ltr">/p/{draft.slug}</div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                {dirty && <span className="text-[11px] font-bold text-amber-600">ذخیره نشده</span>}
+                <div className="flex overflow-hidden rounded-lg border border-border">
+                  <button type="button" onClick={() => setPreviewDevice("desktop")} title="دسکتاپ" aria-label="دسکتاپ" className={`p-2 ${previewDevice === "desktop" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"}`}><Monitor className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => setPreviewDevice("tablet")} title="تبلت" aria-label="تبلت" className={`p-2 ${previewDevice === "tablet" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"}`}><Tablet className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => setPreviewDevice("mobile")} title="موبایل" aria-label="موبایل" className={`p-2 ${previewDevice === "mobile" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"}`}><Smartphone className="h-4 w-4" /></button>
+                </div>
+              </div>
+            </div>
+            <div ref={previewBox} className="min-h-[520px] overflow-hidden bg-muted lg:min-h-[680px]">
+              {previewDevice === "desktop" ? (
+                <div className="w-full overflow-hidden" style={{ height: Math.round(860 * (previewWidth ? Math.min(1, previewWidth / 1440) : 1)) }}>
+                  <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="border-0 bg-background" style={{ width: 1440, height: 860, transform: `scale(${previewWidth ? Math.min(1, previewWidth / 1440) : 1})`, transformOrigin: "top right" }} />
+                </div>
+              ) : (
+                <div className={previewDevice === "mobile" ? "mx-auto w-full max-w-[390px]" : "mx-auto w-full max-w-[834px]"}>
+                  <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="h-[75vh] w-full border-0 bg-background" />
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Settings and block controls — compact column on the left. */}
+          <aside className="min-w-0 space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pl-1">
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+              <div className="text-xs font-bold text-card-foreground">تنظیمات صفحه</div>
+              <label className="block text-xs text-muted-foreground">عنوان
+                <input className={inputCls} value={draft.title} onChange={(e) => patchDraft({ title: e.target.value })} />
+              </label>
+              <label className="block text-xs text-muted-foreground">نامک (slug) → /p/…
+                <input dir="ltr" className={inputCls} value={draft.slug} onChange={(e) => patchDraft({ slug: e.target.value })} />
+              </label>
+              <label className="block text-xs text-muted-foreground">توضیح کوتاه
+                <textarea className={inputCls} rows={2} value={draft.description} onChange={(e) => patchDraft({ description: e.target.value })} />
+              </label>
+              <label className="block text-xs text-muted-foreground">عنوان سئو
+                <input className={inputCls} value={draft.seoTitle} onChange={(e) => patchDraft({ seoTitle: e.target.value })} />
+              </label>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                <input type="checkbox" checked={draft.published} onChange={(e) => patchDraft({ published: e.target.checked })} />
+                منتشر (index در گوگل)
+              </label>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <button type="button" onClick={() => onOpenVisualEditor(pageUrl(draft.slug))} className={btnCls}><Wand2 className="h-3.5 w-3.5" /> ویرایشگر بصری</button>
+                <button type="button" onClick={() => onOpenInspector(pageUrl(draft.slug))} className={btnCls}><Bug className="h-3.5 w-3.5" /> موس ایرادیاب</button>
+                <a href={pageUrl(draft.slug)} target="_blank" rel="noreferrer" className={btnCls}><ExternalLink className="h-3.5 w-3.5" /> مشاهده زنده</a>
+                <button type="button" onClick={() => void duplicatePage(draft.slug)} className={btnCls}><Copy className="h-3.5 w-3.5" /> کپی</button>
+                <button type="button" onClick={() => void deletePage(draft.slug)} className={btnCls}><Trash2 className="h-3.5 w-3.5" /> حذف</button>
+              </div>
+            </div>
+
+            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-card-foreground"><Globe className="h-3.5 w-3.5" /> استخراج محتوا از URL</div>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                <input dir="ltr" className={inputCls} placeholder="https://example.com/page" value={extractUrl} onChange={(e) => setExtractUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !extracting) void runExtract(); }} />
+                <button type="button" onClick={() => void runExtract()} disabled={extracting} className={primaryBtn}>{extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}</button>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-card p-4">
+              <div className="mb-2 text-xs font-bold text-card-foreground">افزودن اجزای صفحه</div>
+              <div className="grid grid-cols-2 gap-2">
+                {BLOCK_TYPES.map((blockType) => (
+                  <button key={blockType.type} type="button" onClick={() => addBlock(blockType.type)} className="flex min-w-0 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-bold hover:bg-muted">
+                    <span className="shrink-0">{blockType.icon}</span><span className="truncate">{blockType.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+              <div className="text-xs font-bold text-card-foreground">اجزای صفحه</div>
+              {draft.blocks.length === 0 && <div className="py-4 text-center text-xs text-muted-foreground">یک جزء به صفحه اضافه کنید.</div>}
+              {draft.blocks.map((block, index) => (
+                <BlockEditor key={block.id} block={block} index={index} total={draft.blocks.length} onMove={(dir) => moveBlock(block.id, dir)} onRemove={() => removeBlock(block.id)} onProp={(key, value) => setBlockProp(block.id, key, value)} onPickMedia={(apply) => setMediaFor({ blockId: block.id, apply })} />
+              ))}
+            </div>
+          </aside>
+        </div>
+      )}
+
       {mediaFor && draft && (
-        <MediaPicker
-          onClose={() => setMediaFor(null)}
-          onPick={(url) => {
-            if (mediaFor) mediaFor.apply(url);
-            setMediaFor(null);
-          }}
-        />
+        <MediaPicker onClose={() => setMediaFor(null)} onPick={(url) => { mediaFor.apply(url); setMediaFor(null); }} />
       )}
     </div>
   );
