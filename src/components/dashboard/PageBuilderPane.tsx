@@ -488,8 +488,8 @@ export function PageBuilderPane({
                   </div>
                   <div ref={previewBox} className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
                     {previewDevice === "desktop" ? (
-                      <div className="w-full overflow-hidden" style={{ height: Math.round(760 * (previewWidth ? Math.min(1, previewWidth / 1440) : 1)) }}>
-                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="border-0 bg-white" style={{ width: 1440, height: 760, transform: `scale(${previewWidth ? Math.min(1, previewWidth / 1440) : 1})`, transformOrigin: "top right" }} />
+                      <div className="w-full overflow-hidden" style={{ height: Math.round(860 * (previewWidth ? Math.min(1, previewWidth / 1440) : 1)) }}>
+                        <iframe ref={previewFrame} src="/p/__page-builder-preview?pbPreview=1" title="پیش‌نمایش صفحه‌ساز" onLoad={sendPreview} className="border-0 bg-white" style={{ width: 1440, height: 860, transform: `scale(${previewWidth ? Math.min(1, previewWidth / 1440) : 1})`, transformOrigin: "top right" }} />
                       </div>
                     ) : (
                       <div className={previewDevice === "mobile" ? "mx-auto w-full max-w-[390px]" : "mx-auto w-full max-w-[834px]"}>
