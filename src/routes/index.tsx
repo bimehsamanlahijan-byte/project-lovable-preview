@@ -225,17 +225,17 @@ function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
                 <img src={s.img} alt={s.title} className={`absolute inset-0 w-full h-full ${cfg.fit === "contain" ? "object-contain bg-slate-900" : "object-cover"}`} loading={i === 0 ? "eager" : "lazy"} />
                 <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-center">
-                  <div className="px-6 md:px-14 max-w-2xl text-primary-foreground">
+                  <div className="px-4 md:px-14 max-w-[92%] md:max-w-2xl text-primary-foreground">
                     <motion.h2
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6 }}
-                      className="text-2xl md:text-5xl font-extrabold mb-3 drop-shadow-lg"
+                      className="text-xl sm:text-2xl md:text-5xl font-extrabold mb-3 drop-shadow-lg"
                     >
                       {s.title}
                     </motion.h2>
-                    {s.subtitle && <p className="text-sm md:text-lg mb-5 opacity-90">{s.subtitle}</p>}
+                    {s.subtitle && <p className="text-xs sm:text-sm md:text-lg mb-4 md:mb-5 opacity-90">{s.subtitle}</p>}
                     {s.cta && (
                       <a href={s.href || "#"} className="inline-block bg-white/95 text-primary px-6 py-3 rounded-full font-bold text-sm shadow-glow hover:scale-105 transition">
                         {s.cta}
@@ -248,7 +248,7 @@ function HeroSliderInner({ cfg }: { cfg: HeroSliderSettings }) {
           </div>
         </div>
         {/* Navigation arrows removed on purpose: slides move only by touch / drag. */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-none">
+        <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-none">
           {data.map((_, i) => (
             <span key={i} className={`h-2 rounded-full transition-all ${i === idx ? "w-8 bg-white" : "w-2 bg-white/50"}`} />
           ))}

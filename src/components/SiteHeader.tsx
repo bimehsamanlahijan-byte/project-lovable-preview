@@ -34,17 +34,17 @@ export function SiteHeader() {
           </div>
         </div>
         {/* Main nav */}
-        <div className="flex items-center justify-between py-4">
-          <a href="/" className="flex items-center gap-3" aria-label="بیمه سامان">
+        <div className="flex items-center justify-between gap-3 py-4 min-w-0">
+          <a href="/" className="flex items-center gap-3 min-w-0 shrink" aria-label="بیمه سامان">
             <img
               src={branding.headerLogoUrl || SITE_LOGO_HEADER}
               alt="بیمه سامان"
               style={{ height: branding.logoHeightHeader }}
-              className="w-auto object-contain"
+              className="w-auto max-w-[140px] sm:max-w-none object-contain"
               loading="eager"
             />
           </a>
-          <nav data-ve-nav="desktop" className="hidden lg:flex items-center gap-1 text-sm font-medium">
+          <nav data-ve-nav="desktop" className="hidden xl:flex items-center gap-1 text-sm font-medium whitespace-nowrap">
             {desktopMenu.map((n) => (
               <div key={n.label} data-ve-nav-item={n.label} className="relative group">
                 <a
@@ -110,13 +110,13 @@ export function SiteHeader() {
               </span>
               <span>{SITE_CONTACT.mobilePhone}</span>
             </a>
-            <button className="lg:hidden p-2" onClick={() => setOpen(!open)} aria-label="menu">
+            <button className="xl:hidden p-2 shrink-0" onClick={() => setOpen(!open)} aria-label="menu">
               <Menu className="w-6 h-6" />
             </button>
           </div>
         </div>
         {open && (
-          <div className="lg:hidden pb-4 flex flex-col gap-1 max-h-[70vh] overflow-y-auto">
+          <div className="xl:hidden pb-4 flex flex-col gap-1 max-h-[calc(100dvh-80px)] overflow-y-auto">
             {mobileMenu.map((n) => {
               const isOpen = mobileSub === n.label;
               return (

@@ -197,10 +197,10 @@ function WheelSection() {
       <CityscapeBackdrop />
       <WheelBackground />
       <div className="relative z-10 text-center mb-6 pt-6">
-        <h2 className="font-extrabold text-foreground leading-relaxed tracking-tight whitespace-nowrap text-[clamp(1.1rem,3.2vw,2rem)]">
+        <h2 className="font-extrabold text-foreground leading-relaxed tracking-tight text-balance max-w-3xl mx-auto px-3 text-[clamp(1rem,3.2vw,2rem)]">
           ارائه کلیه <span className="text-primary">خدمات بیمه‌ای</span> در سریع‌ترین زمان ممکن
         </h2>
-        <p className="text-sm sm:text-base text-red-600 font-extrabold mt-2 tracking-wide whitespace-nowrap">
+        <p className="text-xs sm:text-base text-red-600 font-extrabold mt-2 tracking-wide text-balance px-3">
           بیمه سامان کد ۸۴۵۲ آذرخش، همراه همیشگی شما
         </p>
       </div>
@@ -234,7 +234,7 @@ function WheelSection() {
                 title="برای جابجایی، دکمه را با موس بکشید"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`cta-sheen relative overflow-hidden group inline-flex items-center gap-3 rounded-full px-8 sm:px-12 py-4 sm:py-5 text-white font-extrabold text-base sm:text-2xl shadow-[0_22px_45px_-16px_rgba(220,38,38,0.75)] bg-[linear-gradient(120deg,#b91c1c_0%,#dc2626_35%,#f43f5e_60%,#dc2626_100%)] ring-4 ring-white/60 touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+                className={`cta-sheen relative overflow-hidden group inline-flex items-center gap-2 sm:gap-3 rounded-full px-5 sm:px-12 py-3 sm:py-5 max-w-[calc(100vw-4.5rem)] text-white font-extrabold text-sm sm:text-2xl shadow-[0_22px_45px_-16px_rgba(220,38,38,0.75)] bg-[linear-gradient(120deg,#b91c1c_0%,#dc2626_35%,#f43f5e_60%,#dc2626_100%)] ring-4 ring-white/60 touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
               >
                 <span className="absolute -inset-1 rounded-full bg-red-500/30 blur-xl animate-[ve-pulse_2.2s_ease-in-out_infinite]" aria-hidden="true" />
                 <ShoppingCart className="relative w-6 h-6 sm:w-8 sm:h-8" />
@@ -312,7 +312,7 @@ function WheelSection() {
                   <Link
                     to={it.href as never}
                     preload="intent"
-                    className="group flex flex-col items-center justify-center gap-1 w-[78px] sm:w-[92px] text-center"
+                    className="group flex flex-col items-center justify-center gap-1 w-[64px] sm:w-[92px] text-center"
                   >
                     <div className="w-[58px] h-[58px] sm:w-[68px] sm:h-[68px] rounded-2xl bg-white border border-slate-100 shadow-[0_8px_24px_-10px_rgba(15,30,80,0.18)] flex items-center justify-center group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_30px_-12px_rgba(220,38,38,0.35)] transition-all">
                       <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-primary group-hover:text-red-600 transition-colors" />
