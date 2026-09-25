@@ -15,7 +15,7 @@ import type { CustomPage } from "@/lib/custom-pages";
  * `noindex,nofollow` so they won't be indexed.
  */
 export const Route = createFileRoute("/p/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({ pbPreview: search.pbPreview === "1" }),
+  validateSearch: (search: Record<string, unknown>) => ({ pbPreview: search.pbPreview === "1" || search.pbPreview === 1 || search.pbPreview === true }),
   loader: async ({ params }): Promise<CustomPage | null> => {
     try {
       return await getCustomPage({ data: { slug: params.slug } });
