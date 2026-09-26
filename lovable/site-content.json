@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-09-24T15:44:38.135Z",
-  "note": "به‌روزرسانی خودکار از پیشخوان (ai_assistant)",
+  "exportedAt": "2026-09-26T07:24:34.896Z",
+  "note": "به‌روزرسانی خودکار از پیشخوان (custom_pages)",
   "settings": [
     {
       "key": "wheel_background",
@@ -259,6 +259,284 @@
       "updated_at": "2026-09-10T15:20:44.837+00:00"
     },
     {
+      "key": "custom_pages",
+      "value": {
+        "page-96h8": {
+          "slug": "page-96h8",
+          "title": "خرید بیمه موبایل سامان 📱 [انواع پوشش های بیمه سرقت گوشی]",
+          "blocks": [
+            {
+              "id": "b_mui2cnsh_783c",
+              "type": "hero",
+              "props": {
+                "align": "right",
+                "title": "بیمه موبایل و تبلت",
+                "bgImage": "",
+                "ctaHref": "",
+                "ctaText": "",
+                "subtitle": "یکی از پوشش های بیمه موبایل سامان، بیمه سرقت گوشی می باشد که خیال شما را از این بابت راحت می کند. بیمه گوشی سامان شما را از ضرر مالی زیاد و هنگفت نجات می دهد."
+              }
+            },
+            {
+              "id": "b_mui2cnsh_bs0n",
+              "type": "image",
+              "props": {
+                "alt": "بیمه موبایل و تبلت بیمه سامان",
+                "src": "https://www.si24.ir/wp-content/uploads/2025/05/%D8%A8%DB%8C%D9%85%D9%87-%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84-%D9%88-%D8%AA%D8%A8%D9%84%D8%AA_compressed-768x576.avif",
+                "href": "",
+                "width": "boxed"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_ec9l",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "بیمه موبایل و تبلت"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_e4vz",
+              "type": "text",
+              "props": {
+                "body": "تا به حال برایتان پیش آمده است که موبایل یا تبلت دارای سیم کارت شما به دلیل مشکلاتی مانند نوسانات برق دچار آسیب شده باشد و یا به دلیل آبخوردگی و ورود رطوبت، کیفیت خود را از دست داده و مانند قبل کار نکند و یا سرقت، حریق و سایر بلایای طبیعی باعث از بین رفتن موبایل یا تبلت‌تان شود؟\n\nبیمه موبایل و تبلت یکی از راه‌های مطمئن برای جلوگیری از ضررهای مالی وارد شده به این وسایل به حساب می‌آید.",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_f92i",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "بیمه موبایل چیست؟"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_pbmv",
+              "type": "text",
+              "props": {
+                "body": "بیمه موبایل و تبلت یکی از زیرمجموعه‌های بیمه مهندسی سامان است که هزینه خسارات ناگهانی وارد شده بر تلفن همراه و تبلت را در پرداخت می‌کند. آن هم در شرایط اقتصادی این روزها که خرید لوازم دیجیتال تا حد زیادی سخت و چالش برانگیز است.",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_g2d4",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://www.si24.ir/blog/e-e/mobile-insurance-claim-settlement",
+                "buttonLabel": "راهنمای کامل دریافت خسارت بیمه موبایل"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_847e",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "بیمه موبایل شامل چه طرح هایی است؟"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_az0n",
+              "type": "text",
+              "props": {
+                "body": "بیمه گوشی سامان شامل پنج طرح متفاوت می باشد. که هر پنج طرح به شکل آنلاین و حضوری قابل دریافت هستند. در ادامه هر یک از این سه طرح را به اختصار توضیح می‎دهیم:\n\nطرح ویژه آیفون\n\nدرصد فرانشیز\n\nسقف تعهد (حداکثر)\n\nمناسب موبایل iphone 17",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_9htn",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://samx.si24.ir/mobile-issuance",
+                "buttonLabel": "خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_m9nn",
+              "type": "text",
+              "props": {
+                "body": "پوشش های موبایل و تبلت دارای سیم کارت\n\n• آبدیدگی و نم زدگی\n• نوسان برق و القا الکتریکی\n• ضربه خوردگی\n• شکست\n• آتش سوزی\n• انفجار\n• سیل و طوفان\n• سرقت\n• سرقت با شکست حرز\n\nسقف تعهد 50 میلیون تومان\n\nحق بیمه سالانه:\n\nسقف تعهد:\n\nمناسب همه گوشی ها (طرح دانشجویی)",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_pub8",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://samx.si24.ir/mobile-issuance",
+                "buttonLabel": "خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_tcmh",
+              "type": "text",
+              "props": {
+                "body": "پوشش های موبایل و تبلت دارای سیم کارت\n\n• آبدیدگی و نم زدگی\n• نوسان برق و القا الکتریکی\n• ضربه خوردگی\n• شکست\n• آتش سوزی\n• انفجار\n• سیل و طوفان\n• سرقت\n• سرقت با شکست حرز\n\nسقف تعهد 30 میلیون تومان\n\nحق بیمه سالانه:\n\nسقف تعهد:\n\nمناسب همه گوشی ها",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_ugga",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://samx.si24.ir/mobile-issuance",
+                "buttonLabel": "خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_u0c1",
+              "type": "text",
+              "props": {
+                "body": "پوشش های موبایل و تبلت دارای سیم کارت\n\n• آبدیدگی و نم زدگی\n• نوسان برق و القا الکتریکی\n• ضربه خوردگی\n• شکست\n• آتش سوزی\n• انفجار\n• سیل و طوفان\n• سرقت\n• سرقت با شکست حرز\n\nسقف تعهد از 30 الی 50 میلیون تومان\n\nحق بیمه سالانه:\n\nسقف تعهد:\n\nمناسب همه گوشی ها",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_8i9m",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://samx.si24.ir/mobile-issuance",
+                "buttonLabel": "خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_ohlb",
+              "type": "text",
+              "props": {
+                "body": "پوشش های موبایل و تبلت دارای سیم کارت\n\n• آبدیدگی و نم زدگی\n• نوسان برق و القا الکتریکی\n• ضربه خوردگی\n• شکست\n• آتش سوزی\n• انفجار\n• سیل و طوفان\n• سرقت\n• سرقت با شکست حرز\n\nسقف تعهد از 50 الی 100 میلیون تومان\n\nحق بیمه سالانه:\n\nسقف تعهد:\n\nمناسب همه گوشی ها",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_lrxm",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://samx.si24.ir/mobile-issuance",
+                "buttonLabel": "خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_2d05",
+              "type": "text",
+              "props": {
+                "body": "پوشش های موبایل و تبلت دارای سیم کارت\n\n• آبدیدگی و نم زدگی\n• نوسان برق و القا الکتریکی\n• ضربه خوردگی\n• شکست\n• آتش سوزی\n• انفجار\n• سیل و طوفان\n• سرقت\n• سرقت با شکست حرز",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_jfgn",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "تعهدات بيمه‌گر"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_i58b",
+              "type": "text",
+              "props": {
+                "body": "خدمات بيمه‌ای و مسئوليت بيمه‌گر در قبال خسارات وارده به تجهيزات و دستگاه‌های بيمه شده تحت اين بيمه نامه به موارد ذيل محدود بوده و شامل حالتي ديگر نخواهد بود:\n\n• جبران هزينه‌های تحميل شده به بيمه گزار جهت تعمير دستگاه آسيب ديده شامل هزينه تأمين قطعات لازمه و هزينه دستمزد مرکز تعميرات.\n• بيمه‌گر در دوره تسری بيمه نامه فوق، صرفاً يک نوبت بابت هزينه تعميرات انجام شده خسارت پرداخت خواهد نمود.\n• جبران خسارت کلی (Total Loss): تجهيزاتی که مطابق نظر رسمی مراکز تخصصی و معتبر خدمات فنی تجهيزات الکترونيک شرکت بیمه سامان، قابل تعمير نمی‌باشند.\n• سقف تعهد بیمه گر در زمان بروز خسارت احتمالی به شرح زیر است: 1- برای سرمایه تا 100 میلیون تومان: حداکثر 100 میلیون تومان 2- برای سرمایه تا 200 میلیون تومان: حداکثر 150 میلیون تومان. این سقف ها با ارزش مورد بیمه، هرکدام که کمتر باشد جایگزین می شود.",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_q1qg",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "مزایای بیمه موبایل و تبلت سامان"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_tk82",
+              "type": "text",
+              "props": {
+                "body": "خرید بیمه تلفن همراه سامان مزایای متعددی دارد که بعضی از مهم‌ترین آنها شامل موارد زیر می‌شوند:\n\nبا خرید این طرح، پوشش کامل بیمه‌ای دارید و در صورت آسیب‌دیدگی وسایل الکتریکی خود، خسارت آنها را با بالاترین سقف تعهدات در کل کشور دریافت خواهید کرد.\n\nبیمه موبایل سامان کمترین فرانشیز در ایران را دارد و خسارت آن تا حداکثر 10 روز کاری پرداخت می‌شود.\n\nاز تصمیم به خرید تا دریافت بیمه‌نامه کمتر از ۵ دقیقه طول می‌کشد.\n\nثبت خسارت و تشکیل پرونده به مراجعه حضوری نیاز ندارد.\n\nبیمه گوشی سامان بالاترین سقف پوشش بیمه در کل کشور در اختیار دارد.",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_9y6l",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "سوالات پرتکرار"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_szqz",
+              "type": "text",
+              "props": {
+                "body": "",
+                "align": "right",
+                "title": "فرم مشاوره خرید بیمه"
+              }
+            },
+            {
+              "id": "b_mui2cnsh_f8un",
+              "type": "text",
+              "props": {
+                "body": "نظر خود را ثبت کنید.",
+                "align": "right",
+                "title": ""
+              }
+            },
+            {
+              "id": "b_mui2cnsh_j5mq",
+              "type": "cta",
+              "props": {
+                "bg": "#0b1e3f",
+                "body": "",
+                "title": "",
+                "buttonHref": "https://l.si24.ir/7x5",
+                "buttonLabel": "خرید بیمه موبایل و تبلت"
+              }
+            }
+          ],
+          "seoTitle": "خرید بیمه موبایل سامان 📱 [انواع پوشش های بیمه سرقت گوشی]",
+          "published": false,
+          "updatedAt": "2026-09-26T07:24:29.676Z",
+          "description": "یکی از پوشش های بیمه موبایل سامان، بیمه سرقت گوشی می باشد که خیال شما را از این بابت راحت می کند. بیمه گوشی سامان شما را از ضرر مالی زیاد و هنگفت نجات می دهد.",
+          "seoDescription": "یکی از پوشش های بیمه موبایل سامان، بیمه سرقت گوشی می باشد که خیال شما را از این بابت راحت می کند. بیمه گوشی سامان شما را از ضرر مالی زیاد و هنگفت نجات می دهد."
+        }
+      },
+      "updated_at": "2026-09-26T07:24:30.432+00:00"
+    },
+    {
       "key": "github_sync",
       "value": {
         "accounts": [
@@ -276,6 +554,558 @@
         "autoSync": true
       },
       "updated_at": "2026-09-10T06:12:04.863+00:00"
+    },
+    {
+      "key": "visual_overlays",
+      "value": {
+        "list": [
+          {
+            "id": "ov-mu5ltt5y-z595m",
+            "box": {
+              "top": 238,
+              "left": 16,
+              "width": 1408,
+              "height": 482
+            },
+            "mode": "cover-content",
+            "page": "/insurance/car/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#071d48"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789654073830,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu5m0q13-a49yu",
+            "box": {
+              "top": 126,
+              "left": 112,
+              "width": 1216,
+              "height": 853
+            },
+            "mode": "cover-content",
+            "page": "/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#f9fafc"
+            },
+            "attach": "fixed",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "button": {
+                "bg": "#ff0000",
+                "href": "https://sales.si24.ir/?agent=8452",
+                "label": "ورود به صفحه خرید آنلاین بیمه شخص ثالث"
+              },
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789654396359,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "url": "https://sales.si24.ir/?agent=8452",
+              "block": true,
+              "action": "js",
+              "popupHtml": "https://sales.si24.ir/?agent=8452"
+            }
+          },
+          {
+            "id": "ov-mu5mk5sg-y6ukd",
+            "box": {
+              "top": 127,
+              "left": 113,
+              "width": 1216,
+              "height": 853
+            },
+            "mode": "cover-content",
+            "page": "/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "fixed",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789655303248,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu5mtoh5-7b3w5",
+            "box": {
+              "top": 126,
+              "left": 112,
+              "width": 1216,
+              "height": 853
+            },
+            "mode": "cover-content",
+            "page": "/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "#f9fafc"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
+            "zIndex": 60,
+            "content": {
+              "html": "\n<div id=\"saman-sales-container\"\n     style=\"width:100%; min-height:800px; text-align:center;\">\n\n  <iframe\n    id=\"saman-sales-frame\"\n    src=\"https://sales.si24.ir/?agent=8452\"\n    title=\"سامانه فروش بیمه سامان\"\n    style=\"width:100%; height:800px; border:0;\"\n    allow=\"fullscreen\">\n  </iframe>\n\n  <div id=\"saman-fallback\"\n       style=\"display:none; padding:40px 15px;\n              font-family:Tahoma,Arial,sans-serif;\">\n\n    <p>برای ورود به سامانه فروش بیمه، روی دکمه زیر کلیک کنید.</p>\n\n    <a href=\"https://sales.si24.ir/?agent=8452\"\n       target=\"_blank\"\n       rel=\"noopener noreferrer\"\n       style=\"display:inline-block; padding:14px 28px;\n              background:#0645ad; color:white;\n              text-decoration:none; border-radius:8px;\">\n      ورود به سامانه فروش\n    </a>\n  </div>\n</div>\n\n<script>\n(function () {\n  var frame = document.getElementById(\"saman-sales-frame\");\n  var fallback = document.getElementById(\"saman-fallback\");\n\n  // بعد از 8 ثانیه، در صورت عدم بارگذاری،\n  // پیام جایگزین نمایش داده می‌شود.\n  setTimeout(function () {\n    if (frame && fallback) {\n      frame.style.display = \"none\";\n      fallback.style.display = \"block\";\n    }\n  }, 8000);\n})();\n</script>",
+              "kind": "none",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "iframeSrc": "https://sales.si24.ir/?agent=8452",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": false,
+            "createdAt": 1789655747369,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu6g6ddx-c083z",
+            "box": {
+              "top": 246,
+              "left": 16,
+              "width": 1408,
+              "height": 518
+            },
+            "mode": "cover-content",
+            "page": "/insurance/fire",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789705048389,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu6m5z4x-iynt8",
+            "box": {
+              "top": 61,
+              "left": 344,
+              "width": 128,
+              "height": 56
+            },
+            "mode": "cover-content",
+            "page": "/",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(9) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789715107617,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu6nrmem-zglcr",
+            "box": {
+              "top": 272,
+              "left": 136,
+              "width": 1168,
+              "height": 24
+            },
+            "mode": "cover-content",
+            "page": "/third-party",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1) > p",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789717797166,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu9fc013-4h9dn",
+            "box": {
+              "top": 361,
+              "left": 181,
+              "width": 159,
+              "height": 56
+            },
+            "mode": "cover-content",
+            "page": "/contact",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              },
+              "iframeProxy": true
+            },
+            "visible": true,
+            "createdAt": 1789885029927,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu9fdew2-e105i",
+            "box": {
+              "top": 61,
+              "left": 181,
+              "width": 159,
+              "height": 56
+            },
+            "mode": "cover-content",
+            "page": "/partners",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789885095842,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          },
+          {
+            "id": "ov-mu9fdrds-zx4hh",
+            "box": {
+              "top": 61,
+              "left": 181,
+              "width": 159,
+              "height": 56
+            },
+            "mode": "cover-content",
+            "page": "/partners",
+            "type": "overlay",
+            "label": "لینک خارجی سازگار",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              },
+              "iframeProxy": true
+            },
+            "visible": true,
+            "createdAt": 1789885112032,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
+              "block": true,
+              "action": "url",
+              "target": "_blank"
+            }
+          },
+          {
+            "id": "ov-mu9z0c92-xcvl8",
+            "box": {
+              "top": 61,
+              "left": 181,
+              "width": 159,
+              "height": 56
+            },
+            "mode": "interactive",
+            "page": "/e-services/insurance-payment",
+            "type": "overlay",
+            "label": "لینک خارجی سازگار",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              },
+              "iframeProxy": true
+            },
+            "visible": true,
+            "createdAt": 1789918078214,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
+              "block": true,
+              "action": "url",
+              "target": "_blank"
+            }
+          },
+          {
+            "id": "ov-mu9z2ocr-asgkj",
+            "box": {
+              "top": 246,
+              "left": 16,
+              "width": 1408,
+              "height": 308
+            },
+            "mode": "cover-content",
+            "page": "/contact",
+            "type": "overlay",
+            "label": "لایه پوشاننده",
+            "style": {
+              "align": "center",
+              "radius": "12px",
+              "justify": "center",
+              "opacity": 1,
+              "padding": "16px",
+              "background": "rgba(11, 30, 63, 0.55)"
+            },
+            "attach": "attached",
+            "locked": false,
+            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div",
+            "zIndex": 60,
+            "content": {
+              "kind": "text",
+              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
+              "textStyle": {
+                "color": "#ffffff",
+                "font-size": "16px",
+                "text-align": "center",
+                "font-weight": "700"
+              }
+            },
+            "visible": true,
+            "createdAt": 1789918187211,
+            "responsive": {
+              "sameForAll": true
+            },
+            "interaction": {
+              "block": true,
+              "action": "none"
+            }
+          }
+        ]
+      },
+      "updated_at": "2026-09-20T15:29:48.029+00:00"
     },
     {
       "key": "visual_overrides",
@@ -1028,6 +1858,29 @@
             },
             "hoverDeep": false
           },
+          "/::@mobile::body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(4) > div > div:nth-of-type(4) > div:nth-of-type(2) > p": {
+            "text": "خرید آنلاین آزمایشی",
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "10px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
+          "/::@mobile::body > div:nth-of-type(1) > section:nth-of-type(2) > div > div:nth-of-type(4) > div > div:nth-of-type(4) > div:nth-of-type(2) > h3": {
+            "hover": {},
+            "style": {
+              "color": "#001200",
+              "font-size": "10px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "800"
+            },
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div > div > a:nth-of-type(1)": {
             "text": "بیمه آتش سوزی منازل مسکونی",
             "hover": {},
@@ -1067,559 +1920,7 @@
           }
         }
       },
-      "updated_at": "2026-09-20T15:27:56.473+00:00"
-    },
-    {
-      "key": "visual_overlays",
-      "value": {
-        "list": [
-          {
-            "id": "ov-mu5ltt5y-z595m",
-            "box": {
-              "top": 238,
-              "left": 16,
-              "width": 1408,
-              "height": 482
-            },
-            "mode": "cover-content",
-            "page": "/insurance/car/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#071d48"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789654073830,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu5m0q13-a49yu",
-            "box": {
-              "top": 126,
-              "left": 112,
-              "width": 1216,
-              "height": 853
-            },
-            "mode": "cover-content",
-            "page": "/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#f9fafc"
-            },
-            "attach": "fixed",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "button": {
-                "bg": "#ff0000",
-                "href": "https://sales.si24.ir/?agent=8452",
-                "label": "ورود به صفحه خرید آنلاین بیمه شخص ثالث"
-              },
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789654396359,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "url": "https://sales.si24.ir/?agent=8452",
-              "block": true,
-              "action": "js",
-              "popupHtml": "https://sales.si24.ir/?agent=8452"
-            }
-          },
-          {
-            "id": "ov-mu5mk5sg-y6ukd",
-            "box": {
-              "top": 127,
-              "left": 113,
-              "width": 1216,
-              "height": 853
-            },
-            "mode": "cover-content",
-            "page": "/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "fixed",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789655303248,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu5mtoh5-7b3w5",
-            "box": {
-              "top": 126,
-              "left": 112,
-              "width": 1216,
-              "height": 853
-            },
-            "mode": "cover-content",
-            "page": "/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "#f9fafc"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1)",
-            "zIndex": 60,
-            "content": {
-              "html": "\n<div id=\"saman-sales-container\"\n     style=\"width:100%; min-height:800px; text-align:center;\">\n\n  <iframe\n    id=\"saman-sales-frame\"\n    src=\"https://sales.si24.ir/?agent=8452\"\n    title=\"سامانه فروش بیمه سامان\"\n    style=\"width:100%; height:800px; border:0;\"\n    allow=\"fullscreen\">\n  </iframe>\n\n  <div id=\"saman-fallback\"\n       style=\"display:none; padding:40px 15px;\n              font-family:Tahoma,Arial,sans-serif;\">\n\n    <p>برای ورود به سامانه فروش بیمه، روی دکمه زیر کلیک کنید.</p>\n\n    <a href=\"https://sales.si24.ir/?agent=8452\"\n       target=\"_blank\"\n       rel=\"noopener noreferrer\"\n       style=\"display:inline-block; padding:14px 28px;\n              background:#0645ad; color:white;\n              text-decoration:none; border-radius:8px;\">\n      ورود به سامانه فروش\n    </a>\n  </div>\n</div>\n\n<script>\n(function () {\n  var frame = document.getElementById(\"saman-sales-frame\");\n  var fallback = document.getElementById(\"saman-fallback\");\n\n  // بعد از 8 ثانیه، در صورت عدم بارگذاری،\n  // پیام جایگزین نمایش داده می‌شود.\n  setTimeout(function () {\n    if (frame && fallback) {\n      frame.style.display = \"none\";\n      fallback.style.display = \"block\";\n    }\n  }, 8000);\n})();\n</script>",
-              "kind": "none",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "iframeSrc": "https://sales.si24.ir/?agent=8452",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": false,
-            "createdAt": 1789655747369,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu6g6ddx-c083z",
-            "box": {
-              "top": 246,
-              "left": 16,
-              "width": 1408,
-              "height": 518
-            },
-            "mode": "cover-content",
-            "page": "/insurance/fire",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789705048389,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu6m5z4x-iynt8",
-            "box": {
-              "top": 61,
-              "left": 344,
-              "width": 128,
-              "height": 56
-            },
-            "mode": "cover-content",
-            "page": "/",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(9) > a",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789715107617,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu6nrmem-zglcr",
-            "box": {
-              "top": 272,
-              "left": 136,
-              "width": 1168,
-              "height": 24
-            },
-            "mode": "cover-content",
-            "page": "/third-party",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > main > div > div:nth-of-type(1) > p",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789717797166,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu9fc013-4h9dn",
-            "box": {
-              "top": 361,
-              "left": 181,
-              "width": 159,
-              "height": 56
-            },
-            "mode": "cover-content",
-            "page": "/contact",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              },
-              "iframeProxy": true
-            },
-            "visible": true,
-            "createdAt": 1789885029927,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu9fdew2-e105i",
-            "box": {
-              "top": 61,
-              "left": 181,
-              "width": 159,
-              "height": 56
-            },
-            "mode": "cover-content",
-            "page": "/partners",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789885095842,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          },
-          {
-            "id": "ov-mu9fdrds-zx4hh",
-            "box": {
-              "top": 61,
-              "left": 181,
-              "width": 159,
-              "height": 56
-            },
-            "mode": "cover-content",
-            "page": "/partners",
-            "type": "overlay",
-            "label": "لینک خارجی سازگار",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              },
-              "iframeProxy": true
-            },
-            "visible": true,
-            "createdAt": 1789885112032,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
-              "block": true,
-              "action": "url",
-              "target": "_blank"
-            }
-          },
-          {
-            "id": "ov-mu9z0c92-xcvl8",
-            "box": {
-              "top": 61,
-              "left": 181,
-              "width": 159,
-              "height": 56
-            },
-            "mode": "interactive",
-            "page": "/e-services/insurance-payment",
-            "type": "overlay",
-            "label": "لینک خارجی سازگار",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > header > div > div:nth-of-type(2) > nav > div:nth-of-type(10) > a",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              },
-              "iframeProxy": true
-            },
-            "visible": true,
-            "createdAt": 1789918078214,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "url": "https://bimenaji.com/InsPriceInquiry_ThirdParty",
-              "block": true,
-              "action": "url",
-              "target": "_blank"
-            }
-          },
-          {
-            "id": "ov-mu9z2ocr-asgkj",
-            "box": {
-              "top": 246,
-              "left": 16,
-              "width": 1408,
-              "height": 308
-            },
-            "mode": "cover-content",
-            "page": "/contact",
-            "type": "overlay",
-            "label": "لایه پوشاننده",
-            "style": {
-              "align": "center",
-              "radius": "12px",
-              "justify": "center",
-              "opacity": 1,
-              "padding": "16px",
-              "background": "rgba(11, 30, 63, 0.55)"
-            },
-            "attach": "attached",
-            "locked": false,
-            "target": "body > div:nth-of-type(1) > section:nth-of-type(1) > div",
-            "zIndex": 60,
-            "content": {
-              "kind": "text",
-              "text": "برای مشاهده اطلاعات بیشتر کلیک کنید",
-              "textStyle": {
-                "color": "#ffffff",
-                "font-size": "16px",
-                "text-align": "center",
-                "font-weight": "700"
-              }
-            },
-            "visible": true,
-            "createdAt": 1789918187211,
-            "responsive": {
-              "sameForAll": true
-            },
-            "interaction": {
-              "block": true,
-              "action": "none"
-            }
-          }
-        ]
-      },
-      "updated_at": "2026-09-20T15:29:48.029+00:00"
+      "updated_at": "2026-09-25T06:16:03.009+00:00"
     }
   ]
 }
