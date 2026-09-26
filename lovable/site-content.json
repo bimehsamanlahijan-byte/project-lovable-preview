@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-26T10:44:48.009Z",
+  "exportedAt": "2026-09-26T10:45:34.562Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (ai_engines)",
   "settings": [
     {
@@ -272,11 +272,11 @@
           "provider": "lovable"
         },
         "seoCompetitor": {
-          "model": "google/gemini-2.0-flash-exp:free",
-          "provider": "openrouter"
+          "model": "mistral-small-latest",
+          "provider": "mistral"
         }
       },
-      "updated_at": "2026-09-26T10:44:47.215+00:00"
+      "updated_at": "2026-09-26T10:45:33.326+00:00"
     },
     {
       "key": "github_sync",
