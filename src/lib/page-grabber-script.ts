@@ -38,6 +38,10 @@ export type GrabberOptions = {
   maxChars: number;
   /** Also copy the JSON to the clipboard, not just download it. */
   clipboard: boolean;
+  /** Silent mode for the one-click builder: no download/clipboard/toast. */
+  silent?: boolean;
+  /** Original page URL (used when the page is rendered from a copy). */
+  sourceUrl?: string;
 };
 
 export const DEFAULT_GRABBER_OPTIONS: GrabberOptions = {
@@ -552,17 +556,18 @@ const CLONE_BODY = String.raw`
   var h1 = document.querySelector("h1");
   var title = clean(h1 ? h1.innerText : "") || clean(document.title) || "صفحه";
   var desc = meta('meta[name="description"]') || meta('meta[property="og:description"]');
-  var fromUrl = (location.pathname.split("/").filter(Boolean).pop() || "").replace(/\.(html?|php|aspx?)$/i, "");
+  var fromUrl = ((OPT.sourceUrl ? new URL(OPT.sourceUrl).pathname : location.pathname).split("/").filter(Boolean).pop() || "").replace(/\.(html?|php|aspx?)$/i, "");
   var slug = slugify(OPT.slug || fromUrl || title);
   var blockId = "b_" + Date.now().toString(36) + "_clone";
   var page = {
     slug: slug, title: title, description: desc,
-    blocks: [{ id: blockId, type: "clone", props: { html: html, css: css, maxWidth: Math.round(rootRect.width) >= window.innerWidth - 20 ? "" : Math.round(rootRect.width) + "px", source: location.href } }],
+    blocks: [{ id: blockId, type: "clone", props: { html: html, css: css, maxWidth: Math.round(rootRect.width) >= window.innerWidth - 20 ? "" : Math.round(rootRect.width) + "px", source: OPT.sourceUrl || location.href } }],
     seoTitle: clean(document.title) || title, seoDescription: desc, published: false,
     updatedAt: new Date().toISOString(),
-    source: { url: location.href, grabbedAt: new Date().toISOString(), mode: "clone", elements: count, images: images, videos: videos }
+    source: { url: OPT.sourceUrl || location.href, grabbedAt: new Date().toISOString(), mode: "clone", elements: count, images: images, videos: videos }
   };
   var json = JSON.stringify(page);
+  if (OPT.silent) return page;
   try {
     var blob = new Blob([json], { type: "application/json;charset=utf-8" });
     var a2 = document.createElement("a");

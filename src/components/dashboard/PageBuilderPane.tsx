@@ -13,6 +13,7 @@ import {
   Save,
   Trash2,
   Wand2,
+  Sparkles,
   Bug,
   FilePlus2,
   Globe,
@@ -36,7 +37,8 @@ import {
   type CustomPagesMap,
 } from "@/lib/custom-pages";
 import { githubPublishSnapshot } from "@/lib/github.functions";
-import { extractPageFromUrl } from "@/lib/custom-pages.functions";
+import { extractPageFromUrl, fetchPageHtml } from "@/lib/custom-pages.functions";
+import { buildGrabberScript, DEFAULT_GRABBER_OPTIONS } from "@/lib/page-grabber-script";
 import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
 
 /**
@@ -68,6 +70,8 @@ export function PageBuilderPane({
   const [mediaFor, setMediaFor] = useState<{ blockId: string; apply: (url: string) => void } | null>(null);
   const [extractUrl, setExtractUrl] = useState("");
   const [extracting, setExtracting] = useState(false);
+  const [autoBuilding, setAutoBuilding] = useState(false);
+  const [autoStep, setAutoStep] = useState("");
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [pagesOpen, setPagesOpen] = useState(false);
   const [previewWidth, setPreviewWidth] = useState(0);
@@ -128,6 +132,66 @@ export function PageBuilderPane({
       notifyFailed("استخراج محتوا", e?.message || String(e));
     } finally {
       setExtracting(false);
+    }
+  }
+
+  async function runAutoBuild() {
+    if (!draft) return;
+    const u = extractUrl.trim();
+    if (!u) return notifyFailed("صفحه‌ساز خودکار", "ابتدا آدرس صفحه را در کادر بالا وارد کنید.");
+    setAutoBuilding(true);
+    let frame: HTMLIFrameElement | null = null;
+    try {
+      setAutoStep("در حال دریافت صفحه…");
+      const res = await fetchPageHtml({ data: { url: u } });
+      if (!res.ok) { notifyFailed("صفحه‌ساز خودکار", res.error); return; }
+      setAutoStep("در حال بارگذاری طرح و فونت‌ها…");
+      const base = res.finalUrl;
+      let html = res.html
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+        .replace(/<base\b[^>]*>/gi, "")
+        .replace(/<meta[^>]+http-equiv=["']?(refresh|content-security-policy)[^>]*>/gi, "");
+      // lazy images → real sources so they appear in the copy
+      html = html.replace(/<img\b([^>]*?)\sdata-(?:lazy-)?src=(["'])([^"']+)\2/gi, (_m, a, q, src) => `<img${a} src=${q}${src}${q}`);
+      const baseTag = `<base href="${base.replace(/"/g, "&quot;")}">`;
+      html = /<head[^>]*>/i.test(html) ? html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`) : baseTag + html;
+      frame = document.createElement("iframe");
+      frame.setAttribute("aria-hidden", "true");
+      frame.style.cssText = "position:fixed;left:-20000px;top:0;width:1366px;height:900px;border:0;opacity:0;pointer-events:none";
+      document.body.appendChild(frame);
+      await new Promise<void>((resolve) => {
+        const done = () => resolve();
+        frame!.addEventListener("load", done, { once: true });
+        setTimeout(done, 15000);
+        frame!.srcdoc = html;
+      });
+      await new Promise((r) => setTimeout(r, 2000));
+      try { await (frame.contentDocument as any)?.fonts?.ready; } catch { /* ignore */ }
+      setAutoStep("در حال کپی کامل صفحه…");
+      const script = buildGrabberScript({ ...DEFAULT_GRABBER_OPTIONS, mode: "clone", slug: draft.slug, silent: true, sourceUrl: base, clipboard: false });
+      const page = (frame.contentWindow as any).eval(script);
+      if (!page || !Array.isArray(page.blocks) || !page.blocks.length) {
+        notifyFailed("صفحه‌ساز خودکار", "محتوایی پیدا نشد. این سایت احتمالاً محتوایش را با جاوااسکریپت می‌سازد؛ از روش اسکریپت دستی استفاده کنید.");
+        return;
+      }
+      const next = {
+        ...draft,
+        title: page.title || draft.title,
+        description: page.description || draft.description,
+        seoTitle: page.seoTitle || page.title || draft.seoTitle,
+        seoDescription: page.seoDescription || draft.seoDescription,
+        blocks: page.blocks,
+        updatedAt: new Date().toISOString(),
+      };
+      setDraft(next);
+      setDirty(true);
+      notifySaved("صفحه‌ساز خودکار — صفحه ساخته شد؛ برای ماندگاری «ذخیره» را بزنید");
+    } catch (e: any) {
+      notifyFailed("صفحه‌ساز خودکار", e?.message || String(e));
+    } finally {
+      frame?.remove();
+      setAutoBuilding(false);
+      setAutoStep("");
     }
   }
 
@@ -444,6 +508,11 @@ export function PageBuilderPane({
                 <input dir="ltr" className={inputCls} placeholder="https://example.com/page" value={extractUrl} onChange={(e) => setExtractUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !extracting) void runExtract(); }} />
                 <button type="button" onClick={() => void runExtract()} disabled={extracting} className={primaryBtn}>{extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}</button>
               </div>
+              <button type="button" onClick={() => void runAutoBuild()} disabled={autoBuilding || extracting} className={`${primaryBtn} w-full justify-center`}>
+                {autoBuilding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                {autoBuilding ? autoStep || "در حال ساخت…" : "صفحه‌ساز خودکار (یک کلیک)"}
+              </button>
+              <p className="text-[11px] leading-5 text-muted-foreground">آدرس را وارد کنید و این دکمه را بزنید؛ کل صفحه با طرح، فونت، تصاویر و ویدیو کپی و در پیش‌نمایش نمایش داده می‌شود (هدر و فوتر سایت شما می‌ماند).</p>
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4">
