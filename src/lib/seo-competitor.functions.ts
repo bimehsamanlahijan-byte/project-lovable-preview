@@ -35,6 +35,7 @@ export const analyzeCompetitorSite = createServerFn({ method: "POST" })
       provider?: string;
       model?: string;
       extraNotes?: string;
+      myAltOrigin?: string;
     }) => data,
   )
   .handler(async ({ data }) => {
@@ -54,6 +55,7 @@ export const scanSiteSeo = createServerFn({ method: "POST" })
       analyzer?: string;
       provider?: string;
       model?: string;
+      altOrigin?: string;
     }) => data,
   )
   .handler(async ({ data }) => {

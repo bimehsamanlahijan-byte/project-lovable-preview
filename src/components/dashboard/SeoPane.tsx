@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Search, Save, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink, Swords } from "lucide-react";
+import { Search, Save, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink, Swords, KeyRound, Globe } from "lucide-react";
 
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { DEFAULT_SEO, SEO_SETTING_KEY, normalizeBase, type SeoConfig, type SeoPage } from "@/lib/seo-config";
 import { CompetitorPane } from "./CompetitorPane";
+import { AiKeysPane } from "./AiKeysPane";
+import { SearchConsolePane } from "./SearchConsolePane";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
 
@@ -11,7 +13,7 @@ const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 
 export function SeoPane() {
   const [cfg, setCfg] = useState<SeoConfig>(DEFAULT_SEO);
   const [msg, setMsg] = useState("");
-  const [tab, setTab] = useState<"settings" | "competitor">("settings");
+  const [tab, setTab] = useState<"settings" | "competitor" | "aikeys" | "gsc">("settings");
 
   useEffect(() => {
     adminReadSetting<SeoConfig>(SEO_SETTING_KEY, DEFAULT_SEO).then(setCfg);
@@ -86,9 +88,23 @@ export function SeoPane() {
         >
           <Swords className="w-4 h-4" /> آنالیز وب‌سایت رقیب
         </button>
+        <button
+          onClick={() => setTab("aikeys")}
+          className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${tab === "aikeys" ? "bg-[#0b1e3f] text-white" : "border border-slate-300 bg-white text-slate-600"}`}
+        >
+          <KeyRound className="w-4 h-4" /> کلیدهای هوش مصنوعی
+        </button>
+        <button
+          onClick={() => setTab("gsc")}
+          className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${tab === "gsc" ? "bg-[#0b1e3f] text-white" : "border border-slate-300 bg-white text-slate-600"}`}
+        >
+          <Globe className="w-4 h-4" /> سرچ کنسول گوگل
+        </button>
       </div>
 
       {tab === "competitor" && <CompetitorPane />}
+      {tab === "aikeys" && <AiKeysPane />}
+      {tab === "gsc" && <SearchConsolePane />}
 
       {tab === "settings" && (
       <>

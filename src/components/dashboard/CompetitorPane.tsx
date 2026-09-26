@@ -33,6 +33,8 @@ import {
   scanSiteSeo,
 } from "@/lib/seo-competitor.functions";
 import { AiEngineSelect } from "./AiEngineSelect";
+import { GlassHelp, GlassModal, Steps } from "./GlassHelp";
+import { SECONDARY_DOMAIN, cleanOrigin, joinUrl } from "@/lib/seo-url";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
 const btn = "flex items-center gap-2 text-xs px-3 py-2 rounded-xl border border-slate-300 bg-white font-bold hover:bg-slate-50 disabled:opacity-50";
@@ -62,6 +64,8 @@ export function CompetitorPane() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [scan, setScan] = useState<Scan | null>(null);
   const [notes, setNotes] = useState("");
+  const [domain2, setDomain2] = useState(SECONDARY_DOMAIN);
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -71,7 +75,7 @@ export function CompetitorPane() {
   }, []);
 
   const analyzer = getAnalyzer(engines.analyzer);
-  const origin = normalizeBase(seo.siteUrl);
+  const origin = cleanOrigin(normalizeBase(seo.siteUrl));
   const myPaths = seo.pages.map((p) => p.path);
 
   async function saveEngines(next: AiEnginesSettings) {
@@ -103,7 +107,8 @@ export function CompetitorPane() {
       const res = await analyzeCompetitorSite({
         data: {
           competitorUrl: competitorUrl.trim(),
-          myUrls: origin ? myPaths.slice(0, 6).map((p) => origin + p) : [],
+          myUrls: origin ? myPaths.slice(0, 6).map((p) => joinUrl(origin, p)) : [],
+          myAltOrigin: cleanOrigin(domain2) || undefined,
           keyword: keyword.trim(),
           analyzer: engines.analyzer,
           provider: engines.seoCompetitor.provider,
@@ -113,7 +118,10 @@ export function CompetitorPane() {
       });
       setAnalysis(res);
       if (!res.ok) notifyFailed("آنالیز رقیب", res.error);
-      else notifySaved("تحلیل رقیب آماده شد");
+      else {
+        notifySaved("تحلیل رقیب آماده شد");
+        setShowResult(true);
+      }
     } catch (e: any) {
       notifyFailed("آنالیز رقیب", e?.message || String(e));
     } finally {
@@ -135,12 +143,16 @@ export function CompetitorPane() {
           analyzer: engines.analyzer,
           provider: engines.seoCompetitor.provider,
           model: engines.seoCompetitor.model,
+          altOrigin: cleanOrigin(domain2) || undefined,
         },
       });
       setScan(res);
       if (!res.ok) notifyFailed("اسکن سایت", res.error);
       else {
-        if (res.analysis) setAnalysis(res.analysis);
+        if (res.analysis) {
+          setAnalysis(res.analysis);
+          setShowResult(true);
+        }
         notifySaved("اسکن کلی سایت انجام شد");
       }
     } catch (e: any) {
@@ -157,7 +169,7 @@ export function CompetitorPane() {
     try {
       const res = await aiRewritePage({
         data: {
-          targetUrl: origin + (path.startsWith("/") ? path : `/${path}`),
+          targetUrl: joinUrl(origin, path),
           competitorUrl: competitorUrl.trim() || undefined,
           keyword: keyword.trim() || undefined,
           guidance,
@@ -196,6 +208,30 @@ export function CompetitorPane() {
       <div className="rounded-2xl border border-slate-200 bg-white p-5">
         <h2 className="mb-1 flex items-center gap-2 text-sm font-extrabold text-[#0b1e3f]">
           <Swords className="h-4 w-4" /> آنالیز وب‌سایت رقیب (ترفند سه‌مرحله‌ای)
+          <span className="mr-auto flex gap-1.5">
+            <GlassHelp title="راهنمای آنالیز رقیب">
+              <Steps
+                items={[
+                  "کلمه کلیدی هدف (مثلاً «بیمه بدنه لاهیجان») را در گوگل جستجو کنید.",
+                  "آدرس اولین سایت رقیب را در کادر «آدرس سایت یا صفحه رقیب» بچسبانید.",
+                  "«یافتن صفحات پرترافیک رقیب» را بزنید و از فهرست، مهم‌ترین صفحه را با «تحلیل این صفحه» انتخاب کنید.",
+                  "موتور هوش مصنوعی و ابزار آنالیز را انتخاب کنید (پیش‌فرض Lovable AI و آنالیزور داخلی).",
+                  "«تحلیل نقاط ضعف رقیب» را بزنید؛ پنجره نتیجه نشان می‌دهد با کدام موتور و کدام روش تحلیل شده.",
+                  "در «برنامه محتوا» برای هر صفحه «ساخت محتوای قوی‌تر» را بزنید؛ صفحه در صفحه‌ساز قابل ویرایش است.",
+                ]}
+              />
+            </GlassHelp>
+            <GlassHelp title="دامنه دوم و خطای ۵۲۲" label="دامنه دوم / خطاها">
+              <p>سایت شما دو دامنه دارد. اگر صفحه‌ای از دامنه اول باز نشود، همان صفحه از دامنه دوم خوانده می‌شود و در نتیجه ذکر می‌شود.</p>
+              <p><b>خطای ۵۲۲</b> یعنی Cloudflare نتوانسته به هاست سایت وصل شود. معمولاً هاست خاموش یا کند است، یا IP هاست در بخش DNS کلودفلر اشتباه ثبت شده. از پشتیبانی هاست بپرسید سرور روشن است و IP درست را در Cloudflare → DNS ثبت کنید.</p>
+              <p>آدرس‌های تکراری مثل <span dir="ltr">https://site.ir/https://site.ir</span> به‌صورت خودکار اصلاح می‌شوند.</p>
+            </GlassHelp>
+            <GlassHelp title="روش‌های آنالیز" label="روش‌ها">
+              {ANALYZERS.map((a) => (
+                <p key={a.id}><b>{a.label}:</b> {a.note}</p>
+              ))}
+            </GlassHelp>
+          </span>
         </h2>
         <p className="mb-4 text-[11px] text-slate-500">
           ۱) کلمه کلیدی را در گوگل جستجو کنید و آدرس رقیب اول را اینجا بگذارید. ۲) پرترافیک‌ترین صفحه‌اش را پیدا کنید.
@@ -210,6 +246,10 @@ export function CompetitorPane() {
           <label className="text-xs">
             <span className="mb-1 block font-bold text-slate-600">آدرس سایت یا صفحه رقیب</span>
             <input dir="ltr" value={competitorUrl} onChange={(e) => setCompetitorUrl(e.target.value)} className={inputCls} placeholder="https://competitor.ir/insurance" />
+          </label>
+          <label className="text-xs md:col-span-2">
+            <span className="mb-1 block font-bold text-slate-600">دامنه دوم سایت من (اگر دامنه اول باز نشد از این خوانده می‌شود)</span>
+            <input dir="ltr" value={domain2} onChange={(e) => setDomain2(e.target.value)} className={inputCls} placeholder="https://saman8452.ir" />
           </label>
           <label className="text-xs md:col-span-2">
             <span className="mb-1 block font-bold text-slate-600">یادداشت برای هوش مصنوعی (اختیاری)</span>
@@ -275,6 +315,25 @@ export function CompetitorPane() {
           </ul>
         )}
       </div>
+
+      {showResult && analysis?.ok && (
+        <GlassModal title="نتیجه آنالیز رقیب" onClose={() => setShowResult(false)}>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="rounded-xl bg-white/70 p-2"><b>موتور هوش مصنوعی:</b> <span dir="ltr">{analysis.engine}</span></div>
+            <div className="rounded-xl bg-white/70 p-2"><b>روش آنالیز:</b> {getAnalyzer(analysis.analyzer).label}</div>
+            <div className="rounded-xl bg-white/70 p-2 sm:col-span-2"><b>صفحه رقیب:</b> <span dir="ltr">{analysis.competitor.url}</span> {analysis.competitor.ok ? "✓ خوانده شد" : `— ${analysis.competitor.error ?? ""}`}</div>
+          </div>
+          {analysis.mine.some((m: any) => m.via || !m.ok) && (
+            <ul className="list-inside list-disc text-amber-700">
+              {analysis.mine.map((m: any) => (m.via || !m.ok) && <li key={m.url}><span dir="ltr">{m.url}</span>: {m.via || m.error}</li>)}
+            </ul>
+          )}
+          {analysis.report.summary && <p className="whitespace-pre-line rounded-xl bg-white/70 p-3">{analysis.report.summary}</p>}
+          <ListCard title="نقاط ضعف رقیب" items={analysis.report.competitorWeaknesses.slice(0, 5)} tone="rose" />
+          <ListCard title="کارهای سریع" items={analysis.report.quickWins.slice(0, 5)} tone="emerald" />
+          <p className="text-[11px] text-slate-500">جزئیات کامل و برنامه محتوا زیر همین صفحه نمایش داده شده است.</p>
+        </GlassModal>
+      )}
 
       {scan?.ok && (
         <div className="rounded-2xl border border-slate-200 bg-white p-5">

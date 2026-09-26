@@ -18,6 +18,25 @@
  * and the AI engine itself is switchable too (default: Lovable AI).
  */
 import { readPageForAi } from "./ai-blocks.server";
+import { cleanOrigin, explainFetchError, joinUrl, SECONDARY_DOMAIN, PRIMARY_DOMAIN, swapOrigin } from "./seo-url";
+
+/**
+ * Reads a page; when it fails on one domain, tries the same path on the
+ * second domain (bimehsaman8452.ir <-> saman8452.ir) before giving up.
+ */
+export async function pageSignalsWithFallback(url: string, altOrigin?: string): Promise<PageSignals & { via?: string }> {
+  const first = await pageSignals(url);
+  if (first.ok) return first;
+  const origin = cleanOrigin(url);
+  const alt =
+    cleanOrigin(altOrigin) ||
+    (origin === cleanOrigin(PRIMARY_DOMAIN) ? SECONDARY_DOMAIN : origin === cleanOrigin(SECONDARY_DOMAIN) ? PRIMARY_DOMAIN : "");
+  if (alt && cleanOrigin(alt) !== origin) {
+    const second = await pageSignals(swapOrigin(url, alt));
+    if (second.ok) return { ...second, via: `از دامنه دوم خوانده شد (${cleanOrigin(alt)}) چون ${explainFetchError(first.error)}` };
+  }
+  return { ...first, error: explainFetchError(first.error) };
+}
 
 export type PageSignals = {
   url: string;
@@ -187,6 +206,8 @@ export async function analyzeCompetitor(args: {
   provider?: string;
   model?: string;
   extraNotes?: string;
+  /** Second domain of our own site, used as fallback when a page won't load. */
+  myAltOrigin?: string;
 }): Promise<CompetitorResult> {
   const competitorUrl = (args.competitorUrl || "").trim();
   if (!competitorUrl) return { ok: false, error: "آدرس سایت رقیب را وارد کنید." };
@@ -196,10 +217,10 @@ export async function analyzeCompetitor(args: {
   const competitor =
     analyzer === "ai_only"
       ? { url: competitorUrl, ok: false as const, error: "حالت «فقط هوش مصنوعی» — صفحه خزش نشد." }
-      : await pageSignals(competitorUrl);
+      : await pageSignalsWithFallback(competitorUrl);
   const mine: PageSignals[] = [];
   for (const url of (args.myUrls || []).slice(0, 8)) {
-    mine.push(await pageSignals(url));
+    mine.push(await pageSignalsWithFallback(url, args.myAltOrigin));
   }
 
   const { runModel } = await import("./site-ai.server");
@@ -278,6 +299,7 @@ export async function scanMySite(args: {
   analyzer?: string;
   provider?: string;
   model?: string;
+  altOrigin?: string;
 }): Promise<
   | {
       ok: true;
@@ -286,15 +308,18 @@ export async function scanMySite(args: {
     }
   | { ok: false; error: string }
 > {
-  const origin = (args.origin || "").trim().replace(/\/+$/, "");
+  const origin = cleanOrigin(args.origin);
   if (!origin) return { ok: false, error: "آدرس دامنه سایت در تنظیمات سئو خالی است." };
-  const urls = (args.paths || []).slice(0, 12).map((p) => origin + (p.startsWith("/") ? p : `/${p}`));
+  const altOrigin =
+    cleanOrigin(args.altOrigin) || (origin === cleanOrigin(PRIMARY_DOMAIN) ? SECONDARY_DOMAIN : PRIMARY_DOMAIN);
+  const urls = Array.from(new Set((args.paths || []).slice(0, 12).map((p) => joinUrl(origin, p))));
 
   const pages: (PageSignals & { issues: string[] })[] = [];
   for (const url of urls) {
-    const s = await pageSignals(url);
+    const s = await pageSignalsWithFallback(url, altOrigin);
     const issues: string[] = [];
-    if (!s.ok) issues.push(`صفحه دریافت نشد: ${s.error}`);
+    if (!s.ok) issues.push(`صفحه از هیچ‌کدام از دو دامنه دریافت نشد: ${s.error}`);
+    else if (s.via) issues.push(s.via);
     else {
       if (!s.title) issues.push("عنوان صفحه (title) خالی است.");
       else if (s.title.length < 25) issues.push("عنوان صفحه بسیار کوتاه است (زیر ۲۵ کاراکتر).");
@@ -315,6 +340,7 @@ export async function scanMySite(args: {
       keyword: args.keyword,
       competitorUrl: args.competitorUrl,
       myUrls: urls.slice(0, 6),
+      myAltOrigin: altOrigin,
       analyzer: args.analyzer,
       provider: args.provider,
       model: args.model,

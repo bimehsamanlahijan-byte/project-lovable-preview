@@ -20,7 +20,9 @@ export async function resolveTarget(providerId: string): Promise<
   await loadRuntimeEnv();
 
   const provider = getProvider(providerId);
-  const key = envValue(...provider.keyNames);
+  const { dbProviderKey } = await import("@/lib/ai-keys.server");
+  const stored = await dbProviderKey(provider.id);
+  const key = stored?.key || envValue(...provider.keyNames);
   if (!key) return { ok: false, error: `missing_key_${provider.keyNames[0]}` };
 
   const bearer = { "Content-Type": "application/json", Authorization: `Bearer ${key}` };
@@ -37,7 +39,7 @@ export async function resolveTarget(providerId: string): Promise<
         },
       };
     case "cloudflare": {
-      const account = envValue("CLOUDFLARE_ACCOUNT_ID");
+      const account = stored?.extra || envValue("CLOUDFLARE_ACCOUNT_ID");
       if (!account) return { ok: false, error: "missing_key_CLOUDFLARE_ACCOUNT_ID" };
       return {
         ok: true,
