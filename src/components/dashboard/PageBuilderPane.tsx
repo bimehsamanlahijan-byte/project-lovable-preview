@@ -40,6 +40,9 @@ import { githubPublishSnapshot } from "@/lib/github.functions";
 import { extractPageFromUrl, fetchPageHtml } from "@/lib/custom-pages.functions";
 import { buildGrabberScript, DEFAULT_GRABBER_OPTIONS } from "@/lib/page-grabber-script";
 import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from "@/lib/site-config";
+import { AI_ENGINES_KEY, DEFAULT_AI_ENGINES, type AiEnginesSettings } from "@/lib/ai-engine";
+import { aiExtractPageBlocks } from "@/lib/seo-competitor.functions";
+import { AiEngineSelect } from "./AiEngineSelect";
 
 /**
  * Page Builder pane.
@@ -75,6 +78,8 @@ export function PageBuilderPane({
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [pagesOpen, setPagesOpen] = useState(false);
   const [previewWidth, setPreviewWidth] = useState(0);
+  const [engines, setEngines] = useState<AiEnginesSettings>(DEFAULT_AI_ENGINES);
+  const [aiBuilding, setAiBuilding] = useState(false);
   const previewFrame = useRef<HTMLIFrameElement | null>(null);
   const previewBox = useRef<HTMLDivElement | null>(null);
 
@@ -168,7 +173,9 @@ export function PageBuilderPane({
       await new Promise((r) => setTimeout(r, 2000));
       try { await (frame.contentDocument as any)?.fonts?.ready; } catch { /* ignore */ }
       setAutoStep("در حال کپی کامل صفحه…");
-      const script = buildGrabberScript({ ...DEFAULT_GRABBER_OPTIONS, mode: "clone", slug: draft.slug, silent: true, sourceUrl: base, clipboard: false });
+      // mode "blocks": every part of the page becomes a separate, editable block
+      // (hero/text/image/cards/...) so the visual editor can select and change it.
+      const script = buildGrabberScript({ ...DEFAULT_GRABBER_OPTIONS, mode: "blocks", slug: draft.slug, silent: true, sourceUrl: base, clipboard: false });
       const page = (frame.contentWindow as any).eval(script);
       if (!page || !Array.isArray(page.blocks) || !page.blocks.length) {
         notifyFailed("صفحه‌ساز خودکار", "محتوایی پیدا نشد. این سایت احتمالاً محتوایش را با جاوااسکریپت می‌سازد؛ از روش اسکریپت دستی استفاده کنید.");
@@ -195,9 +202,45 @@ export function PageBuilderPane({
     }
   }
 
+  /** AI extraction: the selected engine turns the source page into editable blocks. */
+  async function runAiBuild() {
+    if (!draft) return;
+    const u = extractUrl.trim();
+    if (!u) return notifyFailed("استخراج با هوش مصنوعی", "ابتدا آدرس صفحه را وارد کنید.");
+    setAiBuilding(true);
+    try {
+      const res = await aiExtractPageBlocks({
+        data: { url: u, provider: engines.pageBuilder.provider, model: engines.pageBuilder.model },
+      });
+      if (!res.ok) { notifyFailed("استخراج با هوش مصنوعی", res.error); return; }
+      setDraft({
+        ...draft,
+        title: res.title || draft.title,
+        description: res.description || draft.description,
+        seoTitle: res.title || draft.seoTitle,
+        seoDescription: res.description || draft.seoDescription,
+        blocks: res.blocks,
+        updatedAt: new Date().toISOString(),
+      });
+      setDirty(true);
+      notifySaved("هوش مصنوعی صفحه را ساخت — همه اجزا قابل ویرایش هستند؛ «ذخیره» را بزنید");
+    } catch (e: any) {
+      notifyFailed("استخراج با هوش مصنوعی", e?.message || String(e));
+    } finally {
+      setAiBuilding(false);
+    }
+  }
+
+  async function saveEngines(next: AiEnginesSettings) {
+    setEngines(next);
+    const r = await adminWriteSetting(AI_ENGINES_KEY, next);
+    if (r.error) notifyFailed("ذخیره موتور هوش مصنوعی", r.error.message);
+  }
+
   async function reload() {
     const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
     setPages(map);
+    setEngines(await adminReadSetting<AiEnginesSettings>(AI_ENGINES_KEY, DEFAULT_AI_ENGINES));
     if (!selectedSlug) {
       const first = Object.keys(map)[0] ?? null;
       if (first) {
@@ -508,11 +551,24 @@ export function PageBuilderPane({
                 <input dir="ltr" className={inputCls} placeholder="https://example.com/page" value={extractUrl} onChange={(e) => setExtractUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !extracting) void runExtract(); }} />
                 <button type="button" onClick={() => void runExtract()} disabled={extracting} className={primaryBtn}>{extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}</button>
               </div>
-              <button type="button" onClick={() => void runAutoBuild()} disabled={autoBuilding || extracting} className={`${primaryBtn} w-full justify-center`}>
-                {autoBuilding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                {autoBuilding ? autoStep || "در حال ساخت…" : "صفحه‌ساز خودکار (یک کلیک)"}
+              <button type="button" onClick={() => void runAiBuild()} disabled={aiBuilding || autoBuilding || extracting} className={`${primaryBtn} w-full justify-center`}>
+                {aiBuilding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                {aiBuilding ? "هوش مصنوعی در حال ساخت صفحه…" : "ساخت صفحه با هوش مصنوعی (پیشنهادی)"}
               </button>
-              <p className="text-[11px] leading-5 text-muted-foreground">آدرس را وارد کنید و این دکمه را بزنید؛ کل صفحه با طرح، فونت، تصاویر و ویدیو کپی و در پیش‌نمایش نمایش داده می‌شود (هدر و فوتر سایت شما می‌ماند).</p>
+              <button type="button" onClick={() => void runAutoBuild()} disabled={autoBuilding || extracting || aiBuilding} className={`${btnCls} w-full justify-center`}>
+                {autoBuilding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                {autoBuilding ? autoStep || "در حال ساخت…" : "صفحه‌ساز خودکار (بدون هوش مصنوعی)"}
+              </button>
+              <p className="text-[11px] leading-5 text-muted-foreground">
+                آدرس صفحه را وارد کنید؛ محتوای همان صفحه به اجزای جداگانه (تیتر، متن، تصویر، کارت…) تبدیل می‌شود و همه در ویرایشگر بصری قابل انتخاب و ویرایش هستند. هدر و فوتر سایت شما همیشه حفظ می‌شود.
+              </p>
+              <div className="rounded-lg border border-border bg-muted/40 p-3">
+                <AiEngineSelect
+                  value={engines.pageBuilder}
+                  onChange={(pageBuilder) => void saveEngines({ ...engines, pageBuilder })}
+                  label="موتور هوش مصنوعی صفحه‌ساز"
+                />
+              </div>
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4">

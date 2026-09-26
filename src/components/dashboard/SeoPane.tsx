@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { Search, Save, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import { Search, Save, Plus, Trash2, ArrowUp, ArrowDown, ExternalLink, Swords } from "lucide-react";
 
 import { adminReadSetting, adminWriteSetting } from "@/lib/admin-db";
 import { DEFAULT_SEO, SEO_SETTING_KEY, normalizeBase, type SeoConfig, type SeoPage } from "@/lib/seo-config";
+import { CompetitorPane } from "./CompetitorPane";
 
 const inputCls = "w-full text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white";
+
 
 export function SeoPane() {
   const [cfg, setCfg] = useState<SeoConfig>(DEFAULT_SEO);
   const [msg, setMsg] = useState("");
+  const [tab, setTab] = useState<"settings" | "competitor">("settings");
 
   useEffect(() => {
     adminReadSetting<SeoConfig>(SEO_SETTING_KEY, DEFAULT_SEO).then(setCfg);
@@ -57,16 +60,38 @@ export function SeoPane() {
             صفحه‌هایی که می‌خواهید زیر دامنه اصلی در نتایج گوگل (سایت‌لینک) دیده شوند را اینجا بسازید و مرتب کنید.
           </p>
         </div>
+        {tab === "settings" && (
+          <button
+            onClick={async () => {
+              const r = await adminWriteSetting(SEO_SETTING_KEY, cfg);
+              setMsg(r.error ? "ذخیره نشد." : "ذخیره شد ✓ (نقشه سایت به‌روز شد)");
+            }}
+            className="flex items-center gap-2 text-xs px-3 py-2 rounded-xl bg-emerald-600 text-white"
+          >
+            <Save className="w-4 h-4" /> ذخیره
+          </button>
+        )}
+      </div>
+
+      <div className="mb-5 flex flex-wrap gap-2">
         <button
-          onClick={async () => {
-            const r = await adminWriteSetting(SEO_SETTING_KEY, cfg);
-            setMsg(r.error ? "ذخیره نشد." : "ذخیره شد ✓ (نقشه سایت به‌روز شد)");
-          }}
-          className="flex items-center gap-2 text-xs px-3 py-2 rounded-xl bg-emerald-600 text-white"
+          onClick={() => setTab("settings")}
+          className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${tab === "settings" ? "bg-[#0b1e3f] text-white" : "border border-slate-300 bg-white text-slate-600"}`}
         >
-          <Save className="w-4 h-4" /> ذخیره
+          <Search className="w-4 h-4" /> تنظیمات سئو و سایت‌لینک
+        </button>
+        <button
+          onClick={() => setTab("competitor")}
+          className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${tab === "competitor" ? "bg-[#0b1e3f] text-white" : "border border-slate-300 bg-white text-slate-600"}`}
+        >
+          <Swords className="w-4 h-4" /> آنالیز وب‌سایت رقیب
         </button>
       </div>
+
+      {tab === "competitor" && <CompetitorPane />}
+
+      {tab === "settings" && (
+      <>
       {msg && <div className="mb-4 text-xs bg-white border border-slate-200 rounded-xl p-3">{msg}</div>}
 
       <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 grid md:grid-cols-2 gap-4">
@@ -156,6 +181,8 @@ export function SeoPane() {
           ))}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
