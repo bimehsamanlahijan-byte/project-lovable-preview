@@ -91,6 +91,13 @@ export function getSelector(el: Element): string {
   const parts: string[] = [];
   let node: Element | null = el;
   while (node && node.nodeType === 1 && node.tagName.toLowerCase() !== "body") {
+    // Page-Builder blocks carry a stable id: anchor the selector there so
+    // chat widgets / splash layers injected into <body> (which shift the
+    // nth-of-type indexes) never break edits made on builder pages.
+    if (node.id && node.id.startsWith("page-block-")) {
+      parts.unshift(`[id="${node.id.replace(/"/g, "")}"]`);
+      return parts.join(" > ");
+    }
     const tag = node.tagName.toLowerCase();
     const parent: Element | null = node.parentElement;
     if (!parent) {

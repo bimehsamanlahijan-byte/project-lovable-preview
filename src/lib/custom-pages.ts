@@ -17,7 +17,8 @@ export type BlockType =
   | "gallery"
   | "video"
   | "divider"
-  | "html";
+  | "html"
+  | "clone";
 
 export type Block = {
   id: string;
@@ -73,6 +74,7 @@ export const BLOCK_TYPES: { type: BlockType; label: string; icon: string }[] = [
   { type: "video", label: "ویدیو", icon: "🎬" },
   { type: "divider", label: "جداکننده", icon: "➖" },
   { type: "html", label: "کد HTML دلخواه", icon: "🧩" },
+  { type: "clone", label: "کپی کامل صفحه (طرح، فونت، ویدیو)", icon: "🧬" },
 ];
 
 export function defaultBlockProps(type: BlockType): Record<string, any> {
@@ -115,6 +117,8 @@ export function defaultBlockProps(type: BlockType): Record<string, any> {
       return {};
     case "html":
       return { html: "<p>کد HTML دلخواه</p>" };
+    case "clone":
+      return { html: "<div style=\"padding:24px\">محتوای کپی‌شده</div>", css: "", maxWidth: "", source: "" };
     default:
       return {};
   }

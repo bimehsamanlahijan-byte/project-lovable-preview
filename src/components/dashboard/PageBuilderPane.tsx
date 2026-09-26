@@ -741,6 +741,23 @@ function BlockProps({
       );
     case "divider":
       return <p className="text-xs text-slate-400">بدون تنظیمات.</p>;
+    case "clone":
+      return (
+        <>
+          <p className="text-[11px] leading-6 text-slate-500">
+            این بلوک کپی کامل صفحهٔ مبدأ است (طرح، فونت، رنگ، ویدیو). جزئیات را با «ویرایشگر بصری» روی خود صفحه ویرایش کنید.
+          </p>
+          <Field label="حداکثر عرض (مثلاً 1200px — خالی = عرض اصلی)">
+            <input dir="ltr" className={inputCls} value={p.maxWidth ?? ""} onChange={(e) => onProp("maxWidth", e.target.value)} />
+          </Field>
+          <Field label="کد HTML (پیشرفته)">
+            <textarea dir="ltr" className={inputCls} rows={6} value={p.html ?? ""} onChange={(e) => onProp("html", e.target.value)} />
+          </Field>
+          <Field label="CSS و فونت‌ها (پیشرفته)">
+            <textarea dir="ltr" className={inputCls} rows={4} value={p.css ?? ""} onChange={(e) => onProp("css", e.target.value)} />
+          </Field>
+        </>
+      );
     case "html":
       return (
         <Field label="کد HTML">

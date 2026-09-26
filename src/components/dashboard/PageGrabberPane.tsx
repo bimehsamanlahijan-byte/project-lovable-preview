@@ -162,6 +162,22 @@ export function PageGrabberPane({ onOpenBuilder }: { onOpenBuilder?: (slug: stri
         <aside className="space-y-4">
           <section className={card}>
             <div className="text-sm font-extrabold text-card-foreground">تنظیمات اسکریپت</div>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                ["clone", "کپی کامل و عینِ صفحه", "طرح، فونت، رنگ، تصویر و ویدیو دقیقاً مثل صفحهٔ اصلی؛ هدر و فوتر با سایت شما جایگزین می‌شود."],
+                ["blocks", "بلوک‌های ساده", "فقط متن و تصاویر به بلوک‌های صفحه‌ساز تبدیل می‌شود."],
+              ] as const).map(([m, label, hint]) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => patch({ mode: m })}
+                  className={`rounded-lg border p-2 text-right text-xs ${opts.mode === m ? "border-primary bg-primary/10 font-bold" : "border-border"}`}
+                >
+                  <div>{label}</div>
+                  <div className="mt-1 text-[10px] leading-5 text-muted-foreground">{hint}</div>
+                </button>
+              ))}
+            </div>
             <label className="block text-xs text-muted-foreground">
               نامک پیشنهادی (خالی = از آدرس صفحه)
               <input dir="ltr" className={inputCls} value={opts.slug} onChange={(e) => patch({ slug: e.target.value })} />

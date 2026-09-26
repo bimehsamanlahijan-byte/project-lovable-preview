@@ -22,6 +22,37 @@ function sanitizeHtml(value: string): string {
     .replace(/\s(href|src)\s*=\s*(["'])\s*(javascript:|data:text\/html)[\s\S]*?\2/gi, "");
 }
 
+/** Video hosts whose embeds are kept inside cloned pages. */
+const VIDEO_HOSTS = /^(https?:)?\/\/([a-z0-9-]+\.)*(youtube\.com|youtube-nocookie\.com|youtu\.be|aparat\.com|vimeo\.com|player\.vimeo\.com|dailymotion\.com|arvancloud\.ir|arvancloud\.com|namava\.ir|filimo\.com|google\.com|googleusercontent\.com)\//i;
+
+/**
+ * Sanitizer for full-page clones: keeps inline styles, <video>/<source>,
+ * <svg> and embeds from known video hosts; strips scripts, handlers and
+ * anything that could hijack the page. Forms become plain containers.
+ */
+export function sanitizeCloneHtml(value: string): string {
+  return value
+    .replace(/<(script|object|embed|meta|link|base|noscript|template)[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<(script|object|embed|meta|link|base)\b[^>]*\/?\s*>/gi, "")
+    .replace(/<style[\s\S]*?<\/style\s*>/gi, "")
+    .replace(/<iframe\b([^>]*)>([\s\S]*?)<\/iframe\s*>/gi, (m, attrs: string) => {
+      const src = /\ssrc\s*=\s*["']([^"']+)["']/i.exec(attrs)?.[1] ?? "";
+      return VIDEO_HOSTS.test(src) ? m : "";
+    })
+    .replace(/<(\/?)form\b/gi, "<$1div")
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/\s(href|src|action|formaction|xlink:href)\s*=\s*(["'])\s*(javascript:|vbscript:|data:text\/html)[\s\S]*?\2/gi, "");
+}
+
+/** Only @font-face / @keyframes / plain rules; no @import or script-ish tricks. */
+export function sanitizeCloneCss(value: string): string {
+  return value
+    .replace(/<\/?style[^>]*>/gi, "")
+    .replace(/@import[^;]*;/gi, "")
+    .replace(/expression\s*\(/gi, "(")
+    .replace(/javascript:/gi, "");
+}
+
 function btnPrimary(label: string, href: string) {
   return (
     <a
@@ -210,6 +241,18 @@ export function BlockRenderer({ block }: { block: Block }) {
     }
     case "divider":
       return <div id={id} style={{ height: 1, background: "#e2e8f0", margin: "24px 16px" }} />;
+    case "clone": {
+      const css = sanitizeCloneCss(String(p.css || ""));
+      return (
+        <section id={id} data-page-clone="1" style={{ width: "100%", overflow: "hidden" }}>
+          {css ? <style dangerouslySetInnerHTML={{ __html: css }} /> : null}
+          <div
+            style={{ maxWidth: p.maxWidth || undefined, margin: "0 auto", direction: "rtl" }}
+            dangerouslySetInnerHTML={{ __html: sanitizeCloneHtml(String(p.html || "")) }}
+          />
+        </section>
+      );
+    }
     case "html":
       return (
         <section
