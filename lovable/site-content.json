@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-26T13:31:27.931Z",
+  "exportedAt": "2026-09-26T13:32:14.697Z",
   "note": "به‌روزرسانی خودکار از پیشخوان (visual_overrides)",
   "settings": [
     {
@@ -901,6 +901,19 @@
             },
             "hoverDeep": false
           },
+          "/::@desktop::body > div:nth-of-type(1) > footer > div > div:nth-of-type(3)": {
+            "html": " تمام حقوق متعلق به بیمه سامان نمایندگی آذرخش می‌باشد",
+            "text": "تمام حقوق متعلق به بیمه سامان نمایندگی آذرخش می‌باشد.",
+            "hover": {},
+            "style": {
+              "color": "#003d900",
+              "font-size": "12px",
+              "text-align": "center",
+              "font-family": "Vazirmatn, system-ui, sans-serif",
+              "font-weight": "400"
+            },
+            "hoverDeep": false
+          },
           "/::body > div:nth-of-type(1) > section:nth-of-type(5) > div:nth-of-type(2)": {
             "hover": {},
             "style": {
@@ -1675,7 +1688,7 @@
           }
         }
       },
-      "updated_at": "2026-09-26T13:31:25.789+00:00"
+      "updated_at": "2026-09-26T13:32:11.84+00:00"
     }
   ]
 }
