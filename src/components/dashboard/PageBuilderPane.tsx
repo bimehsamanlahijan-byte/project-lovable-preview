@@ -3,6 +3,7 @@ import {
   ArrowDown,
   ArrowUp,
   Copy,
+  DownloadCloud,
   ExternalLink,
   Eye,
   EyeOff,
@@ -52,9 +53,12 @@ import { DEFAULT_GITHUB_SYNC, GITHUB_SETTING_KEY, type GithubSyncSettings } from
 export function PageBuilderPane({
   onOpenVisualEditor,
   onOpenInspector,
+  onOpenGrabber,
 }: {
   onOpenVisualEditor: (path: string) => void;
   onOpenInspector: (path: string) => void;
+  /** Opens the "دانلود صفحه" script generator pane. */
+  onOpenGrabber?: () => void;
 }) {
   const [pages, setPages] = useState<CustomPagesMap>({});
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
@@ -202,10 +206,13 @@ export function PageBuilderPane({
     patchDraft({ blocks: draft.blocks.filter((b) => b.id !== id) });
   }
 
-  async function savePage() {
-    if (!draft) return;
+  async function savePage(): Promise<string | null> {
+    if (!draft) return null;
     const slug = sanitizeSlug(draft.slug);
-    if (!slug) return notifyFailed("ذخیره صفحه", "نامک (slug) معتبر نیست.");
+    if (!slug) {
+      notifyFailed("ذخیره صفحه", "نامک (slug) معتبر نیست.");
+      return null;
+    }
     const next: CustomPage = { ...draft, slug, updatedAt: new Date().toISOString() };
     setBusy(true);
     const map = await adminReadSetting<CustomPagesMap>(CUSTOM_PAGES_KEY, {});
@@ -216,13 +223,28 @@ export function PageBuilderPane({
     const res = (await adminWriteSetting(CUSTOM_PAGES_KEY, cleaned)) as { ok?: boolean; error?: { message?: string } };
     setBusy(false);
     if (res.ok === false) {
-      return notifyFailed("ذخیره صفحه", res.error?.message || "خطای دیتابیس");
+      notifyFailed("ذخیره صفحه", res.error?.message || "خطای دیتابیس");
+      return null;
     }
     setPages(cleaned);
     setSelectedSlug(slug);
     setDraft(next);
     setDirty(false);
     notifySaved("صفحه");
+    return slug;
+  }
+
+  /**
+   * The Visual Editor / Inspector / live view all load the *public* URL
+   * `/p/<slug>`, which only exists once the page is stored. Opening an unsaved
+   * (or edited-but-unsaved) draft therefore showed a ۴۰۴ inside the editor
+   * iframe. Save first, then hand over the real saved slug.
+   */
+  async function openSaved(open: (path: string) => void) {
+    if (!draft) return;
+    const slug = selectedSlug && !dirty ? selectedSlug : await savePage();
+    if (!slug) return;
+    open(pageUrl(slug));
   }
 
   async function duplicatePage(slug: string) {
@@ -405,9 +427,12 @@ export function PageBuilderPane({
                 منتشر (index در گوگل)
               </label>
               <div className="flex flex-wrap gap-2 pt-1">
-                <button type="button" onClick={() => onOpenVisualEditor(pageUrl(draft.slug))} className={btnCls}><Wand2 className="h-3.5 w-3.5" /> ویرایشگر بصری</button>
-                <button type="button" onClick={() => onOpenInspector(pageUrl(draft.slug))} className={btnCls}><Bug className="h-3.5 w-3.5" /> موس ایرادیاب</button>
-                <a href={pageUrl(draft.slug)} target="_blank" rel="noreferrer" className={btnCls}><ExternalLink className="h-3.5 w-3.5" /> مشاهده زنده</a>
+                <button type="button" onClick={() => void openSaved(onOpenVisualEditor)} className={btnCls}><Wand2 className="h-3.5 w-3.5" /> ویرایشگر بصری</button>
+                <button type="button" onClick={() => void openSaved(onOpenInspector)} className={btnCls}><Bug className="h-3.5 w-3.5" /> موس ایرادیاب</button>
+                {onOpenGrabber && (
+                  <button type="button" onClick={onOpenGrabber} className={btnCls} title="ساخت اسکریپت دانلود کامل یک صفحه و بارگذاری خروجی آن"><DownloadCloud className="h-3.5 w-3.5" /> اسکریپت دانلود صفحه</button>
+                )}
+                <button type="button" onClick={() => void openSaved((p) => window.open(p, "_blank", "noopener"))} className={btnCls}><ExternalLink className="h-3.5 w-3.5" /> مشاهده زنده</button>
                 <button type="button" onClick={() => void duplicatePage(draft.slug)} className={btnCls}><Copy className="h-3.5 w-3.5" /> کپی</button>
                 <button type="button" onClick={() => void deletePage(draft.slug)} className={btnCls}><Trash2 className="h-3.5 w-3.5" /> حذف</button>
               </div>

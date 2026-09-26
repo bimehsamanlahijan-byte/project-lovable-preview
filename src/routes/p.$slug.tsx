@@ -15,7 +15,24 @@ import type { CustomPage } from "@/lib/custom-pages";
  * `noindex,nofollow` so they won't be indexed.
  */
 export const Route = createFileRoute("/p/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({ pbPreview: search.pbPreview === "1" || search.pbPreview === 1 || search.pbPreview === true }),
+  /**
+   * Keep the Visual Editor / Inspector params alive.
+   *
+   * TanStack Router drops every search param `validateSearch` does not return,
+   * so returning only `pbPreview` silently stripped `?ve=1&veDevice=…` when the
+   * dashboard opened a builder page in the Visual Editor: the editor runtime
+   * never started inside the iframe and the frame reloaded as a plain page.
+   */
+  validateSearch: (search: Record<string, unknown>) => {
+    const str = (v: unknown) => (typeof v === "string" ? v : v == null ? undefined : String(v));
+    return {
+      pbPreview: search.pbPreview === "1" || search.pbPreview === 1 || search.pbPreview === true,
+      ve: str(search.ve),
+      veDevice: str(search.veDevice),
+      inspect: str(search.inspect),
+      t: str(search.t),
+    };
+  },
   loader: async ({ params }): Promise<CustomPage | null> => {
     try {
       return await getCustomPage({ data: { slug: params.slug } });

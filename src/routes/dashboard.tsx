@@ -41,6 +41,7 @@ import {
   Car,
   MessageSquarePlus,
   FilePlus2,
+  DownloadCloud,
 
 } from "lucide-react";
 import { SocialPane } from "@/components/dashboard/SocialPane";
@@ -50,6 +51,7 @@ import { DocsPane } from "@/components/dashboard/DocsPane";
 import { DeployPane } from "@/components/dashboard/DeployPane";
 import { GithubPane } from "@/components/dashboard/GithubPane";
 import { PageBuilderPane } from "@/components/dashboard/PageBuilderPane";
+import { PageGrabberPane } from "@/components/dashboard/PageGrabberPane";
 import { navItems, type NavItem } from "@/components/site-data";
 import { TelegramPane } from "@/components/dashboard/TelegramPane";
 import { LoginsPane } from "@/components/dashboard/LoginsPane";
@@ -179,7 +181,8 @@ type TabKey =
   | "deploy"
   | "github"
   | "logins"
-  | "pagebuilder";
+  | "pagebuilder"
+  | "pagegrabber";
 
 /* ---------- Root ---------- */
 function Dashboard() {
@@ -206,6 +209,7 @@ function Dashboard() {
     { key: "editor", label: "ویرایشگر بصری سایت", icon: Wand2 },
     { key: "inspector", label: "موس ایرادیاب و کدیاب", icon: Bug },
     { key: "pagebuilder", label: "صفحه‌ساز", icon: FilePlus2 },
+    { key: "pagegrabber", label: "دانلود صفحه (اسکریپت استخراج)", icon: DownloadCloud },
     { key: "contacts", label: "درخواست‌های مشاوره", icon: MessageSquare },
     { key: "suggestions", label: "انتقادات و پیشنهادات", icon: MessageSquarePlus },
     { key: "applications", label: "درخواست همکاری", icon: Users },
@@ -305,7 +309,10 @@ function Dashboard() {
           {tab === "editor" && <VisualEditorPane initialPage={editorPage} />}
           {tab === "inspector" && <InspectorPane initialPage={inspectorPage} />}
           {tab === "pagebuilder" && (
-            <PageBuilderPane onOpenVisualEditor={openPageInVisualEditor} onOpenInspector={openPageInInspector} />
+            <PageBuilderPane onOpenVisualEditor={openPageInVisualEditor} onOpenInspector={openPageInInspector} onOpenGrabber={() => { setTab("pagegrabber"); setSidebarOpen(false); }} />
+          )}
+          {tab === "pagegrabber" && (
+            <PageGrabberPane onOpenBuilder={() => { setTab("pagebuilder"); setSidebarOpen(false); }} />
           )}
           {tab === "contacts" && <ContactsPane />}
           {tab === "suggestions" && <SuggestionsPane />}
@@ -611,7 +618,7 @@ function VisualEditorPane({ initialPage = "/" }: { initialPage?: string }) {
       }
       const n = e.data as { type?: string; path?: string };
       if ((n?.type === "ve:ready" || n?.type === "ve:navigate") && n.path) {
-        setCurrentPath(n.path.replace(/[?&]ve=1/, "").replace(/\?$/, "") || "/");
+        setCurrentPath(n.path.split("?")[0] || "/");
       }
       if (n?.type === "ve:ready") {
         frame.current?.contentWindow?.postMessage({ type: "ve:mode", mode: modeRef.current }, "*");
