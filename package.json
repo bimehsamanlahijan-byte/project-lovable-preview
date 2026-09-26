@@ -1,0 +1,11 @@
+{
+  "name": "tanstack_start_ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node app.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

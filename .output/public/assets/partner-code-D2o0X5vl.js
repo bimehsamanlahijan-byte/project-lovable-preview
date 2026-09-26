@@ -1,0 +1,1 @@
+function e(e,t){let n=typeof t==`string`?new Date(t):t,r=Number.isNaN(n.getTime())?`00000000`:`${n.getFullYear()}${String(n.getMonth()+1).padStart(2,`0`)}${String(n.getDate()).padStart(2,`0`)}`,i=0;for(let t of String(e||``))i=(i*31+t.charCodeAt(0))%9e3;return`PA-${r}-${1e3+i}`}export{e as partnerApplicantCode};

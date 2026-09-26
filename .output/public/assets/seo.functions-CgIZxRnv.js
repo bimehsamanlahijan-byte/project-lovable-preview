@@ -1,0 +1,1 @@
+import{W as e,X as t}from"./index-J-d_6WOb.js";var n=e({method:`GET`}).handler(t(`5dd234dbf199d0bf950451d8a21bfef21a7d838e655a678d66e019e355c5be5a`));export{n as getSeoConfig};
